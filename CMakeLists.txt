@@ -39,6 +39,7 @@ add_custom_target(generate_protocol ALL
 
 add_library(eolib SHARED
     src/eo_data.c
+    src/encrypt.c
     src/protocol.c
 )
 
