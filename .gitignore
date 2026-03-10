@@ -16,7 +16,7 @@ eolibTargets.cmake
 eolibTargets-*.cmake
 
 code_gen
-eolib_tests
+eolib**tests
 codegen.stamp
 
 include/protocol.h
