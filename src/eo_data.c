@@ -16,10 +16,6 @@ EoWriter eo_writer_init_with_capacity(size_t capacity)
     return writer;
 }
 
-/**
- * Ensures that the writer has enough capacity to accommodate additional bytes.
- * Returns 0 on success, or -1 on failure (e.g., if the writer is NULL or if memory allocation fails).
- */
 int eo_writer_ensure_capacity(EoWriter *writer, size_t additional)
 {
     if (!writer)

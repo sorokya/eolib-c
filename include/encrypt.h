@@ -6,27 +6,39 @@
 #include <stdlib.h>
 
 /**
- * Calculates the server verification hash based on the given challenge.
+ * Calculates the server verification hash for the given challenge value.
+ * @param challenge The server challenge value.
+ * @return The verification hash.
  */
 int32_t server_verification_hash(int32_t challenge);
 
 /**
- * Swaps sequences of bytes in the data array that are multiples of the given value.
+ * Reverses contiguous sequences of bytes where each value is a multiple of `multiple`.
+ * @param data The packet data to mutate.
+ * @param length Number of bytes in `data`.
+ * @param multiple The divisor used to determine which bytes are in a sequence.
  */
 void swap_multiples(uint8_t *data, size_t length, uint8_t multiple);
 
 /**
  * Generates a random swap multiple between 6 and 12 inclusive.
+ * @return The generated swap multiple.
  */
 uint8_t generate_swap_multiple();
 
 /**
- * Encrypts the given packet data array using the specified swap multiple.
+ * Encrypts a packet in place using the specified swap multiple.
+ * @param data The packet data to encrypt.
+ * @param length Number of bytes in `data`.
+ * @param swap_multiple The swap multiple for the packet.
  */
 void encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
 
 /**
- * Decrypts the given packet data array using the specified swap multiple.
+ * Decrypts a packet in place using the specified swap multiple.
+ * @param data The packet data to decrypt.
+ * @param length Number of bytes in `data`.
+ * @param swap_multiple The swap multiple for the packet.
  */
 void decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
 
