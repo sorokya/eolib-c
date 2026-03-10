@@ -5,6 +5,9 @@ project(eolib_c LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+enable_testing()
+set(CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+
 include(GNUInstallDirs)
 
 set(EOLIB_VERSION "0.1.0")
@@ -89,3 +92,10 @@ install(EXPORT eolibTargets
 	FILE eolibTargets.cmake
 	DESTINATION ${EOLIB_CONFIG_INSTALL_DIR}
 )
+
+add_executable(eolib_tests
+	tests/encrypt_tests.c
+)
+target_include_directories(eolib_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(eolib_tests PRIVATE eolib)
+add_test(NAME eolib_encrypt_tests COMMAND eolib_tests)

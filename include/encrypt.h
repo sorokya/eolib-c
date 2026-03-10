@@ -20,4 +20,14 @@ void swap_multiples(uint8_t *data, size_t length, uint8_t multiple);
  */
 uint8_t generate_swap_multiple();
 
+/**
+ * Encrypts the given packet data array using the specified swap multiple.
+ */
+void encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
+
+/**
+ * Decrypts the given packet data array using the specified swap multiple.
+ */
+void decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
+
 #endif

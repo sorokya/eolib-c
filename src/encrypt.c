@@ -27,9 +27,9 @@ void swap_multiples(uint8_t *data, size_t length, uint8_t multiple)
                     data[start + j] = data[end - j];
                     data[end - j] = temp;
                 }
-
-                sequence_length = 0;
             }
+
+            sequence_length = 0;
         }
     }
 }
@@ -37,4 +37,113 @@ void swap_multiples(uint8_t *data, size_t length, uint8_t multiple)
 uint8_t generate_swap_multiple()
 {
     return (rand() % 7) + 6;
+}
+
+void encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)
+{
+    if (length < 2 || (data[0] == 0xFF && data[1] == 0xFF))
+    {
+        return;
+    }
+
+    swap_multiples(data, length, swap_multiple);
+
+    // ceiling div
+    size_t big_half = (length + 1) / 2;
+
+    for (size_t i = 0; i < length; i++)
+    {
+        size_t next = (i < big_half) ? (i * 2) : ((length - 1 - i) * 2 + 1);
+        if (next == i)
+        {
+            if ((data[i] & 0x7F) != 0)
+            {
+                data[i] ^= 0x80;
+            }
+            continue;
+        }
+
+        size_t j = next;
+        while (j != i && j > i)
+        {
+            j = (j < big_half) ? (j * 2) : ((length - 1 - j) * 2 + 1);
+        }
+        if (j != i)
+        {
+            continue;
+        }
+
+        uint8_t temp = data[i];
+        j = next;
+        while (j != i)
+        {
+            uint8_t swap = data[j];
+            if ((temp & 0x7F) != 0)
+            {
+                temp ^= 0x80;
+            }
+            data[j] = temp;
+            temp = swap;
+            j = (j < big_half) ? (j * 2) : ((length - 1 - j) * 2 + 1);
+        }
+
+        if ((temp & 0x7F) != 0)
+        {
+            temp ^= 0x80;
+        }
+        data[i] = temp;
+    }
+}
+
+void decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)
+{
+    if (length < 2 || (data[0] == 0xFF && data[1] == 0xFF))
+    {
+        return;
+    }
+
+    for (size_t i = 0; i < length; i++)
+    {
+        size_t next = (i % 2 == 0) ? (i / 2) : (length - 1 - (i - 1) / 2);
+        if (next == i)
+        {
+            if ((data[i] & 0x7F) != 0)
+            {
+                data[i] ^= 0x80;
+            }
+            continue;
+        }
+
+        size_t j = next;
+        while (j != i && j > i)
+        {
+            j = (j % 2 == 0) ? (j / 2) : (length - 1 - (j - 1) / 2);
+        }
+        if (j != i)
+        {
+            continue;
+        }
+
+        uint8_t temp = data[i];
+        j = next;
+        while (j != i)
+        {
+            uint8_t swap = data[j];
+            if ((temp & 0x7F) != 0)
+            {
+                temp ^= 0x80;
+            }
+            data[j] = temp;
+            temp = swap;
+            j = (j % 2 == 0) ? (j / 2) : (length - 1 - (j - 1) / 2);
+        }
+
+        if ((temp & 0x7F) != 0)
+        {
+            temp ^= 0x80;
+        }
+        data[i] = temp;
+    }
+
+    swap_multiples(data, length, swap_multiple);
 }
