@@ -93,9 +93,24 @@ install(EXPORT eolibTargets
 	DESTINATION ${EOLIB_CONFIG_INSTALL_DIR}
 )
 
-add_executable(eolib_tests
+add_executable(eolib_encrypt_tests
 	tests/encrypt_tests.c
+	tests/test_utils.c
 )
-target_include_directories(eolib_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(eolib_tests PRIVATE eolib)
-add_test(NAME eolib_encrypt_tests COMMAND eolib_tests)
+target_include_directories(eolib_encrypt_tests PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/tests
+)
+target_link_libraries(eolib_encrypt_tests PRIVATE eolib)
+add_test(NAME eolib_encrypt_tests COMMAND eolib_encrypt_tests)
+
+add_executable(eolib_eo_data_tests
+	tests/eo_data_tests.c
+	tests/test_utils.c
+)
+target_include_directories(eolib_eo_data_tests PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/tests
+)
+target_link_libraries(eolib_eo_data_tests PRIVATE eolib)
+add_test(NAME eolib_eo_data_tests COMMAND eolib_eo_data_tests)
