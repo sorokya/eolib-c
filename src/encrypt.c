@@ -33,3 +33,8 @@ void swap_multiples(uint8_t *data, size_t length, uint8_t multiple)
         }
     }
 }
+
+uint8_t generate_swap_multiple()
+{
+    return (rand() % 7) + 6;
+}
