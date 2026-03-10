@@ -52,6 +52,23 @@ void expect_equal_size(const char *name, size_t actual, size_t expected)
     }
 }
 
+void expect_equal_str(const char *name, const char *actual, const char *expected)
+{
+    if (!actual && !expected)
+    {
+        return;
+    }
+
+    if (!actual || !expected || strcmp(actual, expected) != 0)
+    {
+        fprintf(stderr, "%s failed: actual=%s, expected=%s\n",
+                name,
+                actual ? actual : "(null)",
+                expected ? expected : "(null)");
+        test_failures++;
+    }
+}
+
 void expect(const char *name, int condition)
 {
     if (!condition)
