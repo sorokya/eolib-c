@@ -1,15 +1,27 @@
 #include <errno.h>
+#if defined(_WIN32)
+#include <windows.h>
+#else
+#include <dirent.h>
 #include <glob.h>
+#endif
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+
+#if defined(_WIN32)
+#define EOLIB_PATH_MAX MAX_PATH
+#else
+#define EOLIB_PATH_MAX PATH_MAX
+#endif
 
 #define ARRAY_GROW_CAPACITY(current) ((current) < 8 ? 8 : (current) * 2)
 
@@ -352,21 +364,146 @@ static void struct_list_push(StructDef **list, size_t *count, size_t *capacity,
     *count += 1;
 }
 
+static int path_is_dir(const char *path)
+{
+    struct stat st;
+    if (stat(path, &st) != 0)
+    {
+        return 0;
+    }
+    return (st.st_mode & S_IFDIR) != 0;
+}
+
+static int path_exists(const char *path)
+{
+    struct stat st;
+    return stat(path, &st) == 0;
+}
+
+static void string_list_push_unique(StringList *paths, const char *value)
+{
+    if (!string_list_contains(paths, value))
+    {
+        string_list_push(paths, value);
+    }
+}
+
+static void list_subdirs(const char *base_path, StringList *out)
+{
+#if defined(_WIN32)
+    char search[EOLIB_PATH_MAX];
+    WIN32_FIND_DATAA data;
+    HANDLE handle;
+
+    snprintf(search, sizeof(search), "%s\\*", base_path);
+    handle = FindFirstFileA(search, &data);
+    if (handle == INVALID_HANDLE_VALUE)
+    {
+        return;
+    }
+
+    do
+    {
+        const char *name = data.cFileName;
+        if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+        {
+            continue;
+        }
+        if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+        {
+            char path[EOLIB_PATH_MAX];
+            snprintf(path, sizeof(path), "%s/%s", base_path, name);
+            string_list_push_unique(out, path);
+        }
+    } while (FindNextFileA(handle, &data) != 0);
+
+    FindClose(handle);
+#else
+    DIR *dir = opendir(base_path);
+    if (!dir)
+    {
+        return;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+        {
+            continue;
+        }
+
+        char path[EOLIB_PATH_MAX];
+        snprintf(path, sizeof(path), "%s/%s", base_path, entry->d_name);
+        if (path_is_dir(path))
+        {
+            string_list_push_unique(out, path);
+        }
+    }
+    closedir(dir);
+#endif
+}
+
 static void append_glob_results(StringList *paths, const char *pattern)
 {
+#if defined(_WIN32)
+    if (strcmp(pattern, "eo-protocol/xml/protocol.xml") == 0)
+    {
+        if (path_exists(pattern))
+        {
+            string_list_push_unique(paths, pattern);
+        }
+        return;
+    }
+
+    if (strcmp(pattern, "eo-protocol/xml/*/protocol.xml") == 0)
+    {
+        StringList dirs = {0};
+        list_subdirs("eo-protocol/xml", &dirs);
+        for (size_t i = 0; i < dirs.count; ++i)
+        {
+            char path[EOLIB_PATH_MAX];
+            snprintf(path, sizeof(path), "%s/protocol.xml", dirs.items[i]);
+            if (path_exists(path))
+            {
+                string_list_push_unique(paths, path);
+            }
+        }
+        return;
+    }
+
+    if (strcmp(pattern, "eo-protocol/xml/*/*/protocol.xml") == 0)
+    {
+        StringList level_one = {0};
+        list_subdirs("eo-protocol/xml", &level_one);
+        for (size_t i = 0; i < level_one.count; ++i)
+        {
+            StringList level_two = {0};
+            list_subdirs(level_one.items[i], &level_two);
+            for (size_t j = 0; j < level_two.count; ++j)
+            {
+                char path[EOLIB_PATH_MAX];
+                snprintf(path, sizeof(path), "%s/protocol.xml", level_two.items[j]);
+                if (path_exists(path))
+                {
+                    string_list_push_unique(paths, path);
+                }
+            }
+        }
+        return;
+    }
+#else
     glob_t matches;
     memset(&matches, 0, sizeof(matches));
     if (glob(pattern, GLOB_TILDE, NULL, &matches) == 0)
     {
         for (size_t i = 0; i < matches.gl_pathc; ++i)
         {
-            if (!string_list_contains(paths, matches.gl_pathv[i]))
-            {
-                string_list_push(paths, matches.gl_pathv[i]);
-            }
+            string_list_push_unique(paths, matches.gl_pathv[i]);
         }
     }
     globfree(&matches);
+#endif
 }
 
 static const char *c_keywords[] = {
