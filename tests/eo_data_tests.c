@@ -84,6 +84,24 @@ static void test_eo_encode_decode_string_roundtrip()
     expect_equal_bytes("eo_encode_string roundtrip", buf, expected, length);
 }
 
+static void test_eo_encode_string_known_value()
+{
+    uint8_t expected[] = {0x69, 0x36, 0x5E, 0x49};
+    uint8_t input[] = "Void";
+
+    eo_encode_string(input, 4);
+    expect_equal_bytes("eo_encode_string known value", input, expected, 4);
+}
+
+static void test_eo_decode_string_known_value()
+{
+    uint8_t input[] = {0x69, 0x36, 0x5E, 0x49};
+    uint8_t expected[] = "Void";
+
+    eo_decode_string(input, 4);
+    expect_equal_bytes("eo_decode_string known value", input, expected, 4);
+}
+
 static void test_eo_writer_add_numbers()
 {
     EoWriter writer = eo_writer_init_with_capacity(0);
@@ -294,6 +312,8 @@ int main(void)
     test_eo_writer_ensure_capacity();
     test_eo_encode_decode_number_roundtrip();
     test_eo_encode_decode_string_roundtrip();
+    test_eo_encode_string_known_value();
+    test_eo_decode_string_known_value();
     test_eo_writer_add_numbers();
     test_eo_writer_add_strings_and_bytes();
     test_eo_writer_string_sanitization_mode();
