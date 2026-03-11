@@ -105,4 +105,11 @@ typedef enum EoResult
     EO_STR_TOO_SHORT = 11,
 } EoResult;
 
+/**
+ * Returns a human-readable string describing an EoResult value.
+ * @param result The result code to describe.
+ * @return A static string describing the result. Never returns NULL.
+ */
+const char *eo_result_string(EoResult result);
+
 #endif

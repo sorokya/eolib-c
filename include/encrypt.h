@@ -7,8 +7,11 @@
 
 /**
  * Calculates the server verification hash for the given challenge value.
- * @param challenge The server challenge value.
- * @return The verification hash.
+ * @param challenge The server challenge value (from ServerInitInitServerPacket).
+ * @return The verification hash to be sent back to the server.
+ * @remarks Implements the EO protocol challenge-response formula:
+ *          hash = 110905 + ((c%9)+1) * ((11092004-c) % (((c%11)+1)*119)) * 119 + (c%2004)
+ *          where c = challenge + 1. The constants are protocol-defined magic values.
  */
 int32_t server_verification_hash(int32_t challenge);
 
@@ -21,7 +24,7 @@ int32_t server_verification_hash(int32_t challenge);
 void swap_multiples(uint8_t *data, size_t length, uint8_t multiple);
 
 /**
- * Generates a random swap multiple between 6 and 12 inclusive.
+ * Generates a cryptographically random swap multiple between 6 and 12 inclusive.
  * @return The generated swap multiple.
  */
 uint8_t generate_swap_multiple();

@@ -1691,7 +1691,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
         if (element->kind == ELEMENT_BREAK)
         {
             fprintf(source,
-                    "    if ((result = eo_writer_add_byte(writer, 0xff)) != 0) return result;\n");
+                    "    if ((result = eo_writer_add_byte(writer, EO_BREAK_BYTE)) != 0) return result;\n");
         }
         else if (element->kind == ELEMENT_DUMMY)
         {
@@ -1975,7 +1975,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             {
                 fprintf(source, "        if (i > 0) {\n");
                 fprintf(source,
-                        "            if ((result = eo_writer_add_byte(writer, 0xff)) != 0) return result;\n");
+                        "            if ((result = eo_writer_add_byte(writer, EO_BREAK_BYTE)) != 0) return result;\n");
                 fprintf(source, "        }\n");
             }
 
@@ -2079,7 +2079,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             if (array->delimited && array->trailing_delimiter)
             {
                 fprintf(source,
-                        "        if ((result = eo_writer_add_byte(writer, 0xff)) != 0) return result;\n");
+                        "        if ((result = eo_writer_add_byte(writer, EO_BREAK_BYTE)) != 0) return result;\n");
             }
 
             fprintf(source, "    }\n");

@@ -1,4 +1,5 @@
 #include "data.h"
+#include "result.h"
 
 #include <limits.h>
 #include <stdlib.h>
@@ -6,6 +7,44 @@
 #include <stdio.h>
 
 static size_t eo_reader_next_break_index(const EoReader *reader);
+
+const char *eo_result_string(EoResult result)
+{
+    switch (result)
+    {
+    case EO_SUCCESS:
+        return "EO_SUCCESS: operation completed successfully";
+    case EO_NULL_PTR:
+        return "EO_NULL_PTR: a required pointer argument was NULL";
+    case EO_OVERFLOW:
+        return "EO_OVERFLOW: internal size calculation would overflow";
+    case EO_ALLOC_FAILED:
+        return "EO_ALLOC_FAILED: memory allocation failed";
+    case EO_NUMBER_TOO_LARGE:
+        return "EO_NUMBER_TOO_LARGE: numeric value exceeds EO encoding range";
+    case EO_BUFFER_UNDERRUN:
+        return "EO_BUFFER_UNDERRUN: not enough bytes available for read";
+    case EO_CHUNKED_MODE_DISABLED:
+        return "EO_CHUNKED_MODE_DISABLED: chunked reading mode is not active";
+    case EO_INVALID_SEQUENCE_RANGE:
+        return "EO_INVALID_SEQUENCE_RANGE: calculated sequence range is empty";
+    case EO_SEQUENCE_OUT_OF_RANGE:
+        return "EO_SEQUENCE_OUT_OF_RANGE: sequence value out of encodable range";
+    case EO_INVALID_DATA:
+        return "EO_INVALID_DATA: data is structurally invalid";
+    case EO_STR_OUT_OF_RANGE:
+        return "EO_STR_OUT_OF_RANGE: string exceeds the allowed fixed length";
+    case EO_STR_TOO_SHORT:
+        return "EO_STR_TOO_SHORT: string is shorter than the required fixed length";
+    default:
+        return "unknown EoResult value";
+    }
+}
+
+EoWriter eo_writer_init(void)
+{
+    return eo_writer_init_with_capacity(128);
+}
 
 EoWriter eo_writer_init_with_capacity(size_t capacity)
 {
@@ -15,6 +54,18 @@ EoWriter eo_writer_init_with_capacity(size_t capacity)
     writer.capacity = capacity;
     writer.data = capacity > 0 ? (uint8_t *)malloc(capacity) : NULL;
     return writer;
+}
+
+void eo_writer_free(EoWriter *writer)
+{
+    if (!writer)
+    {
+        return;
+    }
+    free(writer->data);
+    writer->data = NULL;
+    writer->length = 0;
+    writer->capacity = 0;
 }
 
 EoResult eo_writer_ensure_capacity(EoWriter *writer, size_t additional)
@@ -54,10 +105,10 @@ EoResult eo_encode_number(int32_t number, uint8_t out_bytes[4])
         return EO_NULL_PTR;
     }
 
-    out_bytes[0] = 254;
-    out_bytes[1] = 254;
-    out_bytes[2] = 254;
-    out_bytes[3] = 254;
+    out_bytes[0] = EO_NUMBER_PADDING;
+    out_bytes[1] = EO_NUMBER_PADDING;
+    out_bytes[2] = EO_NUMBER_PADDING;
+    out_bytes[3] = EO_NUMBER_PADDING;
 
     int64_t value = number;
     if (value < 0)
@@ -95,7 +146,7 @@ EoResult eo_encode_number(int32_t number, uint8_t out_bytes[4])
 
 int32_t eo_decode_number(const uint8_t *bytes, size_t length)
 {
-    uint8_t data[4] = {254, 254, 254, 254};
+    uint8_t data[4] = {EO_NUMBER_PADDING, EO_NUMBER_PADDING, EO_NUMBER_PADDING, EO_NUMBER_PADDING};
 
     for (size_t i = 0; i < 4; ++i)
     {
@@ -104,7 +155,7 @@ int32_t eo_decode_number(const uint8_t *bytes, size_t length)
             data[i] = bytes[i];
         }
 
-        if (data[i] == 254)
+        if (data[i] == EO_NUMBER_PADDING)
         {
             data[i] = 1;
         }
@@ -344,7 +395,7 @@ EoResult eo_writer_add_string(EoWriter *writer, const char *value)
     {
         for (const char *c = value; *c != '\0'; ++c)
         {
-            if (*c == (char)0xff)
+            if (*c == (char)EO_BREAK_BYTE)
             {
                 writer->data[writer->length++] = 0x79;
             }
@@ -395,7 +446,7 @@ EoResult eo_writer_add_encoded_string(EoWriter *writer, const char *value)
         for (const char *c = value; *c != '\0'; ++c)
         {
             char ch = *c;
-            if (ch == (char)0xff)
+            if (ch == (char)EO_BREAK_BYTE)
             {
                 encoded[i] = 0x79;
             }
@@ -455,7 +506,7 @@ EoResult eo_writer_add_fixed_string(EoWriter *writer, const char *value, size_t 
     {
         for (const char *c = value; *c != '\0'; ++c)
         {
-            if (*c == (char)0xff)
+            if (*c == (char)EO_BREAK_BYTE)
             {
                 writer->data[writer->length++] = 0x79;
             }
@@ -477,7 +528,7 @@ EoResult eo_writer_add_fixed_string(EoWriter *writer, const char *value, size_t 
         size_t remaining = length > value_len ? length - value_len : 0;
         for (size_t i = 0; i < remaining; ++i)
         {
-            writer->data[writer->length++] = 0xff;
+            writer->data[writer->length++] = EO_BREAK_BYTE;
         }
     }
 
@@ -497,12 +548,14 @@ EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value,
         return EO_SUCCESS;
     }
 
-    if (padded && strlen(value) > length)
+    size_t value_len = strlen(value);
+
+    if (padded && value_len > length)
     {
         return EO_STR_OUT_OF_RANGE;
     }
 
-    if (!padded && strlen(value) != length)
+    if (!padded && value_len != length)
     {
         return EO_STR_TOO_SHORT;
     }
@@ -524,7 +577,7 @@ EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value,
         size_t i = 0;
         for (const char *c = value; *c != '\0'; ++c)
         {
-            if (*c == (char)0xff)
+            if (*c == (char)EO_BREAK_BYTE)
             {
                 encoded[i] = 0x79;
             }
@@ -537,16 +590,16 @@ EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value,
     }
     else
     {
-        size_t to_copy = padded ? strlen(value) : length;
+        size_t to_copy = padded ? value_len : length;
         memcpy(encoded, value, to_copy);
     }
 
     if (padded)
     {
-        size_t remaining = length > strlen(value) ? length - strlen(value) : 0;
+        size_t remaining = length > value_len ? length - value_len : 0;
         for (size_t i = 0; i < remaining; ++i)
         {
-            encoded[strlen(value) + i] = 0xff;
+            encoded[value_len + i] = EO_BREAK_BYTE;
         }
     }
 
@@ -577,6 +630,18 @@ EoResult eo_writer_add_bytes(EoWriter *writer, const uint8_t *data, size_t lengt
     writer->length += length;
 
     return EO_SUCCESS;
+}
+
+EoReader eo_reader_init(const uint8_t *data, size_t length)
+{
+    EoReader reader;
+    reader.chunked_reading_mode = false;
+    reader.data = data;
+    reader.length = length;
+    reader.offset = 0;
+    reader.chunk_offset = 0;
+    reader.next_chunk_offset = length;
+    return reader;
 }
 
 bool eo_reader_get_chunked_reading_mode(const EoReader *reader)
@@ -637,7 +702,7 @@ EoResult eo_reader_next_chunk(EoReader *reader)
     reader->offset = reader->next_chunk_offset;
     if (reader->offset < reader->length)
     {
-        reader->offset += 1; // Skip the 0xFF break byte
+        reader->offset += 1; // Skip the EO_BREAK_BYTE break byte
     }
 
     reader->chunk_offset = reader->offset;
@@ -650,12 +715,12 @@ static size_t eo_reader_next_break_index(const EoReader *reader)
 {
     if (!reader || !reader->chunked_reading_mode)
     {
-        return -1;
+        return reader ? reader->length : 0;
     }
 
     for (size_t i = reader->chunk_offset; i < reader->length; ++i)
     {
-        if (reader->data[i] == (uint8_t)0xFF)
+        if (reader->data[i] == (uint8_t)EO_BREAK_BYTE)
         {
             return i;
         }

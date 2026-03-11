@@ -15,26 +15,36 @@
 #define EO_THREE_MAX 16194277
 /** Maximum value encodable in four EO bytes. */
 #define EO_INT_MAX 4097152081
+/** Value used to represent missing bytes in EO number encoding. */
+#define EO_NUMBER_PADDING 0xFE
+/** Delimiter byte used to mark chunk boundaries in EO string/packet data. */
+#define EO_BREAK_BYTE 0xFF
 
 /** Writer that accumulates EO-encoded bytes. */
 typedef struct EoWriter
 {
-    bool string_sanitization_mode;
-    uint8_t *data;
-    size_t length;
-    size_t capacity;
+    bool string_sanitization_mode; /**< Accessible: see eo_writer_get/set_string_sanitization_mode(). */
+    uint8_t *data;                 /**< Read-only: pointer to the accumulated bytes. Do not modify directly. */
+    size_t length;                 /**< Read-only: number of bytes written so far. Do not modify directly. */
+    size_t capacity;               /**< Private: current allocated capacity. Do not access or modify directly. */
 } EoWriter;
 
 /** Reader that parses EO-encoded bytes. */
 typedef struct EoReader
 {
-    bool chunked_reading_mode;
-    const uint8_t *data;
-    size_t length;
-    size_t offset;
-    size_t chunk_offset;
-    size_t next_chunk_offset;
+    bool chunked_reading_mode; /**< Accessible: see eo_reader_get/set_chunked_reading_mode(). */
+    const uint8_t *data;       /**< Read-only: pointer to the underlying data buffer. Do not modify directly. */
+    size_t length;             /**< Read-only: total length of the data buffer. Do not modify directly. */
+    size_t offset;             /**< Read-only: current read position. Do not modify directly. */
+    size_t chunk_offset;       /**< Private: start of the current chunk. Do not access or modify directly. */
+    size_t next_chunk_offset;  /**< Private: start of the next chunk. Do not access or modify directly. */
 } EoReader;
+
+/**
+ * Initializes a writer with a default initial capacity.
+ * @return The initialized writer.
+ */
+EoWriter eo_writer_init(void);
 
 /**
  * Initializes a writer with a specified initial capacity.
@@ -44,12 +54,22 @@ typedef struct EoReader
 EoWriter eo_writer_init_with_capacity(size_t capacity);
 
 /**
- * Ensures a writer has space for additional bytes.
+ * Frees the memory allocated by a writer and zeroes the struct.
+ * @param writer Writer to free. If NULL, this function does nothing.
+ * @remarks The caller is responsible for calling this function when the writer
+ *          is no longer needed. Failure to do so will leak the writer's data buffer.
+ */
+void eo_writer_free(EoWriter *writer);
+
+/**
+ * Ensures a writer has space for additional bytes, reallocating if necessary.
  * @param writer Writer to grow.
  * @param additional Additional bytes required.
  * @return EO_SUCCESS on success, EO_NULL_PTR if writer is NULL,
  *         EO_OVERFLOW if the required size would overflow, or
  *         EO_ALLOC_FAILED if memory reallocation fails.
+ * @remarks This is an internal utility function exposed for advanced use cases.
+ *          Prefer using the `eo_writer_add_*` functions which call this automatically.
  */
 EoResult eo_writer_ensure_capacity(EoWriter *writer, size_t additional);
 
@@ -67,6 +87,9 @@ EoResult eo_encode_number(int32_t number, uint8_t out_bytes[4]);
  * @param bytes Input bytes.
  * @param length Number of bytes to decode (1-4).
  * @return The decoded value.
+ * @remarks Inputs must be valid EO-encoded bytes (values produced by `eo_encode_number`).
+ *          Passing arbitrary bytes may produce values outside the representable range,
+ *          resulting in a silent cast to int32_t with implementation-defined behavior.
  */
 int32_t eo_decode_number(const uint8_t *bytes, size_t length);
 
@@ -74,6 +97,10 @@ int32_t eo_decode_number(const uint8_t *bytes, size_t length);
  * Decodes a string in place using the EO string transform.
  * @param buf Buffer to decode.
  * @param length Number of bytes in the buffer.
+ * @remarks This is a low-level transform exposed for advanced use. Prefer
+ *          `eo_reader_get_encoded_string` and related functions which apply
+ *          this transform automatically. Calling this twice on the same buffer
+ *          (double-decoding) will corrupt the data.
  */
 void eo_decode_string(uint8_t *buf, size_t length);
 
@@ -81,6 +108,10 @@ void eo_decode_string(uint8_t *buf, size_t length);
  * Encodes a string in place using the EO string transform.
  * @param buf Buffer to encode.
  * @param length Number of bytes in the buffer.
+ * @remarks This is a low-level transform exposed for advanced use. Prefer
+ *          `eo_writer_add_encoded_string` and related functions which apply
+ *          this transform automatically. Calling this twice on the same buffer
+ *          (double-encoding) will corrupt the data.
  */
 void eo_encode_string(uint8_t *buf, size_t length);
 
@@ -187,6 +218,15 @@ EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value,
 EoResult eo_writer_add_bytes(EoWriter *writer, const uint8_t *data, size_t length);
 
 /**
+ * Initializes a reader over an existing byte buffer.
+ * @param data Pointer to the byte buffer. The caller must ensure it remains valid
+ *             for the lifetime of the reader.
+ * @param length Number of bytes in the buffer.
+ * @return The initialized reader with chunked reading mode disabled.
+ */
+EoReader eo_reader_init(const uint8_t *data, size_t length);
+
+/**
  * Returns the current chunked reading mode.
  * @param reader Reader to query.
  * @return True if chunked reading is enabled.
@@ -218,52 +258,67 @@ EoResult eo_reader_next_chunk(EoReader *reader);
 /**
  * Reads a raw byte from the reader.
  * @param reader Reader to consume from.
- * @param out_value Optional output for the byte.
- * @return EO_SUCCESS on success, EO_NULL_PTR if reader is NULL, or
- *         EO_BUFFER_UNDERRUN if not enough bytes remain.
+ * @param out_value Output for the byte.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or
+ *         EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only).
+ * @remarks In chunked reading mode, reading past the end of a chunk returns
+ *          EO_SUCCESS with @p out_value set to 0 rather than EO_BUFFER_UNDERRUN.
+ *          Use `eo_reader_remaining()` to check available bytes before reading.
  */
 EoResult eo_reader_get_byte(EoReader *reader, uint8_t *out_value);
 
 /**
  * Reads a 1-byte EO-encoded number.
  * @param reader Reader to consume from.
- * @param out_value Optional output for the value.
- * @return EO_SUCCESS on success, EO_NULL_PTR if reader is NULL, or
- *         EO_BUFFER_UNDERRUN if not enough bytes remain.
+ * @param out_value Output for the value.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or
+ *         EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only).
+ * @remarks In chunked reading mode, reading past the end of a chunk returns
+ *          EO_SUCCESS with @p out_value set to 0 rather than EO_BUFFER_UNDERRUN.
+ *          Use `eo_reader_remaining()` to check available bytes before reading.
  */
 EoResult eo_reader_get_char(EoReader *reader, int32_t *out_value);
 
 /**
  * Reads a 2-byte EO-encoded number.
  * @param reader Reader to consume from.
- * @param out_value Optional output for the value.
- * @return EO_SUCCESS on success, EO_NULL_PTR if reader is NULL, or
- *         EO_BUFFER_UNDERRUN if not enough bytes remain.
+ * @param out_value Output for the value.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or
+ *         EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only).
+ * @remarks In chunked reading mode, reading past the end of a chunk returns
+ *          EO_SUCCESS with @p out_value set to 0 rather than EO_BUFFER_UNDERRUN.
+ *          Use `eo_reader_remaining()` to check available bytes before reading.
  */
 EoResult eo_reader_get_short(EoReader *reader, int32_t *out_value);
 
 /**
  * Reads a 3-byte EO-encoded number.
  * @param reader Reader to consume from.
- * @param out_value Optional output for the value.
- * @return EO_SUCCESS on success, EO_NULL_PTR if reader is NULL, or
- *         EO_BUFFER_UNDERRUN if not enough bytes remain.
+ * @param out_value Output for the value.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or
+ *         EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only).
+ * @remarks In chunked reading mode, reading past the end of a chunk returns
+ *          EO_SUCCESS with @p out_value set to 0 rather than EO_BUFFER_UNDERRUN.
+ *          Use `eo_reader_remaining()` to check available bytes before reading.
  */
 EoResult eo_reader_get_three(EoReader *reader, int32_t *out_value);
 
 /**
  * Reads a 4-byte EO-encoded number.
  * @param reader Reader to consume from.
- * @param out_value Optional output for the value.
- * @return EO_SUCCESS on success, EO_NULL_PTR if reader is NULL, or
- *         EO_BUFFER_UNDERRUN if not enough bytes remain.
+ * @param out_value Output for the value.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or
+ *         EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only).
+ * @remarks In chunked reading mode, reading past the end of a chunk returns
+ *          EO_SUCCESS with @p out_value set to 0 rather than EO_BUFFER_UNDERRUN.
+ *          Use `eo_reader_remaining()` to check available bytes before reading.
  */
 EoResult eo_reader_get_int(EoReader *reader, int32_t *out_value);
 
 /**
  * Reads the remaining bytes as a raw string.
  * @param reader Reader to consume from.
- * @param out_value Output string (allocated by the reader).
+ * @param out_value Output string, heap-allocated — caller must free.
  * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL,
  *         or EO_ALLOC_FAILED if memory allocation fails.
  */
@@ -272,7 +327,7 @@ EoResult eo_reader_get_string(EoReader *reader, char **out_value);
 /**
  * Reads the remaining bytes as an EO-encoded string.
  * @param reader Reader to consume from.
- * @param out_value Output string (allocated by the reader).
+ * @param out_value Output string, heap-allocated — caller must free.
  * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL,
  *         or EO_ALLOC_FAILED if memory allocation fails.
  */
@@ -282,7 +337,7 @@ EoResult eo_reader_get_encoded_string(EoReader *reader, char **out_value);
  * Reads a fixed-length raw string.
  * @param reader Reader to consume from.
  * @param length Number of bytes to read.
- * @param out_value Output string (allocated by the reader).
+ * @param out_value Output string, heap-allocated — caller must free.
  * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL,
  *         EO_BUFFER_UNDERRUN if not enough bytes remain, or
  *         EO_ALLOC_FAILED if memory allocation fails.
@@ -293,7 +348,7 @@ EoResult eo_reader_get_fixed_string(EoReader *reader, size_t length, char **out_
  * Reads a fixed-length EO-encoded string.
  * @param reader Reader to consume from.
  * @param length Number of bytes to read.
- * @param out_value Output string (allocated by the reader).
+ * @param out_value Output string, heap-allocated — caller must free.
  * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL,
  *         EO_BUFFER_UNDERRUN if not enough bytes remain, or
  *         EO_ALLOC_FAILED if memory allocation fails.
@@ -304,7 +359,7 @@ EoResult eo_reader_get_fixed_encoded_string(EoReader *reader, size_t length, cha
  * Reads raw bytes from the reader.
  * @param reader Reader to consume from.
  * @param length Number of bytes to read.
- * @param out_value Output buffer (allocated by the reader).
+ * @param out_value Output buffer, heap-allocated — caller must free.
  * @return EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL,
  *         EO_BUFFER_UNDERRUN if not enough bytes remain, or
  *         EO_ALLOC_FAILED if memory allocation fails.

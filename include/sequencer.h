@@ -29,7 +29,7 @@ Sequencer sequencer_init(int32_t start);
 EoResult sequencer_next(Sequencer *sequencer, int32_t *out_value);
 
 /**
- * Generates a random starting value for a sequencer.
+ * Generates a cryptographically random starting value for a sequencer.
  * @return A random starting value.
  * @remarks The value is guaranteed to fit in the ServerInitInitPacket sequence fields.
  */
