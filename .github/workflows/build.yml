@@ -16,52 +16,52 @@ jobs:
             compiler: gcc
             cc: gcc
             cxx: g++
-            package_platform: Linux-AMD64
+            package_platform: Linux.GCC.x64
             build_type: Release
 
           - os: ubuntu-24.04
             compiler: clang
             cc: clang
             cxx: clang++
-            package_platform: Linux-AMD64
+            package_platform: Linux.Clang.x64
             build_type: Release
 
           - os: ubuntu-24.04-arm
             compiler: gcc
             cc: gcc
             cxx: g++
-            package_platform: Linux-ARM64
+            package_platform: Linux.GCC.arm64
             build_type: Release
 
           - os: ubuntu-24.04-arm
             compiler: clang
             cc: clang
             cxx: clang++
-            package_platform: Linux-ARM64
+            package_platform: Linux.Clang.arm64
             build_type: Release
 
           - os: macos-26
             compiler: clang
             cc: clang
             cxx: clang++
-            package_platform: macOS-ARM64
+            package_platform: macOS.arm64
             build_type: Release
 
           - os: macos-26
             compiler: gcc
-            package_platform: macOS-ARM64
+            package_platform: macOS.arm64.gcc
             build_type: Release
 
           - os: macos-26-intel
             compiler: clang
             cc: clang
             cxx: clang++
-            package_platform: macOS-AMD64
+            package_platform: macOS.x64
             build_type: Release
 
           - os: macos-26-intel
             compiler: gcc
-            package_platform: macOS-AMD64
+            package_platform: macOS.x64.gcc
             build_type: Release
 
           - os: windows-2025
@@ -69,7 +69,7 @@ jobs:
             generator: Visual Studio 17 2022
             msvc_arch: x64
             vcpkg_triplet: x64-windows
-            package_platform: Windows-AMD64
+            package_platform: Windows.VS2022.x64
             build_type: Release
 
           - os: windows-2025
@@ -78,7 +78,7 @@ jobs:
             msvc_arch: x64
             toolset: ClangCL
             vcpkg_triplet: x64-windows
-            package_platform: Windows-AMD64
+            package_platform: Windows.ClangCL.x64
             build_type: Release
 
           - os: windows-2025
@@ -87,7 +87,7 @@ jobs:
             cc: gcc
             cxx: g++
             generator: Ninja
-            package_platform: Windows-AMD64
+            package_platform: Windows.MinGW.x64
             build_type: Release
 
     runs-on: ${{ matrix.os }}
@@ -202,42 +202,16 @@ jobs:
       - name: Run Tests
         run: ctest --output-on-failure -C ${{ matrix.build_type }} --test-dir build
 
-      - name: Install
-        run: cmake --install build --config ${{ matrix.build_type }} --prefix build/install
-
       - name: Package
         run: cpack --config build/CPackConfig.cmake -C ${{ matrix.build_type }} -B build/package
-
-      - name: Package Hashes (Windows)
-        if: startsWith(matrix.os, 'windows')
-        shell: pwsh
-        run: >-
-          Get-ChildItem -Path build/package -File | Where-Object { $_.Extension -ne '.sha256' }
-          | ForEach-Object
-          {"$((Get-FileHash -Algorithm SHA256 $_.FullName).Hash)  $($_.Name)" |
-          Set-Content -Path ("$($_.FullName).sha256") }
-
-      - name: Package Hashes (Unix)
-        if: "!startsWith(matrix.os, 'windows')"
-        run: |
-          cd build/package
-          for f in *; do
-            if [ -f "$f" ] && [ "${f##*.}" != "sha256" ]; then
-              shasum -a 256 "$f" > "$f.sha256"
-            fi
-          done
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: install-${{ matrix.os }}-${{ matrix.compiler }}
-          path: ./build/install
 
       - name: Upload Packages
         uses: actions/upload-artifact@v7
         with:
           name: package-${{ matrix.os }}-${{ matrix.compiler }}
-          path: ./build/package
+          path: |
+            ./build/package/*.zip
+            ./build/package/*.tar.xz
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -255,4 +229,6 @@ jobs:
         with:
           generate_release_notes: true
           token: ${{ secrets.RELEASE_TOKEN }}
-          files: dist/**
+          files: |
+            dist/**/*.zip
+            dist/**/*.tar.xz
