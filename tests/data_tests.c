@@ -203,13 +203,15 @@ static void test_eo_writer_fixed_string()
     expect_equal_str("eo_writer_add_fixed_string padded short string bytes", (const char *)writer.data, "hi\xFF\xFF\xFF");
 
     free(writer.data);
-    writer = eo_writer_init_with_capacity(5);
-    expect_equal_int("eo_writer_add_fixed_string padded long string", eo_writer_add_fixed_string(&writer, "hello world", 5, true), EO_STR_OUT_OF_RANGE);
-    expect_equal_int("eo_writer_add_fixed_encoded_string padded short string", eo_writer_add_fixed_encoded_string(&writer, "hi", 5, true), EO_SUCCESS);
-    expect_equal_str("eo_writer_add_fixed_encoded_string padded short string bytes", (const char *)writer.data, "^:�6e");
+    writer = eo_writer_init_with_capacity(24);
+    expect_equal_int("eo_writer_add_fixed_string padded long string", eo_writer_add_fixed_string(&writer, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", 24, true), EO_STR_OUT_OF_RANGE);
+    expect_equal_int("eo_writer_add_fixed_encoded_string padded short string", eo_writer_add_fixed_encoded_string(&writer, "Aeven", 24, true), EO_SUCCESS);
+    const uint8_t expected_encoded[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x31, 0x68, 0x29, 0x68, 0x5E};
 
-    eo_decode_string(writer.data, 5);
-    expect_equal_str("eo_writer_add_fixed_encoded_string padded short string bytes", (const char *)writer.data, "hi\xFF\xFF\xFF");
+    expect_equal_bytes("eo_writer_add_fixed_encoded_string padded short string bytes", writer.data, expected_encoded, 24);
+
+    eo_decode_string(writer.data, 24);
+    expect_equal_str("eo_writer_add_fixed_encoded_string padded short string bytes", (const char *)writer.data, "Aeven\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 
     free(writer.data);
 }

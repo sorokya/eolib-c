@@ -433,12 +433,14 @@ EoResult eo_writer_add_fixed_string(EoWriter *writer, const char *value, size_t 
         return EO_SUCCESS;
     }
 
-    if (padded && strlen(value) > length)
+    size_t value_len = strlen(value);
+
+    if (padded && value_len > length)
     {
         return EO_STR_OUT_OF_RANGE;
     }
 
-    if (!padded && strlen(value) != length)
+    if (!padded && value_len != length)
     {
         return EO_STR_TOO_SHORT;
     }
@@ -465,16 +467,17 @@ EoResult eo_writer_add_fixed_string(EoWriter *writer, const char *value, size_t 
     }
     else
     {
-        memcpy(writer->data + writer->length, value, length);
-        writer->length += length;
+        size_t to_copy = padded ? value_len : length;
+        memcpy(writer->data + writer->length, value, to_copy);
+        writer->length += to_copy;
     }
 
     if (padded)
     {
-        size_t remaining = length > strlen(value) ? length - strlen(value) : 0;
+        size_t remaining = length > value_len ? length - value_len : 0;
         for (size_t i = 0; i < remaining; ++i)
         {
-            writer->data[writer->length + i] = '\xff';
+            writer->data[writer->length++] = 0xff;
         }
     }
 
@@ -534,7 +537,8 @@ EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value,
     }
     else
     {
-        memcpy(encoded, value, length);
+        size_t to_copy = padded ? strlen(value) : length;
+        memcpy(encoded, value, to_copy);
     }
 
     if (padded)
@@ -542,7 +546,7 @@ EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value,
         size_t remaining = length > strlen(value) ? length - strlen(value) : 0;
         for (size_t i = 0; i < remaining; ++i)
         {
-            encoded[strlen(value) + i] = '\xff';
+            encoded[strlen(value) + i] = 0xff;
         }
     }
 
