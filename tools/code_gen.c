@@ -1335,6 +1335,18 @@ static int struct_exists(StructDef *structs, size_t structs_count, const char *n
 }
 
 static int element_list_has_storage(ElementList *elements);
+static int struct_has_storage(StructDef *structs, size_t structs_count, const char *name)
+{
+    for (size_t i = 0; i < structs_count; ++i)
+    {
+        if (strcmp(structs[i].name, name) == 0)
+        {
+            return element_list_has_storage(&structs[i].elements);
+        }
+    }
+    return 0;
+}
+
 static int is_numeric_string(const char *value);
 
 static int switch_has_storage(SwitchDef *sw)
@@ -1722,9 +1734,18 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             }
             else if (is_struct)
             {
-                fprintf(source,
-                        "    if ((result = %s_serialize(&%s%s%s, writer)) != 0) return result;\n",
-                        type_name, value_expr, value_access, field_name);
+                if (struct_has_storage(structs, structs_count, type_name))
+                {
+                    fprintf(source,
+                            "    if ((result = %s_serialize(&%s%s%s, writer)) != 0) return result;\n",
+                            type_name, value_expr, value_access, field_name);
+                }
+                else
+                {
+                    fprintf(source,
+                            "    if ((result = %s_serialize(writer)) != 0) return result;\n",
+                            type_name);
+                }
             }
             else if (strcmp(type_name, "bool") == 0)
             {
@@ -1918,15 +1939,33 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             {
                 if (is_static)
                 {
-                    fprintf(source,
-                            "        if ((result = %s_serialize(&%s%s%s[i], writer)) != 0) return result;\n",
-                            type_name, value_expr, value_access, field_name);
+                    if (struct_has_storage(structs, structs_count, type_name))
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_serialize(&%s%s%s[i], writer)) != 0) return result;\n",
+                                type_name, value_expr, value_access, field_name);
+                    }
+                    else
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_serialize(writer)) != 0) return result;\n",
+                                type_name);
+                    }
                 }
                 else
                 {
-                    fprintf(source,
-                            "        if ((result = %s_serialize(&((%s *)%s%s%s.items)[i], writer)) != 0) return result;\n",
-                            type_name, type_name, value_expr, value_access, field_name);
+                    if (struct_has_storage(structs, structs_count, type_name))
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_serialize(&((%s *)%s%s%s.items)[i], writer)) != 0) return result;\n",
+                                type_name, type_name, value_expr, value_access, field_name);
+                    }
+                    else
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_serialize(writer)) != 0) return result;\n",
+                                type_name);
+                    }
                 }
             }
             else if (strcmp(type_name, "bool") == 0)
@@ -2118,9 +2157,27 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
         else if (element->kind == ELEMENT_DUMMY)
         {
             DummyDef *dummy = &element->as.dummy;
-            fprintf(source,
-                    "    { %s tmp; if ((result = %s(reader, &tmp)) != 0) return result; }\n",
-                    map_primitive_type(dummy->data_type), map_reader_fn(dummy->data_type));
+            if (strcmp(dummy->data_type, "string") == 0 ||
+                strcmp(dummy->data_type, "encoded_string") == 0)
+            {
+                const char *read_fn = strcmp(dummy->data_type, "string") == 0
+                                          ? "eo_reader_get_string"
+                                          : "eo_reader_get_encoded_string";
+                const char *expected = dummy->value ? dummy->value : "";
+                fprintf(source,
+                        "    { char *tmp = NULL; if ((result = %s(reader, &tmp)) != 0) return result; "
+                        "if (!tmp || strcmp(tmp, \"%s\") != 0) { free(tmp); return -1; } free(tmp); }\n",
+                        read_fn, expected);
+            }
+            else
+            {
+                const char *expected = dummy->value ? dummy->value : "0";
+                fprintf(source,
+                        "    { %s tmp = 0; if ((result = %s(reader, &tmp)) != 0) return result; "
+                        "if (tmp != (%s)(%s)) return -1; }\n",
+                        map_primitive_type(dummy->data_type), map_reader_fn(dummy->data_type),
+                        map_primitive_type(dummy->data_type), expected);
+            }
         }
         else if (element->kind == ELEMENT_LENGTH)
         {
@@ -2165,9 +2222,18 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             }
             else if (is_struct)
             {
-                fprintf(source,
-                        "    if ((result = %s_deserialize(&%s%s%s, reader)) != 0) return result;\n",
-                        type_name, out_expr, out_access, field_name);
+                if (struct_has_storage(structs, structs_count, type_name))
+                {
+                    fprintf(source,
+                            "    if ((result = %s_deserialize(&%s%s%s, reader)) != 0) return result;\n",
+                            type_name, out_expr, out_access, field_name);
+                }
+                else
+                {
+                    fprintf(source,
+                            "    if ((result = %s_deserialize(reader)) != 0) return result;\n",
+                            type_name);
+                }
             }
             else if (strcmp(type_name, "bool") == 0)
             {
@@ -2251,9 +2317,18 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 }
                 else if (is_struct)
                 {
-                    fprintf(source,
-                            "        if ((result = %s_deserialize(&%s%s%s[i], reader)) != 0) return result;\n",
-                            type_name, out_expr, out_access, field_name);
+                    if (struct_has_storage(structs, structs_count, type_name))
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_deserialize(&%s%s%s[i], reader)) != 0) return result;\n",
+                                type_name, out_expr, out_access, field_name);
+                    }
+                    else
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_deserialize(reader)) != 0) return result;\n",
+                                type_name);
+                    }
                 }
                 else if (strcmp(type_name, "bool") == 0)
                 {
@@ -2300,10 +2375,19 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 }
                 else if (is_struct)
                 {
-                    fprintf(source,
-                            "        if ((result = %s_deserialize(&((%s *)%s%s%s.items)[%s%s%s.length++], reader)) != 0) return result;\n",
-                            type_name, type_name, out_expr, out_access, field_name, out_expr,
-                            out_access, field_name);
+                    if (struct_has_storage(structs, structs_count, type_name))
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_deserialize(&((%s *)%s%s%s.items)[%s%s%s.length++], reader)) != 0) return result;\n",
+                                type_name, type_name, out_expr, out_access, field_name, out_expr,
+                                out_access, field_name);
+                    }
+                    else
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_deserialize(reader)) != 0) return result;\n",
+                                type_name);
+                    }
                 }
                 else if (strcmp(type_name, "bool") == 0)
                 {
@@ -2461,39 +2545,75 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
                              EnumDef *enums, size_t enums_count, StructDef *structs,
                              size_t structs_count)
 {
-    fprintf(header, "typedef struct %s {\n", name);
-    write_struct_fields(header, name, elements, enums, enums_count, structs, structs_count);
-    fprintf(header, "} %s;\n\n", name);
+    int has_storage = element_list_has_storage(elements);
+
+    if (has_storage)
+    {
+        fprintf(header, "typedef struct %s {\n", name);
+        write_struct_fields(header, name, elements, enums, enums_count, structs, structs_count);
+        fprintf(header, "} %s;\n\n", name);
+
+        fprintf(header,
+                "int %s_serialize(const %s *value, EoWriter *writer);\n",
+                name,
+                name);
+        fprintf(header,
+                "int %s_deserialize(%s *out, EoReader *reader);\n\n",
+                name,
+                name);
+
+        fprintf(source, "int %s_serialize(const %s *value, EoWriter *writer) {\n", name, name);
+        fprintf(source, "    int result = 0;\n");
+        fprintf(source,
+                "    bool previous_sanitization = eo_writer_get_string_sanitization_mode(writer);\n");
+
+        write_serialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
+                                 "value", "->");
+
+        fprintf(source,
+                "    eo_writer_set_string_sanitization_mode(writer, previous_sanitization);\n");
+        fprintf(source, "    return result;\n}\n\n");
+
+        fprintf(source, "int %s_deserialize(%s *out, EoReader *reader) {\n", name, name);
+        fprintf(source, "    int result = 0;\n");
+        fprintf(source,
+                "    bool previous_chunked = eo_reader_get_chunked_reading_mode(reader);\n");
+        fprintf(source, "    memset(out, 0, sizeof(*out));\n");
+
+        write_deserialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
+                                   "out", "->");
+
+        fprintf(source, "    eo_reader_set_chunked_reading_mode(reader, previous_chunked);\n");
+        fprintf(source, "    return result;\n}\n\n");
+        return;
+    }
 
     fprintf(header,
-            "int %s_serialize(const %s *value, EoWriter *writer);\n",
-            name,
+            "int %s_serialize(EoWriter *writer);\n",
             name);
     fprintf(header,
-            "int %s_deserialize(%s *out, EoReader *reader);\n\n",
-            name,
+            "int %s_deserialize(EoReader *reader);\n\n",
             name);
 
-    fprintf(source, "int %s_serialize(const %s *value, EoWriter *writer) {\n", name, name);
+    fprintf(source, "int %s_serialize(EoWriter *writer) {\n", name);
     fprintf(source, "    int result = 0;\n");
     fprintf(source,
             "    bool previous_sanitization = eo_writer_get_string_sanitization_mode(writer);\n");
 
     write_serialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
-                             "value", "->");
+                             "", "");
 
     fprintf(source,
             "    eo_writer_set_string_sanitization_mode(writer, previous_sanitization);\n");
     fprintf(source, "    return result;\n}\n\n");
 
-    fprintf(source, "int %s_deserialize(%s *out, EoReader *reader) {\n", name, name);
+    fprintf(source, "int %s_deserialize(EoReader *reader) {\n", name);
     fprintf(source, "    int result = 0;\n");
     fprintf(source,
             "    bool previous_chunked = eo_reader_get_chunked_reading_mode(reader);\n");
-    fprintf(source, "    memset(out, 0, sizeof(*out));\n");
 
     write_deserialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
-                               "out", "->");
+                               "", "");
 
     fprintf(source, "    eo_reader_set_chunked_reading_mode(reader, previous_chunked);\n");
     fprintf(source, "    return result;\n}\n\n");

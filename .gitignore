@@ -12,6 +12,8 @@ _deps
 CMakeUserPresets.json
 eolibConfig.cmake
 eolibConfigVersion.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
 eolibTargets.cmake
 eolibTargets-*.cmake
 
