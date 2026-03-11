@@ -1823,6 +1823,25 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                         value_expr, value_access, field_name, value_expr, value_access,
                         field_name);
             }
+            else if (field->length && isdigit((unsigned char)field->length[0]) &&
+                     (strcmp(type_name, "string") == 0 ||
+                      strcmp(type_name, "encoded_string") == 0))
+            {
+                char value_buffer[512];
+                if (field->value)
+                {
+                    snprintf(value_buffer, sizeof(value_buffer), "\"%s\"", field->value);
+                }
+                else
+                {
+                    snprintf(value_buffer, sizeof(value_buffer), "%s%s%s", value_expr,
+                             value_access, field_name);
+                }
+                fprintf(source,
+                        "    if ((result = eo_writer_add_fixed_%s(writer, %s, (size_t)%s, %s)) != 0) return result;\n",
+                        strcmp(type_name, "string") == 0 ? "string" : "encoded_string",
+                        value_buffer, field->length, field->padded ? "true" : "false");
+            }
             else
             {
                 char value_buffer[512];
