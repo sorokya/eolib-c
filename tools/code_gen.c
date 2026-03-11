@@ -895,6 +895,18 @@ static char *normalize_type_name(const char *data_type)
     return out;
 }
 
+/* Returns the type override from "EnumName:overridetype", or NULL if none.
+   Caller must free the returned string. */
+static char *get_type_override(const char *data_type)
+{
+    if (!data_type)
+        return NULL;
+    const char *colon = strchr(data_type, ':');
+    if (!colon)
+        return NULL;
+    return xstrdup(colon + 1);
+}
+
 static char *normalize_path(const char *path)
 {
     size_t len = strlen(path);
@@ -1697,6 +1709,21 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             FieldDef *field = &element->as.field;
             if (!field->name)
             {
+                char *type_name = normalize_type_name(field->data_type);
+                if (strcmp(type_name, "string") == 0 ||
+                    strcmp(type_name, "encoded_string") == 0)
+                {
+                    fprintf(source,
+                            "    if ((result = %s(writer, \"%s\")) != 0) return result;\n",
+                            map_writer_fn(type_name), field->value ? field->value : "");
+                }
+                else
+                {
+                    fprintf(source,
+                            "    if ((result = %s(writer, %s)) != 0) return result;\n",
+                            map_writer_fn(type_name), field->value ? field->value : "0");
+                }
+                free(type_name);
                 continue;
             }
             char *field_name = to_snake_case(field->name);
@@ -1712,6 +1739,8 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             if (is_enum)
             {
                 const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
+                char *type_override = get_type_override(field->data_type);
+                const char *effective_type = type_override ? type_override : enum_data_type;
                 char *enum_prefix = to_upper_snake(type_name);
                 char value_buffer[512];
                 if (field->value)
@@ -1735,8 +1764,9 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 }
                 fprintf(source,
                         "    if ((result = %s(writer, %s)) != 0) return result;\n",
-                        map_writer_fn(enum_data_type), value_buffer);
+                        map_writer_fn(effective_type), value_buffer);
                 free(enum_prefix);
+                free(type_override);
             }
             else if (is_struct)
             {
@@ -2205,6 +2235,29 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             FieldDef *field = &element->as.field;
             if (!field->name)
             {
+                char *type_name = normalize_type_name(field->data_type);
+                if (strcmp(type_name, "string") == 0 ||
+                    strcmp(type_name, "encoded_string") == 0)
+                {
+                    const char *read_fn = strcmp(type_name, "string") == 0
+                                              ? "eo_reader_get_string"
+                                              : "eo_reader_get_encoded_string";
+                    const char *expected = field->value ? field->value : "";
+                    fprintf(source,
+                            "    { char *tmp = NULL; if ((result = %s(reader, &tmp)) != 0) return result; "
+                            "if (!tmp || strcmp(tmp, \"%s\") != 0) { free(tmp); return -1; } free(tmp); }\n",
+                            read_fn, expected);
+                }
+                else
+                {
+                    const char *expected = field->value ? field->value : "0";
+                    fprintf(source,
+                            "    { %s tmp = 0; if ((result = %s(reader, &tmp)) != 0) return result; "
+                            "if (tmp != (%s)(%s)) return -1; }\n",
+                            map_primitive_type(type_name), map_reader_fn(type_name),
+                            map_primitive_type(type_name), expected);
+                }
+                free(type_name);
                 continue;
             }
             char *field_name = to_snake_case(field->name);
@@ -2221,10 +2274,13 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             if (is_enum)
             {
                 const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
-                const char *enum_c_type = map_primitive_type(enum_data_type);
+                char *type_override = get_type_override(field->data_type);
+                const char *effective_type = type_override ? type_override : enum_data_type;
+                const char *enum_c_type = map_primitive_type(effective_type);
                 fprintf(source,
                         "    if ((result = %s(reader, (%s *)&%s%s%s)) != 0) return result;\n",
-                        map_reader_fn(enum_data_type), enum_c_type, out_expr, out_access, field_name);
+                        map_reader_fn(effective_type), enum_c_type, out_expr, out_access, field_name);
+                free(type_override);
             }
             else if (is_struct)
             {

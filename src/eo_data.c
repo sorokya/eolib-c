@@ -316,9 +316,15 @@ int eo_writer_add_int(EoWriter *writer, int32_t value)
 
 int eo_writer_add_string(EoWriter *writer, const char *value)
 {
-    if (!writer || !value)
+    if (!writer)
     {
         return -1;
+    }
+
+    // Ignore NULL strings, treat them as empty strings
+    if (!value)
+    {
+        return 0;
     }
 
     size_t length = strlen(value);
@@ -334,9 +340,15 @@ int eo_writer_add_string(EoWriter *writer, const char *value)
 
 int eo_writer_add_encoded_string(EoWriter *writer, const char *value)
 {
-    if (!writer || !value)
+    if (!writer)
     {
         return -1;
+    }
+
+    // Ignore NULL strings, treat them as empty strings
+    if (!value)
+    {
+        return 0;
     }
 
     size_t length = strlen(value);
@@ -389,7 +401,10 @@ void eo_reader_set_chunked_reading_mode(EoReader *reader, bool enabled)
     if (reader)
     {
         reader->chunked_reading_mode = enabled;
-        reader->next_chunk_offset = eo_reader_next_break_index(reader);
+        if (!reader->next_chunk_offset)
+        {
+            reader->next_chunk_offset = eo_reader_next_break_index(reader);
+        }
     }
 }
 
@@ -426,20 +441,13 @@ int eo_reader_next_chunk(EoReader *reader)
         return -1;
     }
 
-    size_t next_chunk = reader->next_chunk_offset;
-    if (next_chunk == (size_t)-1)
-    {
-        next_chunk = reader->length;
-    }
-
-    reader->chunk_offset = next_chunk;
-    reader->offset = next_chunk;
-
-    if (reader->offset < reader->length && reader->data[reader->offset] == 0xFF)
+    reader->offset = reader->next_chunk_offset;
+    if (reader->offset < reader->length)
     {
         reader->offset += 1; // Skip the 0xFF break byte
     }
 
+    reader->chunk_offset = reader->offset;
     reader->next_chunk_offset = eo_reader_next_break_index(reader);
 
     return 0;
@@ -452,7 +460,7 @@ static size_t eo_reader_next_break_index(const EoReader *reader)
         return -1;
     }
 
-    for (size_t i = reader->offset; i < reader->length; ++i)
+    for (size_t i = reader->chunk_offset; i < reader->length; ++i)
     {
         if (reader->data[i] == 0xFF)
         {
@@ -465,8 +473,19 @@ static size_t eo_reader_next_break_index(const EoReader *reader)
 
 int eo_reader_get_byte(EoReader *reader, uint8_t *out_value)
 {
-    if (!reader || reader->offset > reader->length || reader->length - reader->offset < 1)
+    if (!reader || !out_value)
     {
+        return -1;
+    }
+
+    if (reader->offset > reader->length || reader->length - reader->offset < 1)
+    {
+        if (reader->chunked_reading_mode)
+        {
+            *out_value = 0;
+            return 0;
+        }
+
         return -1;
     }
 
@@ -481,8 +500,19 @@ int eo_reader_get_byte(EoReader *reader, uint8_t *out_value)
 
 int eo_reader_get_char(EoReader *reader, int32_t *out_value)
 {
-    if (!reader || reader->offset > reader->length || reader->length - reader->offset < 1)
+    if (!reader || !out_value)
     {
+        return -1;
+    }
+
+    if (reader->offset > reader->length || reader->length - reader->offset < 1)
+    {
+        if (reader->chunked_reading_mode)
+        {
+            *out_value = 0;
+            return 0;
+        }
+
         return -1;
     }
 
@@ -497,8 +527,19 @@ int eo_reader_get_char(EoReader *reader, int32_t *out_value)
 
 int eo_reader_get_short(EoReader *reader, int32_t *out_value)
 {
-    if (!reader || reader->offset > reader->length || reader->length - reader->offset < 2)
+    if (!reader || !out_value)
     {
+        return -1;
+    }
+
+    if (reader->offset > reader->length || reader->length - reader->offset < 2)
+    {
+        if (reader->chunked_reading_mode)
+        {
+            *out_value = 0;
+            return 0;
+        }
+
         return -1;
     }
 
@@ -513,8 +554,19 @@ int eo_reader_get_short(EoReader *reader, int32_t *out_value)
 
 int eo_reader_get_three(EoReader *reader, int32_t *out_value)
 {
-    if (!reader || reader->offset > reader->length || reader->length - reader->offset < 3)
+    if (!reader || !out_value)
     {
+        return -1;
+    }
+
+    if (reader->offset > reader->length || reader->length - reader->offset < 3)
+    {
+        if (reader->chunked_reading_mode)
+        {
+            *out_value = 0;
+            return 0;
+        }
+
         return -1;
     }
 
@@ -532,8 +584,19 @@ int eo_reader_get_three(EoReader *reader, int32_t *out_value)
 
 int eo_reader_get_int(EoReader *reader, int32_t *out_value)
 {
-    if (!reader || reader->offset > reader->length || reader->length - reader->offset < 4)
+    if (!reader || !out_value)
     {
+        return -1;
+    }
+
+    if (reader->offset > reader->length || reader->length - reader->offset < 4)
+    {
+        if (reader->chunked_reading_mode)
+        {
+            *out_value = 0;
+            return 0;
+        }
+
         return -1;
     }
 
@@ -560,7 +623,7 @@ int eo_reader_get_string(EoReader *reader, char **out_value)
     size_t length = eo_reader_remaining(reader);
     if (length == 0)
     {
-        *out_value = NULL;
+        *out_value = NULL; // strdup("");
         return 0;
     }
 
@@ -586,9 +649,20 @@ int eo_reader_get_encoded_string(EoReader *reader, char **out_value)
 
 int eo_reader_get_fixed_string(EoReader *reader, size_t length, char **out_value)
 {
-    if (!reader || !out_value || reader->offset > reader->length ||
+    if (!reader || !out_value)
+    {
+        return -1;
+    }
+
+    if (reader->offset > reader->length ||
         reader->length - reader->offset < length)
     {
+        if (reader->chunked_reading_mode)
+        {
+            *out_value = NULL;
+            return 0;
+        }
+
         return -1;
     }
 
@@ -606,9 +680,19 @@ int eo_reader_get_fixed_string(EoReader *reader, size_t length, char **out_value
 
 int eo_reader_get_fixed_encoded_string(EoReader *reader, size_t length, char **out_value)
 {
-    if (!reader || !out_value || reader->offset > reader->length ||
-        reader->length - reader->offset < length)
+    if (!reader || !out_value)
     {
+        return -1;
+    }
+
+    if (reader->offset > reader->length || reader->length - reader->offset < length)
+    {
+        if (reader->chunked_reading_mode)
+        {
+            *out_value = NULL;
+            return 0;
+        }
+
         return -1;
     }
 
@@ -627,9 +711,19 @@ int eo_reader_get_fixed_encoded_string(EoReader *reader, size_t length, char **o
 
 int eo_reader_get_bytes(EoReader *reader, size_t length, uint8_t **out_value)
 {
-    if (!reader || !out_value || reader->offset > reader->length ||
-        reader->length - reader->offset < length)
+    if (!reader || !out_value)
     {
+        return -1;
+    }
+
+    if (reader->offset > reader->length || reader->length - reader->offset < length)
+    {
+        if (reader->chunked_reading_mode)
+        {
+            *out_value = NULL;
+            return 0;
+        }
+
         return -1;
     }
 
