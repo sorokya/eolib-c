@@ -1,0 +1,184 @@
+name: Build Library
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            compiler: gcc
+            cc: gcc
+            cxx: g++
+            build_type: Release
+
+          - os: ubuntu-24.04
+            compiler: clang
+            cc: clang
+            cxx: clang++
+            build_type: Release
+
+          - os: ubuntu-24.04-arm
+            compiler: gcc
+            cc: gcc
+            cxx: g++
+            build_type: Release
+
+          - os: ubuntu-24.04-arm
+            compiler: clang
+            cc: clang
+            cxx: clang++
+            build_type: Release
+
+          - os: macos-26
+            compiler: clang
+            cc: clang
+            cxx: clang++
+            build_type: Release
+
+          - os: macos-26
+            compiler: gcc
+            build_type: Release
+
+          - os: macos-26-intel
+            compiler: clang
+            cc: clang
+            cxx: clang++
+            build_type: Release
+
+          - os: macos-26-intel
+            compiler: gcc
+            build_type: Release
+
+          - os: windows-2025
+            compiler: msvc
+            generator: Visual Studio 17 2022
+            msvc_arch: x64
+            build_type: Release
+
+          - os: windows-2025
+            compiler: clang-cl
+            generator: Visual Studio 17 2022
+            msvc_arch: x64
+            toolset: ClangCL
+            build_type: Release
+
+          - os: windows-2025
+            compiler: mingw
+            msys_system: mingw64
+            cc: gcc
+            cxx: g++
+            generator: MinGW Makefiles
+            build_type: Release
+
+          - os: windows-11-arm
+            compiler: msvc
+            generator: Visual Studio 17 2022
+            msvc_arch: ARM64
+            build_type: Release
+
+          - os: windows-11-arm
+            compiler: clang-cl
+            generator: Visual Studio 17 2022
+            msvc_arch: ARM64
+            toolset: ClangCL
+            build_type: Release
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: "recursive"
+
+      - name: Setup MSVC
+        if: startsWith(matrix.compiler, 'msvc') || matrix.compiler == 'clang-cl'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
+
+      - name: Setup MinGW
+        if: matrix.compiler == 'mingw'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msys_system }}
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+
+      - name: Setup Clang (Linux)
+        if: matrix.compiler == 'clang' && startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get update && sudo apt-get install -y clang
+
+      - name: Setup Ninja (Linux)
+        if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Set Compiler Env (Unix)
+        if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
+        run: |
+          echo "CC=${{ matrix.cc }}" >> "$GITHUB_ENV"
+          echo "CXX=${{ matrix.cxx }}" >> "$GITHUB_ENV"
+
+      - name: Setup GCC (macOS)
+        if: matrix.compiler == 'gcc' && startsWith(matrix.os, 'macos')
+        run: |
+          brew install gcc
+          gcc_path=$(ls -1 /opt/homebrew/bin/gcc-* /usr/local/bin/gcc-* 2>/dev/null | sort -V | tail -1)
+          gxx_path=$(ls -1 /opt/homebrew/bin/g++-* /usr/local/bin/g++-* 2>/dev/null | sort -V | tail -1)
+          echo "CC=${gcc_path:-gcc}" >> "$GITHUB_ENV"
+          echo "CXX=${gxx_path:-g++}" >> "$GITHUB_ENV"
+
+      - name: Setup Ninja (macOS)
+        if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'macos')
+        run: brew install ninja
+
+      - name: Configure (MSVC/ClangCL)
+        if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
+        run: >-
+          cmake -S . -B build -G "${{ matrix.generator }}"
+          -A ${{ matrix.msvc_arch }}
+          ${{ matrix.toolset && format('-T {0}', matrix.toolset) || '' }}
+
+      - name: Build (MSVC/ClangCL)
+        if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
+        run: cmake --build build --config ${{ matrix.build_type }}
+
+      - name: Configure (MinGW)
+        if: matrix.compiler == 'mingw'
+        shell: msys2 {0}
+        run: >-
+          cmake -S . -B build -G "${{ matrix.generator }}"
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      - name: Build (MinGW)
+        if: matrix.compiler == 'mingw'
+        shell: msys2 {0}
+        run: cmake --build build
+
+      - name: Configure (Unix)
+        if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
+        run: >-
+          cmake -S . -B build -G Ninja
+          -DCMAKE_C_COMPILER=$CC
+          -DCMAKE_CXX_COMPILER=$CXX
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      - name: Build (Unix)
+        if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
+        run: cmake --build build
+
+      - name: Run Tests
+        run: ctest --output-on-failure -C ${{ matrix.build_type }} --test-dir build
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-${{ matrix.os }}-${{ matrix.compiler }}
+          path: ./build
