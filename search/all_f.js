@@ -8,7 +8,8 @@ var searchData=
   ['onlineplayer_5ffree_5',['OnlinePlayer_free',['../protocol_8h.html#aa10258fcef6666c7463f93a6cb8281f1',1,'OnlinePlayer_free(OnlinePlayer *value):&#160;protocol.c'],['../protocol_8c.html#aa10258fcef6666c7463f93a6cb8281f1',1,'OnlinePlayer_free(OnlinePlayer *value):&#160;protocol.c']]],
   ['onlineplayer_5fserialize_6',['OnlinePlayer_serialize',['../protocol_8h.html#a1a8f271150be1a41cde3bdb3317c0c7c',1,'OnlinePlayer_serialize(const OnlinePlayer *value, EoWriter *writer):&#160;protocol.c'],['../protocol_8c.html#a1a8f271150be1a41cde3bdb3317c0c7c',1,'OnlinePlayer_serialize(const OnlinePlayer *value, EoWriter *writer):&#160;protocol.c']]],
   ['onlineplayer_5fsize_7',['OnlinePlayer_size',['../protocol_8h.html#ad2fdfe88f87053376c8b72f9725d4a3c',1,'OnlinePlayer_size(const OnlinePlayer *value):&#160;protocol.c'],['../protocol_8c.html#ad2fdfe88f87053376c8b72f9725d4a3c',1,'OnlinePlayer_size(const OnlinePlayer *value):&#160;protocol.c']]],
-  ['others_8',['others',['../structEffectTargetOtherServerPacket.html#ab42d619aa0ce9775b94250c36367bf1f',1,'EffectTargetOtherServerPacket']]],
-  ['others_5flength_9',['others_length',['../structEffectTargetOtherServerPacket.html#a765e4a383130133d810f81d0996c6de6',1,'EffectTargetOtherServerPacket']]],
-  ['out_5fof_5fdate_10',['out_of_date',['../structInitInitServerPacket.html#a782e1d989a2d260221198bf7fb4e961e',1,'InitInitServerPacket']]]
+  ['optional_20fields_8',['Optional Fields',['../optional_fields.html',1,'']]],
+  ['others_9',['others',['../structEffectTargetOtherServerPacket.html#ab42d619aa0ce9775b94250c36367bf1f',1,'EffectTargetOtherServerPacket']]],
+  ['others_5flength_10',['others_length',['../structEffectTargetOtherServerPacket.html#a765e4a383130133d810f81d0996c6de6',1,'EffectTargetOtherServerPacket']]],
+  ['out_5fof_5fdate_11',['out_of_date',['../structInitInitServerPacket.html#a782e1d989a2d260221198bf7fb4e961e',1,'InitInitServerPacket']]]
 ];
