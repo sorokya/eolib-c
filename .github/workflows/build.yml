@@ -173,7 +173,7 @@ jobs:
 
       - name: Reconfigure (MSVC/ClangCL)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
-        run: cmake -S . -B build
+        run: cmake -S . -B build -D CMAKE_SUPPRESS_REGENERATION=ON
 
       - name: Configure (MinGW)
         if: matrix.compiler == 'mingw'
