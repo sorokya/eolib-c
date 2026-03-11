@@ -1,0 +1,89 @@
+#include "sequencer.h"
+#include "eo_data.h"
+#include "test_utils.h"
+
+#include <stdlib.h>
+
+static void test_sequencer_next_wraps()
+{
+    Sequencer seq = sequencer_init(100);
+    int32_t expected[] = {101, 102, 103, 104, 105, 106, 107, 108, 109, 100, 101};
+
+    for (size_t i = 0; i < sizeof(expected) / sizeof(expected[0]); i++)
+    {
+        int32_t value = sequencer_next(&seq);
+        expect_equal_int32("sequencer_next wrap", value, expected[i]);
+    }
+
+    expect_equal_int32("sequencer_next null", sequencer_next(NULL), -1);
+}
+
+static void test_generate_sequence_start_range()
+{
+    srand(1);
+    for (int i = 0; i < 50; i++)
+    {
+        int32_t start = generate_sequence_start();
+        expect("generate_sequence_start >= 0", start >= 0);
+        expect("generate_sequence_start upper bound", start <= (EO_CHAR_MAX - 10));
+    }
+}
+
+static void test_sequence_init_bytes_roundtrip()
+{
+    int32_t starts[] = {-13, 0, 1, 50, 100, 200};
+    srand(2);
+
+    for (size_t i = 0; i < sizeof(starts) / sizeof(starts[0]); i++)
+    {
+        uint8_t bytes[2] = {0};
+        int result = sequence_init_bytes(starts[i], bytes);
+        expect_equal_int("sequence_init_bytes result", result, 0);
+        if (result != 0)
+        {
+            continue;
+        }
+        expect("sequence_init_bytes seq1 range", bytes[0] <= (EO_CHAR_MAX - 1));
+        expect("sequence_init_bytes seq2 range", bytes[1] <= (EO_CHAR_MAX - 1));
+        expect_equal_int32("sequence_init_bytes roundtrip",
+                           sequence_start_from_init(bytes[0], bytes[1]),
+                           starts[i]);
+    }
+}
+
+static void test_sequence_ping_bytes_roundtrip()
+{
+    int32_t starts[] = {-10, 0, 5, 100};
+    srand(3);
+
+    for (size_t i = 0; i < sizeof(starts) / sizeof(starts[0]); i++)
+    {
+        uint8_t bytes[2] = {0};
+        int result = sequence_ping_bytes(starts[i], bytes);
+        expect_equal_int("sequence_ping_bytes result", result, 0);
+        if (result != 0)
+        {
+            continue;
+        }
+        expect("sequence_ping_bytes seq1 range", bytes[0] <= (EO_CHAR_MAX - 1));
+        expect("sequence_ping_bytes seq2 range", bytes[1] <= (EO_CHAR_MAX - 1));
+        expect_equal_int32("sequence_ping_bytes roundtrip",
+                           sequence_start_from_ping(bytes[0], bytes[1]),
+                           starts[i]);
+    }
+
+    uint8_t bytes[2] = {0};
+    expect_equal_int("sequence_ping_bytes invalid high",
+                     sequence_ping_bytes(EO_CHAR_MAX, bytes),
+                     -1);
+}
+
+int main(void)
+{
+    test_sequencer_next_wraps();
+    test_generate_sequence_start_range();
+    test_sequence_init_bytes_roundtrip();
+    test_sequence_ping_bytes_roundtrip();
+
+    return test_failures != 0 ? 1 : 0;
+}

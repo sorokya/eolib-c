@@ -485,54 +485,6 @@ static char *to_upper_snake(const char *value)
     return snake;
 }
 
-static char *to_pascal_case(const char *value)
-{
-    if (!value)
-    {
-        return xstrdup("T");
-    }
-
-    size_t len = strlen(value);
-    char *out = xmalloc(len * 2 + 2);
-    size_t out_len = 0;
-    int next_upper = 1;
-
-    for (size_t i = 0; i < len; ++i)
-    {
-        char ch = value[i];
-        if (ch == '_' || ch == '-' || ch == ' ')
-        {
-            next_upper = 1;
-            continue;
-        }
-
-        if (next_upper && ch >= 'a' && ch <= 'z')
-        {
-            ch = (char)(ch - 'a' + 'A');
-        }
-        next_upper = 0;
-        out[out_len++] = ch;
-    }
-
-    if (out_len == 0 || (out[0] >= '0' && out[0] <= '9'))
-    {
-        memmove(out + 1, out, out_len + 1);
-        out[0] = 'T';
-        out_len += 1;
-    }
-
-    out[out_len] = '\0';
-    if (is_c_keyword(out))
-    {
-        char *prefixed = xmalloc(out_len + 2);
-        snprintf(prefixed, out_len + 2, "T%s", out);
-        free(out);
-        return prefixed;
-    }
-
-    return out;
-}
-
 static int parse_bool_attr(xmlNode *node, const char *name, int default_value)
 {
     xmlChar *value = xmlGetProp(node, (const xmlChar *)name);
@@ -1172,14 +1124,29 @@ static void write_doc_comment(FILE *out, const char *comment, const char *indent
 
 static void write_enum_def(FILE *header, FILE *source, EnumDef *def)
 {
+    if (def->comment)
+    {
+        write_doc_comment(header, def->comment, "");
+    }
+
     char *enum_prefix = to_upper_snake(def->name);
+    fprintf(header, "typedef enum %s {\n", def->name);
     for (size_t i = 0; i < def->values_count; ++i)
     {
         EnumValue *value = &def->values[i];
+        if (value->comment)
+        {
+            write_doc_comment(header, value->comment, "    ");
+        }
         char *constant_name = to_upper_snake(value->name);
-        fprintf(header, "#define %s_%s %d\n", enum_prefix, constant_name, value->value);
+        fprintf(header, "    %s_%s = %d%s\n",
+                enum_prefix,
+                constant_name,
+                value->value,
+                i + 1 == def->values_count ? "" : ",");
         free(constant_name);
     }
+    fprintf(header, "} %s;\n\n", def->name);
     free(enum_prefix);
 }
 
@@ -1222,6 +1189,7 @@ static int struct_exists(StructDef *structs, size_t structs_count, const char *n
 }
 
 static int element_list_has_storage(ElementList *elements);
+static int is_numeric_string(const char *value);
 
 static int switch_has_storage(SwitchDef *sw)
 {
@@ -1233,6 +1201,23 @@ static int switch_has_storage(SwitchDef *sw)
             continue;
         }
         if (element_list_has_storage(&case_def->elements))
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static int switch_has_numeric_case(SwitchDef *sw)
+{
+    for (size_t i = 0; i < sw->cases_count; ++i)
+    {
+        CaseDef *case_def = &sw->cases[i];
+        if (!case_def->has_elements || case_def->is_default)
+        {
+            continue;
+        }
+        if (case_def->value && is_numeric_string(case_def->value))
         {
             return 1;
         }
@@ -1320,8 +1305,7 @@ static void write_struct_fields_with_indent(FILE *header, const char *struct_nam
 
             if (enum_exists(enums, enums_count, type_name))
             {
-                const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
-                fprintf(header, "%s%s %s;\n", indent, map_primitive_type(enum_data_type), field_name);
+                fprintf(header, "%s%s %s;\n", indent, type_name, field_name);
             }
             else if (struct_exists(structs, structs_count, type_name))
             {
@@ -1344,8 +1328,7 @@ static void write_struct_fields_with_indent(FILE *header, const char *struct_nam
                                                                    : type_name;
             if (enum_exists(enums, enums_count, type_name))
             {
-                const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
-                mapped_type = map_primitive_type(enum_data_type);
+                mapped_type = type_name;
             }
 
             write_doc_comment(header, array->comment, indent);
@@ -1742,8 +1725,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             const char *item_c_type = map_primitive_type(type_name);
             if (is_enum)
             {
-                const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
-                item_c_type = map_primitive_type(enum_data_type);
+                item_c_type = type_name;
             }
 
             if (array->optional)
@@ -1782,7 +1764,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 {
                     fprintf(source,
                             "        if ((result = %s(writer, ((%s *)%s%s%s.items)[i])) != 0) return result;\n",
-                            map_writer_fn(enum_data_type), map_primitive_type(enum_data_type),
+                            map_writer_fn(enum_data_type), item_c_type,
                             value_expr, value_access, field_name);
                 }
             }
@@ -1871,6 +1853,20 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             char *field_type = find_field_data_type(elements, sw->field);
             int has_default = 0;
             int has_storage = switch_has_storage(sw);
+            int suppress_enum_switch_warning =
+                field_type && enum_exists(enums, enums_count, field_type) &&
+                switch_has_numeric_case(sw);
+            if (suppress_enum_switch_warning)
+            {
+                fprintf(source,
+                        "#if defined(__clang__)\n"
+                        "    #pragma clang diagnostic push\n"
+                        "    #pragma clang diagnostic ignored \"-Wswitch\"\n"
+                        "#elif defined(__GNUC__)\n"
+                        "    #pragma GCC diagnostic push\n"
+                        "    #pragma GCC diagnostic ignored \"-Wswitch\"\n"
+                        "#endif\n");
+            }
             fprintf(source, "    switch (%s%s%s) {\n", value_expr, value_access, field_name);
             for (size_t c = 0; c < sw->cases_count; ++c)
             {
@@ -1935,6 +1931,15 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 fprintf(source, "        default: break;\n");
             }
             fprintf(source, "    }\n");
+            if (suppress_enum_switch_warning)
+            {
+                fprintf(source,
+                        "#if defined(__clang__)\n"
+                        "    #pragma clang diagnostic pop\n"
+                        "#elif defined(__GNUC__)\n"
+                        "    #pragma GCC diagnostic pop\n"
+                        "#endif\n");
+            }
             free(field_name);
             free(field_type);
         }
@@ -2007,9 +2012,10 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             if (is_enum)
             {
                 const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
+                const char *enum_c_type = map_primitive_type(enum_data_type);
                 fprintf(source,
-                        "    if ((result = %s(reader, &%s%s%s)) != 0) return result;\n",
-                        map_reader_fn(enum_data_type), out_expr, out_access, field_name);
+                        "    if ((result = %s(reader, (%s *)&%s%s%s)) != 0) return result;\n",
+                        map_reader_fn(enum_data_type), enum_c_type, out_expr, out_access, field_name);
             }
             else if (is_struct)
             {
@@ -2064,8 +2070,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             const char *item_c_type = map_primitive_type(type_name);
             if (is_enum)
             {
-                const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
-                item_c_type = map_primitive_type(enum_data_type);
+                item_c_type = type_name;
             }
 
             if (array->optional)
@@ -2093,9 +2098,10 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 if (is_enum)
                 {
                     const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
+                    const char *enum_c_type = map_primitive_type(enum_data_type);
                     fprintf(source,
-                            "        if ((result = %s(reader, &%s%s%s[i])) != 0) return result;\n",
-                            map_reader_fn(enum_data_type), out_expr, out_access, field_name);
+                            "        if ((result = %s(reader, (%s *)&%s%s%s[i])) != 0) return result;\n",
+                            map_reader_fn(enum_data_type), enum_c_type, out_expr, out_access, field_name);
                 }
                 else if (is_struct)
                 {
@@ -2140,9 +2146,10 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 if (is_enum)
                 {
                     const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
+                    const char *enum_c_type = map_primitive_type(enum_data_type);
                     fprintf(source,
-                            "        if ((result = %s(reader, &((%s *)%s%s%s.items)[%s%s%s.length++])) != 0) return result;\n",
-                            map_reader_fn(enum_data_type), map_primitive_type(enum_data_type),
+                            "        if ((result = %s(reader, (%s *)&((%s *)%s%s%s.items)[%s%s%s.length++])) != 0) return result;\n",
+                            map_reader_fn(enum_data_type), enum_c_type, item_c_type,
                             out_expr, out_access, field_name, out_expr, out_access, field_name);
                 }
                 else if (is_struct)
@@ -2205,9 +2212,24 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             char *field_name = to_snake_case(sw->field);
             char *field_type = find_field_data_type(elements, sw->field);
             int has_storage = switch_has_storage(sw);
+            int has_default = 0;
+            int suppress_enum_switch_warning =
+                field_type && enum_exists(enums, enums_count, field_type) &&
+                switch_has_numeric_case(sw);
             if (has_storage)
             {
                 fprintf(source, "    %s%s%s_data = NULL;\n", out_expr, out_access, field_name);
+            }
+            if (suppress_enum_switch_warning)
+            {
+                fprintf(source,
+                        "#if defined(__clang__)\n"
+                        "    #pragma clang diagnostic push\n"
+                        "    #pragma clang diagnostic ignored \"-Wswitch\"\n"
+                        "#elif defined(__GNUC__)\n"
+                        "    #pragma GCC diagnostic push\n"
+                        "    #pragma GCC diagnostic ignored \"-Wswitch\"\n"
+                        "#endif\n");
             }
             fprintf(source, "    switch (%s%s%s) {\n", out_expr, out_access, field_name);
             for (size_t c = 0; c < sw->cases_count; ++c)
@@ -2216,6 +2238,10 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 if (!case_def->has_elements)
                 {
                     continue;
+                }
+                if (case_def->is_default)
+                {
+                    has_default = 1;
                 }
                 const char *case_name = case_def->is_default ? "default" : case_def->value;
                 char *case_const = to_upper_snake(case_name);
@@ -2265,7 +2291,20 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 free(case_const);
                 free(case_field);
             }
+            if (!has_default)
+            {
+                fprintf(source, "    default: break;\n");
+            }
             fprintf(source, "    }\n");
+            if (suppress_enum_switch_warning)
+            {
+                fprintf(source,
+                        "#if defined(__clang__)\n"
+                        "    #pragma clang diagnostic pop\n"
+                        "#elif defined(__GNUC__)\n"
+                        "    #pragma GCC diagnostic pop\n"
+                        "#endif\n");
+            }
             free(field_type);
             free(field_name);
         }

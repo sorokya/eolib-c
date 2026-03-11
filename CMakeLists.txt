@@ -43,6 +43,7 @@ add_custom_target(generate_protocol ALL
 add_library(eolib SHARED
     src/eo_data.c
     src/encrypt.c
+	src/sequencer.c
     src/protocol.c
 )
 
@@ -114,3 +115,14 @@ target_include_directories(eolib_eo_data_tests PRIVATE
 )
 target_link_libraries(eolib_eo_data_tests PRIVATE eolib)
 add_test(NAME eolib_eo_data_tests COMMAND eolib_eo_data_tests)
+
+add_executable(eolib_sequencer_tests
+	tests/sequencer_tests.c
+	tests/test_utils.c
+)
+target_include_directories(eolib_sequencer_tests PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/tests
+)
+target_link_libraries(eolib_sequencer_tests PRIVATE eolib)
+add_test(NAME eolib_sequencer_tests COMMAND eolib_sequencer_tests)

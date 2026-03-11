@@ -35,4 +35,6 @@ AUTOLINK_SUPPORT       = YES
 
 STRIP_FROM_PATH        =
 
+SHOW_ENUM_VALUES       = YES
+
 TAB_SIZE               = 4
