@@ -33,5 +33,5 @@ tests/packet_tests.list
 *.dylib
 *.o
 
-docs
+docs/html
 build

@@ -5,8 +5,8 @@ PROJECT_BRIEF          = "A core C library for writing applications related to E
 OUTPUT_DIRECTORY       = docs
 CREATE_SUBDIRS         = NO
 
-INPUT                  = include src
-FILE_PATTERNS          = *.h *.c
+INPUT                  = include src docs
+FILE_PATTERNS          = *.h *.c *.dox
 RECURSIVE              = YES
 EXCLUDE                =
 

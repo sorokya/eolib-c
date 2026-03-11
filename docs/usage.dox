@@ -1,0 +1,314 @@
+/**
+ * @mainpage eolib-c
+ *
+ * A core C library for writing applications related to
+ * [Endless Online](https://endless-online.com), a free 2D MMORPG.
+ *
+ * The library provides utilities for encoding, encrypting, and sequencing
+ * data according to the EO network protocol.
+ *
+ * **Sections:**
+ * - @ref error_handling
+ * - @ref reading_data
+ * - @ref writing_data
+ * - @ref optional_fields
+ * - @ref encryption
+ * - @ref sequencing
+ */
+
+/**
+ * @page error_handling Error Handling
+ *
+ * Nearly every function in eolib-c returns an ::EoResult value. A return
+ * value of ::EO_SUCCESS (0) indicates success; any other value indicates a
+ * specific failure condition.
+ *
+ * Use eo_result_string() to obtain a human-readable description of an error.
+ *
+ * **Typical pattern:**
+ * @code{.c}
+ * EoWriter writer = eo_writer_init();
+ *
+ * EoResult result = eo_writer_add_short(&writer, 1234);
+ * if (result != EO_SUCCESS) {
+ *     fprintf(stderr, "write failed: %s\n", eo_result_string(result));
+ *     eo_writer_free(&writer);
+ *     return;
+ * }
+ * @endcode
+ *
+ * **Error codes:**
+ * | Code | Meaning |
+ * |------|---------|
+ * | ::EO_SUCCESS | Operation succeeded |
+ * | ::EO_NULL_PTR | A required pointer argument was NULL |
+ * | ::EO_OVERFLOW | An internal size calculation would overflow |
+ * | ::EO_ALLOC_FAILED | A memory allocation failed |
+ * | ::EO_NUMBER_TOO_LARGE | Value exceeds ::EO_INT_MAX |
+ * | ::EO_BUFFER_UNDERRUN | Not enough bytes remaining to complete a read |
+ * | ::EO_CHUNKED_MODE_DISABLED | A chunked-mode operation was attempted with chunked reading disabled |
+ * | ::EO_INVALID_SEQUENCE_RANGE | The sequence start value is out of range |
+ * | ::EO_SEQUENCE_OUT_OF_RANGE | A sequence byte could not be encoded as a single EO char |
+ * | ::EO_INVALID_DATA | Structural mismatch in the data |
+ * | ::EO_STR_OUT_OF_RANGE | A string is longer than the specified fixed length |
+ * | ::EO_STR_TOO_SHORT | A string is shorter than the required fixed length |
+ */
+
+/**
+ * @page reading_data Reading Data
+ *
+ * ::EoReader provides a cursor over a caller-owned byte buffer and exposes
+ * methods for reading EO-encoded values. The reader does **not** take
+ * ownership of the underlying data.
+ *
+ * **Basic usage:**
+ * @code{.c}
+ * // Data buffer owned by the caller.
+ * const uint8_t *buf = ...;
+ * size_t buf_len     = ...;
+ *
+ * EoReader reader = eo_reader_init(buf, buf_len);
+ *
+ * int32_t action;
+ * int32_t family;
+ * if (eo_reader_get_byte(&reader, (uint8_t *)&action) != EO_SUCCESS ||
+ *     eo_reader_get_byte(&reader, (uint8_t *)&family) != EO_SUCCESS) {
+ *     // handle error
+ * }
+ *
+ * int32_t player_id;
+ * eo_reader_get_short(&reader, &player_id);
+ *
+ * char *name = NULL;
+ * eo_reader_get_string(&reader, &name);
+ * // ... use name ...
+ * free(name);
+ *
+ * eo_reader_free(&reader);  // No-op; kept for symmetry.
+ * @endcode
+ *
+ * **Chunked reading mode:**
+ *
+ * EO packets use `0xFF` bytes as chunk delimiters. Enable chunked reading mode
+ * to respect these boundaries automatically. While in chunked mode,
+ * eo_reader_remaining() and all `get_*` functions operate only within the
+ * current chunk. Call eo_reader_next_chunk() to advance past the next `0xFF`
+ * delimiter.
+ *
+ * @code{.c}
+ * EoReader reader = eo_reader_init(buf, buf_len);
+ * eo_reader_set_chunked_reading_mode(&reader, true);
+ *
+ * // Read fields from the first chunk.
+ * int32_t val;
+ * eo_reader_get_char(&reader, &val);
+ *
+ * // Advance to the second chunk.
+ * eo_reader_next_chunk(&reader);
+ * char *str = NULL;
+ * eo_reader_get_string(&reader, &str);
+ * free(str);
+ * @endcode
+ *
+ * **Number types and their byte widths:**
+ * | Function | Bytes read | Max value |
+ * |----------|-----------|-----------|
+ * | eo_reader_get_byte() | 1 | 255 |
+ * | eo_reader_get_char() | 1 | ::EO_CHAR_MAX |
+ * | eo_reader_get_short() | 2 | ::EO_SHORT_MAX |
+ * | eo_reader_get_three() | 3 | ::EO_THREE_MAX |
+ * | eo_reader_get_int() | 4 | ::EO_INT_MAX |
+ */
+
+/**
+ * @page writing_data Writing Data
+ *
+ * ::EoWriter accumulates EO-encoded bytes into a dynamically-growing buffer.
+ * Call eo_writer_free() when finished to release the owned memory.
+ *
+ * **Basic usage:**
+ * @code{.c}
+ * EoWriter writer = eo_writer_init();
+ *
+ * eo_writer_add_byte(&writer, 0x06);   // Action byte
+ * eo_writer_add_byte(&writer, 0x02);   // Family byte
+ * eo_writer_add_short(&writer, 1234);  // Player ID
+ * eo_writer_add_string(&writer, "Eoserv");
+ *
+ * // writer.data and writer.length hold the final payload.
+ * send(socket, writer.data, writer.length);
+ *
+ * eo_writer_free(&writer);
+ * @endcode
+ *
+ * **Encoded (EO-transformed) strings:**
+ *
+ * Some packet fields use EO's string encoding, which byte-transforms and
+ * reverses the string. Use the `_encoded_` variants for these fields:
+ *
+ * @code{.c}
+ * eo_writer_add_encoded_string(&writer, "secret");
+ * @endcode
+ *
+ * **String sanitization mode:**
+ *
+ * When string sanitization is enabled, any `0xFF` byte in a string is
+ * replaced with `0x79` (`'y'`). This prevents chat or name strings from
+ * accidentally introducing chunk delimiters.
+ *
+ * @code{.c}
+ * eo_writer_set_string_sanitization_mode(&writer, true);
+ * eo_writer_add_string(&writer, user_input);  // 0xFF bytes safely replaced.
+ * @endcode
+ *
+ * **Number types and their byte widths:**
+ * | Function | Bytes written | Max value |
+ * |----------|--------------|-----------|
+ * | eo_writer_add_byte() | 1 | 255 |
+ * | eo_writer_add_char() | 1 | ::EO_CHAR_MAX |
+ * | eo_writer_add_short() | 2 | ::EO_SHORT_MAX |
+ * | eo_writer_add_three() | 3 | ::EO_THREE_MAX |
+ * | eo_writer_add_int() | 4 | ::EO_INT_MAX |
+ */
+
+/**
+ * @page optional_fields Optional Fields
+ *
+ * The EO protocol uses two mechanisms for optional data: chunked delimiters
+ * and padded fixed-length strings.
+ *
+ * **Reading optional fields with chunked mode:**
+ *
+ * In chunked reading mode, attempting to read past the end of the current
+ * chunk returns `0` (or an empty string) rather than ::EO_BUFFER_UNDERRUN.
+ * This lets you safely read fields that may or may not be present without
+ * extra length checks.
+ *
+ * @code{.c}
+ * EoReader reader = eo_reader_init(buf, buf_len);
+ * eo_reader_set_chunked_reading_mode(&reader, true);
+ *
+ * int32_t required_field;
+ * eo_reader_get_short(&reader, &required_field);
+ *
+ * // This field is only present in some versions of the packet.
+ * int32_t optional_field = 0;
+ * eo_reader_get_char(&reader, &optional_field);
+ * // optional_field remains 0 if the chunk ended before it.
+ *
+ * eo_reader_next_chunk(&reader);
+ *
+ * // An optional trailing string.
+ * char *optional_str = NULL;
+ * if (eo_reader_remaining(&reader) > 0) {
+ *     eo_reader_get_string(&reader, &optional_str);
+ * }
+ * free(optional_str);  // safe even if NULL was never reassigned
+ * @endcode
+ *
+ * **Writing optional fixed-length strings with padding:**
+ *
+ * Pass `padded = true` to eo_writer_add_fixed_string() or
+ * eo_writer_add_fixed_encoded_string() to right-pad a shorter string with
+ * `0xFF` bytes up to the declared length.
+ *
+ * @code{.c}
+ * // Write a name into a 12-byte padded field.
+ * eo_writer_add_fixed_string(&writer, "Bob", 12, true);
+ * // Produces: 'B','o','b', 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+ * @endcode
+ *
+ * Passing `NULL` as the string value is treated as an empty string and
+ * writes nothing (the field is simply omitted), which is useful when an
+ * optional trailing field is not present.
+ */
+
+/**
+ * @page encryption Encryption
+ *
+ * EO uses a two-stage packet encryption scheme. The library exposes both
+ * the high-level encrypt/decrypt functions and the lower-level primitives.
+ *
+ * **Overview:**
+ * 1. eo_swap_multiples() reverses contiguous runs of bytes that are
+ *    multiples of a given value.
+ * 2. eo_encrypt_packet() additionally applies a position-based byte
+ *    permutation and toggles the high bit of non-zero bytes.
+ * 3. Both operations are involutions: applying them twice yields the
+ *    original data.
+ *
+ * **Typical client-side workflow:**
+ * @code{.c}
+ * // --- Sending a packet ---
+ * uint8_t multiple = eo_generate_swap_multiple();  // random 6-12
+ *
+ * // Prepend the multiple as the first byte of the payload, then encrypt
+ * // bytes 2 onward (the actual packet data follows the two-byte header).
+ * eo_encrypt_packet(payload + 2, payload_length - 2, multiple);
+ *
+ * // --- Receiving a packet ---
+ * uint8_t multiple = payload[0];  // negotiated during handshake
+ * eo_decrypt_packet(payload + 2, payload_length - 2, multiple);
+ * @endcode
+ *
+ * **Server verification hash:**
+ *
+ * During the connection handshake the client sends a challenge value to the
+ * server. The server must respond with the correct hash, which the client can
+ * verify using eo_server_verification_hash():
+ *
+ * @code{.c}
+ * int32_t challenge = ...; // chosen by the client and sent in the init packet
+ * int32_t expected  = eo_server_verification_hash(challenge);
+ * // Compare expected against the hash value received from the server.
+ * @endcode
+ *
+ * Packets whose first two bytes are both `0xFF` are never encrypted and are
+ * passed through unchanged by eo_encrypt_packet() / eo_decrypt_packet().
+ */
+
+/**
+ * @page sequencing Packet Sequencing
+ *
+ * EO embeds a sequence number in every client packet to detect out-of-order or
+ * replayed packets. The sequence start is established during the handshake
+ * and then increments by one per packet, wrapping every 10 steps.
+ *
+ * **Initialization from a server init packet:**
+ * @code{.c}
+ * // Server sends two bytes (seq1, seq2) that encode the start value.
+ * int32_t seq1 = ...; // from ServerInitInitPacket
+ * int32_t seq2 = ...; // from ServerInitInitPacket
+ *
+ * int32_t start = eo_sequence_start_from_init(seq1, seq2);
+ * EoSequencer sequencer = eo_sequencer_init(start);
+ * @endcode
+ *
+ * **Re-synchronisation from a server ping packet:**
+ * @code{.c}
+ * int32_t seq1 = ...; // from server ping
+ * int32_t seq2 = ...; // from server ping
+ *
+ * int32_t start = eo_sequence_start_from_ping(seq1, seq2);
+ * sequencer = eo_sequencer_init(start);
+ * @endcode
+ *
+ * **Stamping outgoing packets:**
+ * @code{.c}
+ * int32_t seq;
+ * eo_sequencer_next(&sequencer, &seq);
+ * eo_writer_add_char(&writer, seq);  // written into the packet header
+ * @endcode
+ *
+ * **Server-side: generating and encoding a new start:**
+ * @code{.c}
+ * int32_t start = eo_generate_sequence_start();
+ *
+ * uint8_t bytes[2];
+ * if (eo_sequence_init_bytes(start, bytes) == EO_SUCCESS) {
+ *     // Send bytes[0] and bytes[1] in the init packet.
+ * }
+ *
+ * EoSequencer sequencer = eo_sequencer_init(start);
+ * @endcode
+ */
