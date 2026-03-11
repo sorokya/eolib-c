@@ -1,8 +1,8 @@
 var searchData=
 [
   ['karma_0',['karma',['../structCharacterStatsWelcome.html#a0cadd283b83124ebdd6c153ad92f73bf',1,'CharacterStatsWelcome::karma()'],['../structRecoverReplyServerPacket.html#a926b1cf90f2cfb22abda7f7becdee6c5',1,'RecoverReplyServerPacket::karma()']]],
-  ['key_1',['key',['../structMapLegacyDoorKey.html#a2d0f135872b9b4a362615801942e9dcc',1,'MapLegacyDoorKey::key()'],['../structMapItem.html#ab1ce09eb811928ba63a3ba5b493cb3fc',1,'MapItem::key()'],['../structDoorCloseServerPacket.html#acbe576c72e0c35d2965727df0418b6db',1,'DoorCloseServerPacket::key()'],['../structChestCloseServerPacket.html#ae2f4ee34f329a8ef8b29200570d276f0',1,'ChestCloseServerPacket::key()']]],
-  ['kill_5fsteal_5fprotection_2',['kill_steal_protection',['../structNpcReplyServerPacket.html#a7ba421f2fd8d27fd5ac0f283142fc68b',1,'NpcReplyServerPacket::kill_steal_protection()'],['../structCastReplyServerPacket.html#a3e54b075e75ff8b572f21c476198a459',1,'CastReplyServerPacket::kill_steal_protection()']]],
+  ['key_1',['key',['../structMapLegacyDoorKey.html#a2d0f135872b9b4a362615801942e9dcc',1,'MapLegacyDoorKey::key()'],['../structMapItem.html#ab1ce09eb811928ba63a3ba5b493cb3fc',1,'MapItem::key()'],['../structDoorCloseServerPacket.html#acbe576c72e0c35d2965727df0418b6db',1,'DoorCloseServerPacket::key()'],['../structChestCloseServerPacket.html#abb1b5fa4e8e47a72c7c98642901eb5a4',1,'ChestCloseServerPacket::key()']]],
+  ['kill_5fsteal_5fprotection_2',['kill_steal_protection',['../structNpcReplyServerPacket.html#a4b2e81e83abb8cef9a59ac0e019400ec',1,'NpcReplyServerPacket::kill_steal_protection()'],['../structCastReplyServerPacket.html#ad758ac6503d65d4f330c7bc289902712',1,'CastReplyServerPacket::kill_steal_protection()']]],
   ['killed_3',['killed',['../structNpcUpdateAttack.html#a6923d0b01150d6011871afdab1d64a9e',1,'NpcUpdateAttack']]],
   ['killer_5fdirection_4',['killer_direction',['../structNpcKilledData.html#a6fad0205039bd5b5405c8489dc3a98ac',1,'NpcKilledData']]],
   ['killer_5fid_5',['killer_id',['../structNpcKilledData.html#ad921ef988b4b27ab0db6b283379e4398',1,'NpcKilledData']]],

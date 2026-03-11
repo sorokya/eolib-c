@@ -73,18 +73,21 @@ $(function() {
 <div class="textblock">Here is a list of all functions, variables, defines, enums, and typedefs with links to the files they belong to:</div>
 
 <h3><a id="index_d" name="index_d"></a>- d -</h3><ul>
-<li>decrypt_packet()&#160;:&#160;<a class="el" href="encrypt_8c.html#a4a115cab56c52682fc03837920aeb402">encrypt.c</a>, <a class="el" href="encrypt_8h.html#a4a115cab56c52682fc03837920aeb402">encrypt.h</a></li>
 <li>DIALOG_ENTRY_TYPE_LINK&#160;:&#160;<a class="el" href="protocol_8h.html#a16ca17059b9166dc6cd6234604856c71a65d4d280170e169948cc305af2d505ad">protocol.h</a></li>
 <li>DIALOG_ENTRY_TYPE_TEXT&#160;:&#160;<a class="el" href="protocol_8h.html#a16ca17059b9166dc6cd6234604856c71aadeb67bedd5113f376acfe97792f8781">protocol.h</a></li>
 <li>DIALOG_REPLY_LINK&#160;:&#160;<a class="el" href="protocol_8h.html#a1fa8c0da3842d68fbad96f923d7203caa0cb9d65a0d7f8d7cce0ef9c31014f5cf">protocol.h</a></li>
 <li>DIALOG_REPLY_OK&#160;:&#160;<a class="el" href="protocol_8h.html#a1fa8c0da3842d68fbad96f923d7203caaf6f06a6ca992a45c3c6c8b6c1c299eb9">protocol.h</a></li>
 <li>DialogEntry&#160;:&#160;<a class="el" href="protocol_8h.html#a20d85a88a2a728dc22ac0cecdb904c2f">protocol.h</a></li>
 <li>DialogEntry_deserialize()&#160;:&#160;<a class="el" href="protocol_8h.html#a9359ebae1a29bba463e983fb012aecc7">protocol.h</a>, <a class="el" href="protocol_8c.html#a9359ebae1a29bba463e983fb012aecc7">protocol.c</a></li>
+<li>DialogEntry_free()&#160;:&#160;<a class="el" href="protocol_8h.html#a2dbd45c4b7c8cea750028a1476977e8c">protocol.h</a>, <a class="el" href="protocol_8c.html#a2dbd45c4b7c8cea750028a1476977e8c">protocol.c</a></li>
 <li>DialogEntry_serialize()&#160;:&#160;<a class="el" href="protocol_8h.html#a4efa926257f7abd4411d79ca6d624842">protocol.h</a>, <a class="el" href="protocol_8c.html#a4efa926257f7abd4411d79ca6d624842">protocol.c</a></li>
+<li>DialogEntry_size()&#160;:&#160;<a class="el" href="protocol_8c.html#aaefde7991f6148e597cc39ecdd73e702">protocol.c</a>, <a class="el" href="protocol_8h.html#aaefde7991f6148e597cc39ecdd73e702">protocol.h</a></li>
 <li>DialogEntryType&#160;:&#160;<a class="el" href="protocol_8h.html#a16ca17059b9166dc6cd6234604856c71">protocol.h</a></li>
 <li>DialogQuestEntry&#160;:&#160;<a class="el" href="protocol_8h.html#a8af44af65a142758a1978cb09e2b71cf">protocol.h</a></li>
-<li>DialogQuestEntry_deserialize()&#160;:&#160;<a class="el" href="protocol_8c.html#ae18dda795b2339e0010d2154fabdae78">protocol.c</a>, <a class="el" href="protocol_8h.html#ae18dda795b2339e0010d2154fabdae78">protocol.h</a></li>
-<li>DialogQuestEntry_serialize()&#160;:&#160;<a class="el" href="protocol_8h.html#af0df58f0d00c5178869446613ee4b475">protocol.h</a>, <a class="el" href="protocol_8c.html#af0df58f0d00c5178869446613ee4b475">protocol.c</a></li>
+<li>DialogQuestEntry_deserialize()&#160;:&#160;<a class="el" href="protocol_8h.html#ae18dda795b2339e0010d2154fabdae78">protocol.h</a>, <a class="el" href="protocol_8c.html#ae18dda795b2339e0010d2154fabdae78">protocol.c</a></li>
+<li>DialogQuestEntry_free()&#160;:&#160;<a class="el" href="protocol_8h.html#a98f259c18a538569b9c3ca9f436fae60">protocol.h</a>, <a class="el" href="protocol_8c.html#a98f259c18a538569b9c3ca9f436fae60">protocol.c</a></li>
+<li>DialogQuestEntry_serialize()&#160;:&#160;<a class="el" href="protocol_8c.html#af0df58f0d00c5178869446613ee4b475">protocol.c</a>, <a class="el" href="protocol_8h.html#af0df58f0d00c5178869446613ee4b475">protocol.h</a></li>
+<li>DialogQuestEntry_size()&#160;:&#160;<a class="el" href="protocol_8h.html#a755109ddcd9324edd5488363ccf85b9a">protocol.h</a>, <a class="el" href="protocol_8c.html#a755109ddcd9324edd5488363ccf85b9a">protocol.c</a></li>
 <li>DialogReply&#160;:&#160;<a class="el" href="protocol_8h.html#a1fa8c0da3842d68fbad96f923d7203ca">protocol.h</a></li>
 <li>Direction&#160;:&#160;<a class="el" href="protocol_8h.html#a224b9163917ac32fc95a60d8c1eec3aa">protocol.h</a></li>
 <li>DIRECTION_DOWN&#160;:&#160;<a class="el" href="protocol_8h.html#a224b9163917ac32fc95a60d8c1eec3aaa56d7e58d244b905d940d3524ba575edb">protocol.h</a></li>
@@ -92,23 +95,31 @@ $(function() {
 <li>DIRECTION_RIGHT&#160;:&#160;<a class="el" href="protocol_8h.html#a224b9163917ac32fc95a60d8c1eec3aaae7b72494b59dbe17e48615b49d8bd70f">protocol.h</a></li>
 <li>DIRECTION_UP&#160;:&#160;<a class="el" href="protocol_8h.html#a224b9163917ac32fc95a60d8c1eec3aaa6c1eae28e7db0d37e0e8a3140926b7f0">protocol.h</a></li>
 <li>DoorCloseServerPacket&#160;:&#160;<a class="el" href="protocol_8h.html#a30a98497d3cbe631da88a86d63bf5497">protocol.h</a></li>
-<li>DoorCloseServerPacket_deserialize()&#160;:&#160;<a class="el" href="protocol_8c.html#a55d5c44f800d38fc37775ecf2d2f359d">protocol.c</a>, <a class="el" href="protocol_8h.html#a55d5c44f800d38fc37775ecf2d2f359d">protocol.h</a></li>
+<li>DoorCloseServerPacket_deserialize()&#160;:&#160;<a class="el" href="protocol_8h.html#a55d5c44f800d38fc37775ecf2d2f359d">protocol.h</a>, <a class="el" href="protocol_8c.html#a55d5c44f800d38fc37775ecf2d2f359d">protocol.c</a></li>
 <li>DoorCloseServerPacket_serialize()&#160;:&#160;<a class="el" href="protocol_8h.html#ae5cd2364de6840936919fdf7743b3a7d">protocol.h</a>, <a class="el" href="protocol_8c.html#ae5cd2364de6840936919fdf7743b3a7d">protocol.c</a></li>
+<li>DoorCloseServerPacket_size()&#160;:&#160;<a class="el" href="protocol_8h.html#a47a0d032120a6d3c78be7edffa903f6a">protocol.h</a>, <a class="el" href="protocol_8c.html#a47a0d032120a6d3c78be7edffa903f6a">protocol.c</a></li>
 <li>DoorOpenClientPacket&#160;:&#160;<a class="el" href="protocol_8h.html#ad667bda1b5a32c03d3a24b73401e5e2c">protocol.h</a></li>
-<li>DoorOpenClientPacket_deserialize()&#160;:&#160;<a class="el" href="protocol_8h.html#aa7afaa9adc2cde0d4fe164549d8d0074">protocol.h</a>, <a class="el" href="protocol_8c.html#aa7afaa9adc2cde0d4fe164549d8d0074">protocol.c</a></li>
-<li>DoorOpenClientPacket_serialize()&#160;:&#160;<a class="el" href="protocol_8h.html#a630a3482e8c0df85295c0729e7276953">protocol.h</a>, <a class="el" href="protocol_8c.html#a630a3482e8c0df85295c0729e7276953">protocol.c</a></li>
+<li>DoorOpenClientPacket_deserialize()&#160;:&#160;<a class="el" href="protocol_8c.html#aa7afaa9adc2cde0d4fe164549d8d0074">protocol.c</a>, <a class="el" href="protocol_8h.html#aa7afaa9adc2cde0d4fe164549d8d0074">protocol.h</a></li>
+<li>DoorOpenClientPacket_serialize()&#160;:&#160;<a class="el" href="protocol_8c.html#a630a3482e8c0df85295c0729e7276953">protocol.c</a>, <a class="el" href="protocol_8h.html#a630a3482e8c0df85295c0729e7276953">protocol.h</a></li>
+<li>DoorOpenClientPacket_size()&#160;:&#160;<a class="el" href="protocol_8h.html#aa8823acbe4e34264785d06a1db465111">protocol.h</a>, <a class="el" href="protocol_8c.html#aa8823acbe4e34264785d06a1db465111">protocol.c</a></li>
 <li>DoorOpenServerPacket&#160;:&#160;<a class="el" href="protocol_8h.html#a83804bba8c55af34a95e37126f57f1af">protocol.h</a></li>
 <li>DoorOpenServerPacket_deserialize()&#160;:&#160;<a class="el" href="protocol_8h.html#ad55562b4eeffd4a073c998131e13d23d">protocol.h</a>, <a class="el" href="protocol_8c.html#ad55562b4eeffd4a073c998131e13d23d">protocol.c</a></li>
-<li>DoorOpenServerPacket_serialize()&#160;:&#160;<a class="el" href="protocol_8h.html#a8aab16141936ce3d1b6e8ecbfaf83c14">protocol.h</a>, <a class="el" href="protocol_8c.html#a8aab16141936ce3d1b6e8ecbfaf83c14">protocol.c</a></li>
+<li>DoorOpenServerPacket_serialize()&#160;:&#160;<a class="el" href="protocol_8c.html#a8aab16141936ce3d1b6e8ecbfaf83c14">protocol.c</a>, <a class="el" href="protocol_8h.html#a8aab16141936ce3d1b6e8ecbfaf83c14">protocol.h</a></li>
+<li>DoorOpenServerPacket_size()&#160;:&#160;<a class="el" href="protocol_8h.html#a964c11b302d0975fb59902cb41282a6c">protocol.h</a>, <a class="el" href="protocol_8c.html#a964c11b302d0975fb59902cb41282a6c">protocol.c</a></li>
 <li>DropFile&#160;:&#160;<a class="el" href="protocol_8h.html#a30c6bd031aa8c7927d2913970b279d94">protocol.h</a></li>
 <li>DropFile_deserialize()&#160;:&#160;<a class="el" href="protocol_8h.html#a2eac7f7de7ef82fd231ad45349ac8008">protocol.h</a>, <a class="el" href="protocol_8c.html#a2eac7f7de7ef82fd231ad45349ac8008">protocol.c</a></li>
-<li>DropFile_serialize()&#160;:&#160;<a class="el" href="protocol_8h.html#a2e39b9b173feb82a71b65e58f7c4c2d8">protocol.h</a>, <a class="el" href="protocol_8c.html#a2e39b9b173feb82a71b65e58f7c4c2d8">protocol.c</a></li>
+<li>DropFile_free()&#160;:&#160;<a class="el" href="protocol_8h.html#a75ee433db97d9f04438857fc12e3ef0c">protocol.h</a>, <a class="el" href="protocol_8c.html#a75ee433db97d9f04438857fc12e3ef0c">protocol.c</a></li>
+<li>DropFile_serialize()&#160;:&#160;<a class="el" href="protocol_8c.html#a2e39b9b173feb82a71b65e58f7c4c2d8">protocol.c</a>, <a class="el" href="protocol_8h.html#a2e39b9b173feb82a71b65e58f7c4c2d8">protocol.h</a></li>
+<li>DropFile_size()&#160;:&#160;<a class="el" href="protocol_8h.html#adbf9c0f69d3f4e7553cb39d4ba4af49d">protocol.h</a>, <a class="el" href="protocol_8c.html#adbf9c0f69d3f4e7553cb39d4ba4af49d">protocol.c</a></li>
 <li>DropNpcRecord&#160;:&#160;<a class="el" href="protocol_8h.html#ac573c6bacfd44236a546d6e57d30af2a">protocol.h</a></li>
 <li>DropNpcRecord_deserialize()&#160;:&#160;<a class="el" href="protocol_8h.html#afd8c7ec70a1c746a9f4d23fd7a9a8cc5">protocol.h</a>, <a class="el" href="protocol_8c.html#afd8c7ec70a1c746a9f4d23fd7a9a8cc5">protocol.c</a></li>
-<li>DropNpcRecord_serialize()&#160;:&#160;<a class="el" href="protocol_8h.html#ad7ef1482c843bc5bd54cf31ccddcc2bb">protocol.h</a>, <a class="el" href="protocol_8c.html#ad7ef1482c843bc5bd54cf31ccddcc2bb">protocol.c</a></li>
+<li>DropNpcRecord_free()&#160;:&#160;<a class="el" href="protocol_8h.html#acc8e1d79ecd7cca694d1cffdc79b220c">protocol.h</a>, <a class="el" href="protocol_8c.html#acc8e1d79ecd7cca694d1cffdc79b220c">protocol.c</a></li>
+<li>DropNpcRecord_serialize()&#160;:&#160;<a class="el" href="protocol_8c.html#ad7ef1482c843bc5bd54cf31ccddcc2bb">protocol.c</a>, <a class="el" href="protocol_8h.html#ad7ef1482c843bc5bd54cf31ccddcc2bb">protocol.h</a></li>
+<li>DropNpcRecord_size()&#160;:&#160;<a class="el" href="protocol_8h.html#aaa66c2301c9cb27d046e3747006245f4">protocol.h</a>, <a class="el" href="protocol_8c.html#aaa66c2301c9cb27d046e3747006245f4">protocol.c</a></li>
 <li>DropRecord&#160;:&#160;<a class="el" href="protocol_8h.html#ae10593a9aa2a3d024d3c91bc9843e0e0">protocol.h</a></li>
 <li>DropRecord_deserialize()&#160;:&#160;<a class="el" href="protocol_8h.html#acccaf38aff9e3575109e373477ddc103">protocol.h</a>, <a class="el" href="protocol_8c.html#acccaf38aff9e3575109e373477ddc103">protocol.c</a></li>
 <li>DropRecord_serialize()&#160;:&#160;<a class="el" href="protocol_8h.html#a7b2d1dfc10a01f561edde3d70fb07295">protocol.h</a>, <a class="el" href="protocol_8c.html#a7b2d1dfc10a01f561edde3d70fb07295">protocol.c</a></li>
+<li>DropRecord_size()&#160;:&#160;<a class="el" href="protocol_8h.html#affee2f062d1303d22bc318d2d625869f">protocol.h</a>, <a class="el" href="protocol_8c.html#affee2f062d1303d22bc318d2d625869f">protocol.c</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

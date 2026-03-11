@@ -88,66 +88,29 @@ Data Fields</h2></td></tr>
 <tr class="separator:a831b896d60f0b546c19f3edfd10de80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa571e904c6fa309854f1e802d41e3adf"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetSelfServerPacket.html#aa571e904c6fa309854f1e802d41e3adf">hp_percentage</a></td></tr>
 <tr class="separator:aa571e904c6fa309854f1e802d41e3adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38e3934e1890e4d70f1b2b478a406a76"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetSelfServerPacket.html#a38e3934e1890e4d70f1b2b478a406a76">has_hp</a></td></tr>
-<tr class="separator:a38e3934e1890e4d70f1b2b478a406a76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91da60319ab093d4c9168f311a9fc6bc"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetSelfServerPacket.html#a91da60319ab093d4c9168f311a9fc6bc">hp</a></td></tr>
-<tr class="separator:a91da60319ab093d4c9168f311a9fc6bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8d02f48afbc22572bf5b6f9c03046e4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetSelfServerPacket.html#aa8d02f48afbc22572bf5b6f9c03046e4">has_tp</a></td></tr>
-<tr class="separator:aa8d02f48afbc22572bf5b6f9c03046e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd7dade4954c104575405388dc076845"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetSelfServerPacket.html#acd7dade4954c104575405388dc076845">tp</a></td></tr>
-<tr class="separator:acd7dade4954c104575405388dc076845"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a521665621fc09f87a76c29e367f42f1b"><td class="memItemLeft" align="right" valign="top">int32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetSelfServerPacket.html#a521665621fc09f87a76c29e367f42f1b">hp</a></td></tr>
+<tr class="separator:a521665621fc09f87a76c29e367f42f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a256d1ae2231d94784d4e23cd5a914535"><td class="memItemLeft" align="right" valign="top">int32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetSelfServerPacket.html#a256d1ae2231d94784d4e23cd5a914535">tp</a></td></tr>
+<tr class="separator:a256d1ae2231d94784d4e23cd5a914535"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04382">4382</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04914">4914</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a id="a38e3934e1890e4d70f1b2b478a406a76" name="a38e3934e1890e4d70f1b2b478a406a76"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a38e3934e1890e4d70f1b2b478a406a76">&#9670;&#160;</a></span>has_hp</h2>
+<a id="a521665621fc09f87a76c29e367f42f1b" name="a521665621fc09f87a76c29e367f42f1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a521665621fc09f87a76c29e367f42f1b">&#9670;&#160;</a></span>hp</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool SpellTargetSelfServerPacket::has_hp</td>
+          <td class="memname">int32_t* SpellTargetSelfServerPacket::hp</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p >The official client reads this if the packet is larger than 12 bytes </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04390">4390</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
-
-</div>
-</div>
-<a id="aa8d02f48afbc22572bf5b6f9c03046e4" name="aa8d02f48afbc22572bf5b6f9c03046e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa8d02f48afbc22572bf5b6f9c03046e4">&#9670;&#160;</a></span>has_tp</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool SpellTargetSelfServerPacket::has_tp</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >The official client reads this if the packet is larger than 12 bytes </p>
-
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04395">4395</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
-
-</div>
-</div>
-<a id="a91da60319ab093d4c9168f311a9fc6bc" name="a91da60319ab093d4c9168f311a9fc6bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91da60319ab093d4c9168f311a9fc6bc">&#9670;&#160;</a></span>hp</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int32_t SpellTargetSelfServerPacket::hp</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04391">4391</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04922">4922</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -163,7 +126,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04386">4386</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04918">4918</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -179,7 +142,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04383">4383</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04915">4915</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -195,7 +158,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04385">4385</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04917">4917</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -211,23 +174,24 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04384">4384</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04916">4916</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="acd7dade4954c104575405388dc076845" name="acd7dade4954c104575405388dc076845"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acd7dade4954c104575405388dc076845">&#9670;&#160;</a></span>tp</h2>
+<a id="a256d1ae2231d94784d4e23cd5a914535" name="a256d1ae2231d94784d4e23cd5a914535"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a256d1ae2231d94784d4e23cd5a914535">&#9670;&#160;</a></span>tp</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t SpellTargetSelfServerPacket::tp</td>
+          <td class="memname">int32_t* SpellTargetSelfServerPacket::tp</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p >The official client reads this if the packet is larger than 12 bytes </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04396">4396</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04926">4926</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

@@ -2,7 +2,7 @@ var searchData=
 [
   ['walk_5faction_0',['walk_action',['../structWalkSpecClientPacket.html#a53848925c2e529790b8cf4630f9e2abc',1,'WalkSpecClientPacket::walk_action()'],['../structWalkPlayerClientPacket.html#a89a66d2eb9380a341129bdff788a5c8b',1,'WalkPlayerClientPacket::walk_action()'],['../structWalkAdminClientPacket.html#aee63e791a965e484f1b50526a4c4c2f9',1,'WalkAdminClientPacket::walk_action()']]],
   ['warp_1',['warp',['../structMapWarpRowTile.html#adad4cb8d5ca20ca6da66b0550d5ab756',1,'MapWarpRowTile']]],
-  ['warp_5feffect_2',['warp_effect',['../structCharacterMapInfo.html#a35bbdbe45b36f363e4457101893f5fd4',1,'CharacterMapInfo::warp_effect()'],['../structAvatarRemoveServerPacket.html#a36738b3ee3b9c7d1adeb940576b495df',1,'AvatarRemoveServerPacket::warp_effect()'],['../structWarpAgreeServerPacket.html#a058e3e58d2495fafc8f81e232d1cfddb',1,'WarpAgreeServerPacket::warp_effect()']]],
+  ['warp_5feffect_2',['warp_effect',['../structCharacterMapInfo.html#ab61a574bdbf85588a7fe73fa23cfb73e',1,'CharacterMapInfo::warp_effect()'],['../structAvatarRemoveServerPacket.html#a0638c2482934ab2f0b7ee909bd7f9c74',1,'AvatarRemoveServerPacket::warp_effect()'],['../structWarpAgreeServerPacket.html#a058e3e58d2495fafc8f81e232d1cfddb',1,'WarpAgreeServerPacket::warp_effect()']]],
   ['warp_5fmap_3',['warp_map',['../structInitInitServerPacket.html#a7e548f8510451487fb06bc6ee50df40a',1,'InitInitServerPacket']]],
   ['warp_5frows_4',['warp_rows',['../structEmf.html#a365001e5d74a429de80e7418fc8d2284',1,'Emf']]],
   ['warp_5frows_5flength_5',['warp_rows_length',['../structEmf.html#abad69e94788d9544a986d1443d69e905',1,'Emf']]],

@@ -80,14 +80,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:ae07d805d1848fc087312d6e82bf1e58c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoReader.html#ae07d805d1848fc087312d6e82bf1e58c">chunked_reading_mode</a></td></tr>
-<tr class="separator:ae07d805d1848fc087312d6e82bf1e58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac49eb39b09fd414ce1ceaf51d841e4dc"><td class="memItemLeft" align="right" valign="top">const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoReader.html#ac49eb39b09fd414ce1ceaf51d841e4dc">data</a></td></tr>
 <tr class="separator:ac49eb39b09fd414ce1ceaf51d841e4dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb9a93e68626ce87ef7061bd07fcc664"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoReader.html#acb9a93e68626ce87ef7061bd07fcc664">length</a></td></tr>
 <tr class="separator:acb9a93e68626ce87ef7061bd07fcc664"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b5f04be8def7667ca951bb9bbac1bbf"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoReader.html#a6b5f04be8def7667ca951bb9bbac1bbf">offset</a></td></tr>
 <tr class="separator:a6b5f04be8def7667ca951bb9bbac1bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae07d805d1848fc087312d6e82bf1e58c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoReader.html#ae07d805d1848fc087312d6e82bf1e58c">chunked_reading_mode</a></td></tr>
+<tr class="separator:ae07d805d1848fc087312d6e82bf1e58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5606b228355b414321377b129e48bf5"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoReader.html#aa5606b228355b414321377b129e48bf5">chunk_offset</a></td></tr>
 <tr class="separator:aa5606b228355b414321377b129e48bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67f13232c9cb4a7b6e8a71fa3677ab61"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoReader.html#a67f13232c9cb4a7b6e8a71fa3677ab61">next_chunk_offset</a></td></tr>
@@ -109,7 +109,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Private: start of the current chunk. Do not access or modify directly. </p>
+<p >Private: do not access or modify directly. </p>
 
 <p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00039">39</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
@@ -126,9 +126,9 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Accessible: see eo_reader_get/set_chunked_reading_mode(). </p>
+<p >Private: use eo_reader_get/set_chunked_reading_mode(). </p>
 
-<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00035">35</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00038">38</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
 </div>
 </div>
@@ -145,7 +145,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p >Read-only: pointer to the underlying data buffer. Do not modify directly. </p>
 
-<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00036">36</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00035">35</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
 </div>
 </div>
@@ -162,7 +162,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p >Read-only: total length of the data buffer. Do not modify directly. </p>
 
-<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00037">37</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00036">36</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
 </div>
 </div>
@@ -177,7 +177,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Private: start of the next chunk. Do not access or modify directly. </p>
+<p >Private: do not access or modify directly. </p>
 
 <p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00040">40</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
@@ -196,7 +196,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p >Read-only: current read position. Do not modify directly. </p>
 
-<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00038">38</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00037">37</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
 </div>
 </div>
