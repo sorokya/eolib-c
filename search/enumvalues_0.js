@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['account_5freply_5fchange_5ffailed_0',['ACCOUNT_REPLY_CHANGE_FAILED',['../protocol_8h.html#a9780b738b86801ed97b5b6c6b0b83c3aab13cb067d2ecb63e7466adfd866b0dff',1,'protocol.h']]],
+  ['account_5freply_5fchanged_1',['ACCOUNT_REPLY_CHANGED',['../protocol_8h.html#a9780b738b86801ed97b5b6c6b0b83c3aad1cd8ec42df40a364fe56d72e9ab1498',1,'protocol.h']]],
+  ['account_5freply_5fcreated_2',['ACCOUNT_REPLY_CREATED',['../protocol_8h.html#a9780b738b86801ed97b5b6c6b0b83c3aaf0a76c15708858383c1aa4efa0fd0261',1,'protocol.h']]],
+  ['account_5freply_5fexists_3',['ACCOUNT_REPLY_EXISTS',['../protocol_8h.html#a9780b738b86801ed97b5b6c6b0b83c3aaa93f1831244a881b5e7a29800893b89c',1,'protocol.h']]],
+  ['account_5freply_5fnot_5fapproved_4',['ACCOUNT_REPLY_NOT_APPROVED',['../protocol_8h.html#a9780b738b86801ed97b5b6c6b0b83c3aaa8ef462f8943433d13c7573e2f9296cb',1,'protocol.h']]],
+  ['account_5freply_5frequest_5fdenied_5',['ACCOUNT_REPLY_REQUEST_DENIED',['../protocol_8h.html#a9780b738b86801ed97b5b6c6b0b83c3aadc398f5a966b747fe17e0ba82a33ab28',1,'protocol.h']]],
+  ['admin_5flevel_5fgame_5fmaster_6',['ADMIN_LEVEL_GAME_MASTER',['../protocol_8h.html#ab63fe8b94b1515b948e07adee7c5a82dac2480fb5ed396176656accaaf0bc923c',1,'protocol.h']]],
+  ['admin_5flevel_5fguardian_7',['ADMIN_LEVEL_GUARDIAN',['../protocol_8h.html#ab63fe8b94b1515b948e07adee7c5a82daa08f81c782f442ec7cc1c5eb6e40abb9',1,'protocol.h']]],
+  ['admin_5flevel_5fhigh_5fgame_5fmaster_8',['ADMIN_LEVEL_HIGH_GAME_MASTER',['../protocol_8h.html#ab63fe8b94b1515b948e07adee7c5a82da007e8aaea670c92a7501fd00db7b00d1',1,'protocol.h']]],
+  ['admin_5flevel_5flight_5fguide_9',['ADMIN_LEVEL_LIGHT_GUIDE',['../protocol_8h.html#ab63fe8b94b1515b948e07adee7c5a82dad3e6db615538c7cbcb05d2f926f1e365',1,'protocol.h']]],
+  ['admin_5flevel_5fplayer_10',['ADMIN_LEVEL_PLAYER',['../protocol_8h.html#ab63fe8b94b1515b948e07adee7c5a82da6b7302afd6fb3291facef13b0d42eada',1,'protocol.h']]],
+  ['admin_5flevel_5fspy_11',['ADMIN_LEVEL_SPY',['../protocol_8h.html#ab63fe8b94b1515b948e07adee7c5a82dab5c7ceda4740eff2251e9e99c2bdd4b3',1,'protocol.h']]],
+  ['admin_5fmessage_5ftype_5fmessage_12',['ADMIN_MESSAGE_TYPE_MESSAGE',['../protocol_8h.html#a6dc6ca71617f4446aefb9f823f9609b8af7a10fb38425027b9e2c67931237c15f',1,'protocol.h']]],
+  ['admin_5fmessage_5ftype_5freport_13',['ADMIN_MESSAGE_TYPE_REPORT',['../protocol_8h.html#a6dc6ca71617f4446aefb9f823f9609b8a3bf16e7b3c1aa841745b76a97ce22a18',1,'protocol.h']]],
+  ['avatar_5fchange_5ftype_5fequipment_14',['AVATAR_CHANGE_TYPE_EQUIPMENT',['../protocol_8h.html#accb6d06ab0e6b49b98012fe37517fc31a9d1ed11eb49e5c9f31b68d470d9aa507',1,'protocol.h']]],
+  ['avatar_5fchange_5ftype_5fhair_15',['AVATAR_CHANGE_TYPE_HAIR',['../protocol_8h.html#accb6d06ab0e6b49b98012fe37517fc31a6707e02cda1e17f3a3adaced1942a675',1,'protocol.h']]],
+  ['avatar_5fchange_5ftype_5fhair_5fcolor_16',['AVATAR_CHANGE_TYPE_HAIR_COLOR',['../protocol_8h.html#accb6d06ab0e6b49b98012fe37517fc31a4c2ca1315894d1a4677b9600a779bb74',1,'protocol.h']]]
+];

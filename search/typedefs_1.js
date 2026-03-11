@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['bankaddclientpacket_0',['BankAddClientPacket',['../protocol_8h.html#a2086a4811de9bf7bbc724e3f2dc46d40',1,'protocol.h']]],
+  ['bankopenclientpacket_1',['BankOpenClientPacket',['../protocol_8h.html#a957b58117bfdf9cbd986df08d848e8f4',1,'protocol.h']]],
+  ['bankopenserverpacket_2',['BankOpenServerPacket',['../protocol_8h.html#a99bab8d912f9afc8fbc4a8ef195d1cda',1,'protocol.h']]],
+  ['bankreplyserverpacket_3',['BankReplyServerPacket',['../protocol_8h.html#afb73336abc5b0d47eae971e4a1642954',1,'protocol.h']]],
+  ['banktakeclientpacket_4',['BankTakeClientPacket',['../protocol_8h.html#af98df7b6af2f5de5286a61c9df1d018e',1,'protocol.h']]],
+  ['barberagreeserverpacket_5',['BarberAgreeServerPacket',['../protocol_8h.html#adc70845f5262fba967f6fd9626c2359a',1,'protocol.h']]],
+  ['barberbuyclientpacket_6',['BarberBuyClientPacket',['../protocol_8h.html#a5a430dafa5f9c360bf10736808c99e42',1,'protocol.h']]],
+  ['barberopenclientpacket_7',['BarberOpenClientPacket',['../protocol_8h.html#af00e48eccbc8ceab05c3776da47facc6',1,'protocol.h']]],
+  ['barberopenserverpacket_8',['BarberOpenServerPacket',['../protocol_8h.html#aa6aaedec2f9a5e62fdf9e89afcc18018',1,'protocol.h']]],
+  ['bigcoords_9',['BigCoords',['../protocol_8h.html#aa8199b8604b704273c2bef7ec2313597',1,'protocol.h']]],
+  ['boardcreateclientpacket_10',['BoardCreateClientPacket',['../protocol_8h.html#a245f8685029b9c36a9f3699ef5133313',1,'protocol.h']]],
+  ['boardopenclientpacket_11',['BoardOpenClientPacket',['../protocol_8h.html#a6b6e6b9177ebba43fede27b2b3c17a08',1,'protocol.h']]],
+  ['boardopenserverpacket_12',['BoardOpenServerPacket',['../protocol_8h.html#aa38c512b92552e3eab7082e9a1621802',1,'protocol.h']]],
+  ['boardplayerserverpacket_13',['BoardPlayerServerPacket',['../protocol_8h.html#aed941805ede174d44bae083b60637598',1,'protocol.h']]],
+  ['boardpostlisting_14',['BoardPostListing',['../protocol_8h.html#a5abcc9eded91d1c48f68013e8ec37cdd',1,'protocol.h']]],
+  ['boardremoveclientpacket_15',['BoardRemoveClientPacket',['../protocol_8h.html#a7e2df99cd2020c19b4ceff5631bcda96',1,'protocol.h']]],
+  ['boardtakeclientpacket_16',['BoardTakeClientPacket',['../protocol_8h.html#aa0c6a047c2f37588267cdd063ce26fc4',1,'protocol.h']]],
+  ['bookreplyserverpacket_17',['BookReplyServerPacket',['../protocol_8h.html#a38cf0f57788ef4da1e9d5a30432a69ea',1,'protocol.h']]],
+  ['bookrequestclientpacket_18',['BookRequestClientPacket',['../protocol_8h.html#ab648a36aa1ea2d4a8667b0a8ffed23a4',1,'protocol.h']]],
+  ['bytecoords_19',['ByteCoords',['../protocol_8h.html#a87e3f047975aa0d8d03f25525cedc716',1,'protocol.h']]]
+];

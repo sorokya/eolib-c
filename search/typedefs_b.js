@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['nearbyinfo_0',['NearbyInfo',['../protocol_8h.html#a78bedf38e5116d7733221599310db9f4',1,'protocol.h']]],
+  ['npcacceptserverpacket_1',['NpcAcceptServerPacket',['../protocol_8h.html#ad344161dbed47fe4949b2017ff6ca8e5',1,'protocol.h']]],
+  ['npcagreeserverpacket_2',['NpcAgreeServerPacket',['../protocol_8h.html#ad50157a2005f54865dd7409faad25f12',1,'protocol.h']]],
+  ['npcdialogserverpacket_3',['NpcDialogServerPacket',['../protocol_8h.html#a3d8ababce56665de32113f36d44cab71',1,'protocol.h']]],
+  ['npcjunkserverpacket_4',['NpcJunkServerPacket',['../protocol_8h.html#abef062d97c25401e0fe6698b20e6cb9a',1,'protocol.h']]],
+  ['npckilleddata_5',['NpcKilledData',['../protocol_8h.html#a2e3ac5eb448241f45042032b920b012f',1,'protocol.h']]],
+  ['npckillstealprotectionstate_6',['NpcKillStealProtectionState',['../protocol_8h.html#adfbf07dc30fdd317d83e3982b09cd84b',1,'protocol.h']]],
+  ['npcmapinfo_7',['NpcMapInfo',['../protocol_8h.html#a0f978741fb67192af47f152da8d93222',1,'protocol.h']]],
+  ['npcplayerserverpacket_8',['NpcPlayerServerPacket',['../protocol_8h.html#aef94e6c3a3f5f37adfa510bdaa61cf61',1,'protocol.h']]],
+  ['npcrangerequestclientpacket_9',['NpcRangeRequestClientPacket',['../protocol_8h.html#a3ab96c91e746528e08eb287239ca0583',1,'protocol.h']]],
+  ['npcreplyserverpacket_10',['NpcReplyServerPacket',['../protocol_8h.html#aed96cec9e3cdb28d439255414a671819',1,'protocol.h']]],
+  ['npcspecserverpacket_11',['NpcSpecServerPacket',['../protocol_8h.html#afb876bd9a461c87d7aa13e9a19321838',1,'protocol.h']]],
+  ['npctype_12',['NpcType',['../protocol_8h.html#ad50d8456626cc24fcb7b7545744b43fe',1,'protocol.h']]],
+  ['npcupdateattack_13',['NpcUpdateAttack',['../protocol_8h.html#a9898588d9a82ff0f688c03d0b9cf0959',1,'protocol.h']]],
+  ['npcupdatechat_14',['NpcUpdateChat',['../protocol_8h.html#a156b48d36c140dd4d99cad1248b369ad',1,'protocol.h']]],
+  ['npcupdateposition_15',['NpcUpdatePosition',['../protocol_8h.html#a15c2cc40ae848e069dc2d4412d3b2712',1,'protocol.h']]]
+];

@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['faceplayerclientpacket_0',['FacePlayerClientPacket',['../structFacePlayerClientPacket.html',1,'FacePlayerClientPacket'],['../protocol_8h.html#a1c3aa91eeba231d99f2bd737ffad1f05',1,'FacePlayerClientPacket():&#160;protocol.h']]],
+  ['faceplayerclientpacket_5fdeserialize_1',['FacePlayerClientPacket_deserialize',['../protocol_8c.html#a02664b7b13cc834add775fb7ef795010',1,'FacePlayerClientPacket_deserialize(FacePlayerClientPacket *out, EoReader *reader):&#160;protocol.c'],['../protocol_8h.html#a02664b7b13cc834add775fb7ef795010',1,'FacePlayerClientPacket_deserialize(FacePlayerClientPacket *out, EoReader *reader):&#160;protocol.c']]],
+  ['faceplayerclientpacket_5fserialize_2',['FacePlayerClientPacket_serialize',['../protocol_8c.html#a456f821cd25a1acc57db8df023d77a07',1,'FacePlayerClientPacket_serialize(const FacePlayerClientPacket *value, EoWriter *writer):&#160;protocol.c'],['../protocol_8h.html#a456f821cd25a1acc57db8df023d77a07',1,'FacePlayerClientPacket_serialize(const FacePlayerClientPacket *value, EoWriter *writer):&#160;protocol.c']]],
+  ['faceplayerserverpacket_3',['FacePlayerServerPacket',['../structFacePlayerServerPacket.html',1,'FacePlayerServerPacket'],['../protocol_8h.html#ab2079b1aad0893a275b89e787d99a491',1,'FacePlayerServerPacket():&#160;protocol.h']]],
+  ['faceplayerserverpacket_5fdeserialize_4',['FacePlayerServerPacket_deserialize',['../protocol_8c.html#ac4ead77accfed690bf90346ce55e8ec8',1,'FacePlayerServerPacket_deserialize(FacePlayerServerPacket *out, EoReader *reader):&#160;protocol.c'],['../protocol_8h.html#ac4ead77accfed690bf90346ce55e8ec8',1,'FacePlayerServerPacket_deserialize(FacePlayerServerPacket *out, EoReader *reader):&#160;protocol.c']]],
+  ['faceplayerserverpacket_5fserialize_5',['FacePlayerServerPacket_serialize',['../protocol_8c.html#a62c04e265ed251a0b3e56f0e19d5a57e',1,'FacePlayerServerPacket_serialize(const FacePlayerServerPacket *value, EoWriter *writer):&#160;protocol.c'],['../protocol_8h.html#a62c04e265ed251a0b3e56f0e19d5a57e',1,'FacePlayerServerPacket_serialize(const FacePlayerServerPacket *value, EoWriter *writer):&#160;protocol.c']]],
+  ['file_5fecf_6',['file_ecf',['../structInitInitServerPacket.html#a0425e975ecc948c836e0e9b62b2e0bc1',1,'InitInitServerPacket']]],
+  ['file_5feif_7',['file_eif',['../structInitInitServerPacket.html#a880eea1baad13bc573bfe71d57b0f580',1,'InitInitServerPacket']]],
+  ['file_5femf_8',['file_emf',['../structInitInitServerPacket.html#a1378897360acc5b2858492aeec8bc7b2',1,'InitInitServerPacket']]],
+  ['file_5fenf_9',['file_enf',['../structInitInitServerPacket.html#a134ff7a37364732647baee042bf4be4f',1,'InitInitServerPacket']]],
+  ['file_5fesf_10',['file_esf',['../structInitInitServerPacket.html#ad33b6e6f57614d2dd430fe5bf2ff4421',1,'InitInitServerPacket']]],
+  ['file_5fid_11',['file_id',['../structWelcomeAgreeClientPacket.html#afe6ad5b290fd735c276087f9944ba548',1,'WelcomeAgreeClientPacket::file_id()'],['../structPubFile.html#a4b9d97f616e89df4bf666c3f1723ec8c',1,'PubFile::file_id()']]],
+  ['file_5ftype_12',['file_type',['../structWelcomeAgreeClientPacket.html#a5c13bd1e9ede66adc9c5152d935f390f',1,'WelcomeAgreeClientPacket']]],
+  ['file_5ftype_5fdata_13',['file_type_data',['../structWelcomeAgreeClientPacket.html#a62e12805cd33cb98ab4d4430c3b1c071',1,'WelcomeAgreeClientPacket']]],
+  ['file_5ftype_5fecf_14',['FILE_TYPE_ECF',['../protocol_8h.html#a2c794c5c13ab4dd7e65bad031dbe41c3a3ca0a0963975a28b21e544198099a980',1,'protocol.h']]],
+  ['file_5ftype_5feif_15',['FILE_TYPE_EIF',['../protocol_8h.html#a2c794c5c13ab4dd7e65bad031dbe41c3afd1b989bdb67cd9bcdd917d7714c9563',1,'protocol.h']]],
+  ['file_5ftype_5femf_16',['FILE_TYPE_EMF',['../protocol_8h.html#a2c794c5c13ab4dd7e65bad031dbe41c3a8189256cf39768b0a652ad048c6dace2',1,'protocol.h']]],
+  ['file_5ftype_5fenf_17',['FILE_TYPE_ENF',['../protocol_8h.html#a2c794c5c13ab4dd7e65bad031dbe41c3a5a0150d75fd97e6505e6f68916916cde',1,'protocol.h']]],
+  ['file_5ftype_5fesf_18',['FILE_TYPE_ESF',['../protocol_8h.html#a2c794c5c13ab4dd7e65bad031dbe41c3a623b015f4131b1da3675eede7be3944f',1,'protocol.h']]],
+  ['filetype_19',['FileType',['../protocol_8h.html#a2c794c5c13ab4dd7e65bad031dbe41c3',1,'FileType():&#160;protocol.h'],['../protocol_8h.html#a1eae3eb1a2e185ff0c628d2fa2ac9bfd',1,'FileType():&#160;protocol.h']]],
+  ['fill_5ftile_20',['fill_tile',['../structEmf.html#ae926d272e3f5c2be6be03582c87256fd',1,'Emf']]],
+  ['fire_21',['fire',['../structCharacterElementalStats.html#a4bdf6efbf21157a9e6bbdb067c3d07b0',1,'CharacterElementalStats']]],
+  ['fire_5fresistance_22',['fire_resistance',['../structEifRecord.html#a265be808ae1729bec7c2713ec576e0d9',1,'EifRecord']]],
+  ['full_5fname_23',['full_name',['../structAccountCreateClientPacket.html#ac7c4a2b50af00b6bb93d4069808fcb2e',1,'AccountCreateClientPacket']]]
+];

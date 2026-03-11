@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['bankaddclientpacket_0',['BankAddClientPacket',['../structBankAddClientPacket.html',1,'']]],
+  ['bankopenclientpacket_1',['BankOpenClientPacket',['../structBankOpenClientPacket.html',1,'']]],
+  ['bankopenserverpacket_2',['BankOpenServerPacket',['../structBankOpenServerPacket.html',1,'']]],
+  ['bankreplyserverpacket_3',['BankReplyServerPacket',['../structBankReplyServerPacket.html',1,'']]],
+  ['banktakeclientpacket_4',['BankTakeClientPacket',['../structBankTakeClientPacket.html',1,'']]],
+  ['barberagreeserverpacket_5',['BarberAgreeServerPacket',['../structBarberAgreeServerPacket.html',1,'']]],
+  ['barberbuyclientpacket_6',['BarberBuyClientPacket',['../structBarberBuyClientPacket.html',1,'']]],
+  ['barberopenclientpacket_7',['BarberOpenClientPacket',['../structBarberOpenClientPacket.html',1,'']]],
+  ['barberopenserverpacket_8',['BarberOpenServerPacket',['../structBarberOpenServerPacket.html',1,'']]],
+  ['bigcoords_9',['BigCoords',['../structBigCoords.html',1,'']]],
+  ['boardcreateclientpacket_10',['BoardCreateClientPacket',['../structBoardCreateClientPacket.html',1,'']]],
+  ['boardopenclientpacket_11',['BoardOpenClientPacket',['../structBoardOpenClientPacket.html',1,'']]],
+  ['boardopenserverpacket_12',['BoardOpenServerPacket',['../structBoardOpenServerPacket.html',1,'']]],
+  ['boardplayerserverpacket_13',['BoardPlayerServerPacket',['../structBoardPlayerServerPacket.html',1,'']]],
+  ['boardpostlisting_14',['BoardPostListing',['../structBoardPostListing.html',1,'']]],
+  ['boardremoveclientpacket_15',['BoardRemoveClientPacket',['../structBoardRemoveClientPacket.html',1,'']]],
+  ['boardtakeclientpacket_16',['BoardTakeClientPacket',['../structBoardTakeClientPacket.html',1,'']]],
+  ['bookreplyserverpacket_17',['BookReplyServerPacket',['../structBookReplyServerPacket.html',1,'']]],
+  ['bookrequestclientpacket_18',['BookRequestClientPacket',['../structBookRequestClientPacket.html',1,'']]],
+  ['bytecoords_19',['ByteCoords',['../structByteCoords.html',1,'']]]
+];

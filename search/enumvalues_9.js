@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['npc_5fkill_5fsteal_5fprotection_5fstate_5fprotected_0',['NPC_KILL_STEAL_PROTECTION_STATE_PROTECTED',['../protocol_8h.html#af67d3f994e96d917bb6adb0a40b2f207ab29a2821a9d3f8402d86c79134a8b951',1,'protocol.h']]],
+  ['npc_5fkill_5fsteal_5fprotection_5fstate_5funprotected_1',['NPC_KILL_STEAL_PROTECTION_STATE_UNPROTECTED',['../protocol_8h.html#af67d3f994e96d917bb6adb0a40b2f207ac2a35f5d5aa8401c8cfcdbc00e46f8b9',1,'protocol.h']]],
+  ['npc_5ftype_5faggressive_2',['NPC_TYPE_AGGRESSIVE',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4af85c5dcca0e1bc5bac95154c48f8a905',1,'protocol.h']]],
+  ['npc_5ftype_5fbank_3',['NPC_TYPE_BANK',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a28d87a8b10f85aea6b83c8a60870ba75',1,'protocol.h']]],
+  ['npc_5ftype_5fbarber_4',['NPC_TYPE_BARBER',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4aec20a157a64c33400bb1545f9fac4fdb',1,'protocol.h']]],
+  ['npc_5ftype_5ffriendly_5',['NPC_TYPE_FRIENDLY',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4ae80b9c7873eb6178f5b15b11afbb18cd',1,'protocol.h']]],
+  ['npc_5ftype_5fguild_6',['NPC_TYPE_GUILD',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4af99e76bd574c4fe8691b12230887d951',1,'protocol.h']]],
+  ['npc_5ftype_5finn_7',['NPC_TYPE_INN',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4acdf6a1811c00edce88ed52163decd286',1,'protocol.h']]],
+  ['npc_5ftype_5flawyer_8',['NPC_TYPE_LAWYER',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a34eb62c952821c81ff09e2953a4821cd',1,'protocol.h']]],
+  ['npc_5ftype_5fpassive_9',['NPC_TYPE_PASSIVE',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a9b082b5cc4478208e43715b994d4b9d0',1,'protocol.h']]],
+  ['npc_5ftype_5fpriest_10',['NPC_TYPE_PRIEST',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4ac242e11f64e293b85559c8f795607eb6',1,'protocol.h']]],
+  ['npc_5ftype_5fquest_11',['NPC_TYPE_QUEST',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a37f1e4136a23fc300f4aa566e418e2eb',1,'protocol.h']]],
+  ['npc_5ftype_5freserved3_12',['NPC_TYPE_RESERVED3',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a64a8d80d55773a9528dde016008a6317',1,'protocol.h']]],
+  ['npc_5ftype_5freserved4_13',['NPC_TYPE_RESERVED4',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a8bd791f5392e1d16baac076e1eeec584',1,'protocol.h']]],
+  ['npc_5ftype_5freserved5_14',['NPC_TYPE_RESERVED5',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a87f2508363f72d86e3ec1dd5cd3b50e7',1,'protocol.h']]],
+  ['npc_5ftype_5freserved8_15',['NPC_TYPE_RESERVED8',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a01e8f3f592b91156cd5ad3bcb3c1ae7f',1,'protocol.h']]],
+  ['npc_5ftype_5fshop_16',['NPC_TYPE_SHOP',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4ad5ab521bbbb2a3b52a00ac39da9049a1',1,'protocol.h']]],
+  ['npc_5ftype_5ftrainer_17',['NPC_TYPE_TRAINER',['../protocol_8h.html#a1c8f4a8828794aed19879a9034c04ae4a6c6036b5dbd4e1278613edf59917429b',1,'protocol.h']]]
+];
