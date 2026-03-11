@@ -2,6 +2,7 @@ name: Build Library
 on:
   push:
     branches: [master]
+    tags: ["*"]
   pull_request:
     branches: [master]
 
@@ -140,6 +141,10 @@ jobs:
           echo "CC=${gcc_path:-gcc}" >> "$GITHUB_ENV"
           echo "CXX=${gxx_path:-g++}" >> "$GITHUB_ENV"
 
+      - name: Setup Ninja (macOS)
+        if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'macos')
+        run: brew install ninja
+
       - name: Setup libxml2 (macOS)
         if: startsWith(matrix.os, 'macos')
         run: |
@@ -170,6 +175,7 @@ jobs:
           cmake -S . -B build -G "${{ matrix.generator }}"
           -A ${{ matrix.msvc_arch }}
           -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\\scripts\\buildsystems\\vcpkg.cmake
+          -DCPACK_PACKAGE_FILE_NAME=eolib-${{ matrix.os }}-${{ matrix.compiler }}
           ${{ matrix.toolset && format('-T {0}', matrix.toolset) || '' }}
 
       - name: Build (MSVC/ClangCL)
@@ -182,6 +188,7 @@ jobs:
         run: >-
           cmake -S . -B build -G "${{ matrix.generator }}"
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCPACK_PACKAGE_FILE_NAME=eolib-${{ matrix.os }}-${{ matrix.compiler }}
 
       - name: Build (MinGW)
         if: matrix.compiler == 'mingw'
@@ -195,6 +202,7 @@ jobs:
           -DCMAKE_C_COMPILER=$CC
           -DCMAKE_CXX_COMPILER=$CXX
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCPACK_PACKAGE_FILE_NAME=eolib-${{ matrix.os }}-${{ matrix.compiler }}
 
       - name: Build (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
@@ -203,8 +211,56 @@ jobs:
       - name: Run Tests
         run: ctest --output-on-failure -C ${{ matrix.build_type }} --test-dir build
 
+      - name: Install
+        run: cmake --install build --config ${{ matrix.build_type }} --prefix build/install
+
+      - name: Package
+        run: cpack --config build/CPackConfig.cmake -C ${{ matrix.build_type }} -B build/package
+
+      - name: Package Hashes (Windows)
+        if: startsWith(matrix.os, 'windows')
+        shell: pwsh
+        run: >-
+          Get-ChildItem -Path build/package -File | ForEach-Object
+          {"$((Get-FileHash -Algorithm SHA256 $_.FullName).Hash)  $($_.Name)"}
+          | Set-Content -Path build/package/sha256.txt
+
+      - name: Package Hashes (Unix)
+        if: "!startsWith(matrix.os, 'windows')"
+        run: |
+          cd build/package
+          rm -f sha256.txt
+          for f in *; do
+            if [ -f "$f" ]; then
+              shasum -a 256 "$f" >> sha256.txt
+            fi
+          done
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: build-${{ matrix.os }}-${{ matrix.compiler }}
-          path: ./build
+          name: install-${{ matrix.os }}-${{ matrix.compiler }}
+          path: ./build/install
+
+      - name: Upload Packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: package-${{ matrix.os }}-${{ matrix.compiler }}
+          path: ./build/package
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download Packages
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/**

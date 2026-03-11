@@ -130,3 +130,17 @@ target_include_directories(eolib_sequencer_tests PRIVATE
 )
 target_link_libraries(eolib_sequencer_tests PRIVATE eolib)
 add_test(NAME eolib_sequencer_tests COMMAND eolib_sequencer_tests)
+
+set(CPACK_PACKAGE_NAME "eolib")
+set(CPACK_PACKAGE_VENDOR "sorokya")
+set(CPACK_PACKAGE_VERSION ${EOLIB_VERSION})
+set(CPACK_PACKAGE_CONTACT "https://github.com/sorokya/eolib-c")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_PACKAGE_FILE_NAME "eolib-${EOLIB_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+if(WIN32)
+	set(CPACK_GENERATOR "ZIP")
+else()
+	set(CPACK_GENERATOR "TXZ")
+endif()
+
+include(CPack)
