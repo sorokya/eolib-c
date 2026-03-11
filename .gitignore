@@ -27,3 +27,5 @@ src/protocol.c
 *.dll
 *.dylib
 *.o
+
+docs
