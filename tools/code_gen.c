@@ -856,6 +856,22 @@ static const char *map_writer_fn(const char *data_type)
     return "eo_writer_add_int";
 }
 
+static int primitive_byte_size(const char *data_type)
+{
+    if (!data_type)
+        return 0;
+    if (strcmp(data_type, "byte") == 0 || strcmp(data_type, "char") == 0 ||
+        strcmp(data_type, "bool") == 0)
+        return 1;
+    if (strcmp(data_type, "short") == 0)
+        return 2;
+    if (strcmp(data_type, "three") == 0)
+        return 3;
+    if (strcmp(data_type, "int") == 0)
+        return 4;
+    return 0;
+}
+
 static const char *map_reader_fn(const char *data_type)
 {
     if (strcmp(data_type, "byte") == 0)
@@ -1337,6 +1353,11 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                                        size_t structs_count, const char *out_expr,
                                        const char *out_access);
 static void write_free_elements(FILE *source, const char *struct_name,
+                                ElementList *elements, EnumDef *enums,
+                                size_t enums_count, StructDef *structs,
+                                size_t structs_count, const char *value_expr,
+                                const char *value_access);
+static void write_size_elements(FILE *source, const char *struct_name,
                                 ElementList *elements, EnumDef *enums,
                                 size_t enums_count, StructDef *structs,
                                 size_t structs_count, const char *value_expr,
@@ -2983,6 +3004,451 @@ static void write_free_elements(FILE *source, const char *struct_name,
     }
 }
 
+/* Sums the static (compile-time-known) byte contributions of all elements.
+ * Each element kind contributes only the parts whose size is fixed regardless
+ * of runtime data.  Dynamic parts (strings, blobs, optional fields, struct
+ * fields, dynamic-count arrays) are skipped here and emitted by
+ * write_size_elements instead. */
+static int compute_elements_precomputed_size(ElementList *elements, EnumDef *enums,
+                                              size_t enums_count, StructDef *structs,
+                                              size_t structs_count)
+{
+    int total = 0;
+    for (size_t i = 0; i < elements->elements_count; ++i)
+    {
+        StructElement *element = &elements->elements[i];
+
+        if (element->kind == ELEMENT_CHUNKED)
+        {
+            total += compute_elements_precomputed_size(&element->as.chunked, enums, enums_count,
+                                                        structs, structs_count);
+            continue;
+        }
+
+        if (element->kind == ELEMENT_BREAK)
+        {
+            total += 1;
+            continue;
+        }
+
+        if (element->kind == ELEMENT_COMMENT)
+            continue;
+
+        if (element->kind == ELEMENT_DUMMY)
+        {
+            DummyDef *dummy = &element->as.dummy;
+            char *type_name = normalize_type_name(dummy->data_type);
+            if (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0)
+                total += dummy->value ? (int)strlen(dummy->value) : 0;
+            else
+                total += primitive_byte_size(type_name);
+            free(type_name);
+            continue;
+        }
+
+        if (element->kind == ELEMENT_LENGTH)
+        {
+            LengthDef *length = &element->as.length;
+            if (!length->optional)
+            {
+                int sz = primitive_byte_size(length->data_type);
+                total += sz > 0 ? sz : 1;
+            }
+            continue;
+        }
+
+        if (element->kind == ELEMENT_FIELD)
+        {
+            FieldDef *field = &element->as.field;
+            if (field->optional)
+                continue;
+
+            char *type_name = normalize_type_name(field->data_type);
+            int is_enum = enum_exists(enums, enums_count, type_name);
+
+            if (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0)
+            {
+                if (field->length && isdigit((unsigned char)field->length[0]))
+                    total += atoi(field->length);
+                else if (!field->name)
+                    total += field->value ? (int)strlen(field->value) : 0;
+                /* else: dynamic string — 0 contribution */
+            }
+            else if (strcmp(type_name, "blob") == 0)
+            {
+                /* dynamic — 0 contribution */
+            }
+            else if (is_enum)
+            {
+                char *type_override = get_type_override(field->data_type);
+                const char *edt = find_enum_data_type(enums, enums_count, type_name);
+                const char *eff = type_override ? type_override : edt;
+                int sz = primitive_byte_size(eff);
+                if (sz > 0) total += sz;
+                free(type_override);
+            }
+            else if (struct_exists(structs, structs_count, type_name))
+            {
+                /* struct fields emitted at runtime via TypeName_size() */
+            }
+            else
+            {
+                int sz = primitive_byte_size(type_name);
+                if (sz > 0) total += sz;
+            }
+            free(type_name);
+            continue;
+        }
+
+        if (element->kind == ELEMENT_ARRAY)
+        {
+            ArrayDef *array = &element->as.array;
+            if (array->optional || !is_static_length(array->length))
+                continue;
+
+            int count = atoi(array->length);
+            char *type_name = normalize_type_name(array->data_type);
+            int is_enum = enum_exists(enums, enums_count, type_name);
+
+            if (!struct_exists(structs, structs_count, type_name) &&
+                strcmp(type_name, "string") != 0 &&
+                strcmp(type_name, "encoded_string") != 0 &&
+                strcmp(type_name, "blob") != 0)
+            {
+                int elem_sz = is_enum
+                    ? primitive_byte_size(find_enum_data_type(enums, enums_count, type_name))
+                    : primitive_byte_size(type_name);
+                if (elem_sz > 0)
+                {
+                    int arr_total = count * elem_sz;
+                    if (array->delimited)
+                        arr_total += array->trailing_delimiter
+                            ? count
+                            : (count > 1 ? count - 1 : 0);
+                    total += arr_total;
+                }
+            }
+            /* struct/string/blob arrays emitted at runtime */
+            free(type_name);
+            continue;
+        }
+
+        /* ELEMENT_SWITCH: always dynamic */
+    }
+    return total;
+}
+
+static void write_size_elements(FILE *source, const char *struct_name,
+                                ElementList *elements, EnumDef *enums,
+                                size_t enums_count, StructDef *structs,
+                                size_t structs_count, const char *value_expr,
+                                const char *value_access)
+{
+    (void)struct_name;
+    for (size_t i = 0; i < elements->elements_count; ++i)
+    {
+        StructElement *element = &elements->elements[i];
+
+        /* ELEMENT_CHUNKED: recurse so dynamic children are still emitted
+         * even though their static siblings were pre-calculated. */
+        if (element->kind == ELEMENT_CHUNKED)
+        {
+            write_size_elements(source, struct_name, &element->as.chunked, enums, enums_count,
+                                structs, structs_count, value_expr, value_access);
+            continue;
+        }
+
+        /* BREAK, COMMENT, DUMMY: fully precomputed — nothing to emit. */
+        if (element->kind == ELEMENT_BREAK ||
+            element->kind == ELEMENT_COMMENT ||
+            element->kind == ELEMENT_DUMMY)
+            continue;
+
+        if (element->kind == ELEMENT_LENGTH)
+        {
+            LengthDef *length = &element->as.length;
+            if (!length->optional)
+                continue; /* precomputed */
+            char *field_name = to_snake_case(length->name);
+            int sz = primitive_byte_size(length->data_type);
+            if (sz <= 0) sz = 1;
+            fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access, field_name);
+            fprintf(source, "        total += %d;\n", sz);
+            fprintf(source, "    }\n");
+            free(field_name);
+        }
+        else if (element->kind == ELEMENT_FIELD)
+        {
+            FieldDef *field = &element->as.field;
+            char *type_name = normalize_type_name(field->data_type);
+            int is_enum = enum_exists(enums, enums_count, type_name);
+            int is_struct = struct_exists(structs, structs_count, type_name);
+            char *field_name = field->name ? to_snake_case(field->name) : NULL;
+            int is_fixed_string =
+                (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0) &&
+                field->length && isdigit((unsigned char)field->length[0]);
+            int is_unnamed_literal =
+                !field->name &&
+                (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0);
+
+            /* Non-optional primitives, enums, fixed-length strings, and unnamed
+             * literal strings are fully precomputed — nothing to emit. */
+            if (!field->optional &&
+                ((!is_struct && !is_enum &&
+                  strcmp(type_name, "blob") != 0 &&
+                  strcmp(type_name, "string") != 0 &&
+                  strcmp(type_name, "encoded_string") != 0) ||
+                 is_enum ||
+                 is_fixed_string ||
+                 is_unnamed_literal))
+            {
+                free(field_name);
+                free(type_name);
+                continue;
+            }
+
+            if (field->optional && field_name)
+                fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access, field_name);
+
+            if (is_struct)
+            {
+                if (field_name && struct_has_storage(structs, structs_count, type_name))
+                    fprintf(source, "    total += %s_size(&%s%s%s);\n",
+                            type_name, value_expr, value_access, field_name);
+                else
+                    fprintf(source, "    total += %s_size();\n", type_name);
+            }
+            else if (strcmp(type_name, "blob") == 0 && field_name)
+            {
+                fprintf(source, "    total += %s%s%s_length;\n",
+                        value_expr, value_access, field_name);
+            }
+            else if (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0)
+            {
+                if (field_name)
+                    fprintf(source, "    total += %s%s%s ? strlen(%s%s%s) : 0;\n",
+                            value_expr, value_access, field_name,
+                            value_expr, value_access, field_name);
+            }
+            else if (is_enum)
+            {
+                char *type_override = get_type_override(field->data_type);
+                const char *edt = find_enum_data_type(enums, enums_count, type_name);
+                const char *eff = type_override ? type_override : edt;
+                int sz = primitive_byte_size(eff);
+                if (sz > 0) fprintf(source, "    total += %d;\n", sz);
+                free(type_override);
+            }
+            else
+            {
+                int sz = primitive_byte_size(type_name);
+                if (sz > 0) fprintf(source, "    total += %d;\n", sz);
+            }
+
+            if (field->optional && field_name)
+                fprintf(source, "    }\n");
+
+            free(field_name);
+            free(type_name);
+        }
+        else if (element->kind == ELEMENT_ARRAY)
+        {
+            ArrayDef *array = &element->as.array;
+            char *field_name = to_snake_case(array->name);
+            char *type_name = normalize_type_name(array->data_type);
+            int is_enum = enum_exists(enums, enums_count, type_name);
+            int is_struct = struct_exists(structs, structs_count, type_name);
+            int is_static_count = is_static_length(array->length);
+            int is_dynamic_elem = is_struct ||
+                                  strcmp(type_name, "string") == 0 ||
+                                  strcmp(type_name, "encoded_string") == 0 ||
+                                  strcmp(type_name, "blob") == 0;
+
+            /* Non-optional, static-count, fixed-size elements: fully precomputed. */
+            if (!array->optional && is_static_count && !is_dynamic_elem)
+            {
+                free(type_name);
+                free(field_name);
+                continue;
+            }
+
+            int elem_size = 0;
+            if (!is_dynamic_elem)
+            {
+                if (is_enum)
+                {
+                    const char *edt = find_enum_data_type(enums, enums_count, type_name);
+                    elem_size = primitive_byte_size(edt);
+                }
+                else
+                {
+                    elem_size = primitive_byte_size(type_name);
+                }
+            }
+
+            if (array->optional)
+                fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access, field_name);
+
+            if (!is_dynamic_elem && elem_size > 0)
+            {
+                /* Dynamic-count array of fixed-size elements */
+                fprintf(source, "    total += %s%s%s_length * %d;\n",
+                        value_expr, value_access, field_name, elem_size);
+                if (array->delimited)
+                {
+                    if (array->trailing_delimiter)
+                        fprintf(source, "    total += %s%s%s_length;\n",
+                                value_expr, value_access, field_name);
+                    else
+                        fprintf(source,
+                                "    if (%s%s%s_length > 0) total += %s%s%s_length - 1;\n",
+                                value_expr, value_access, field_name,
+                                value_expr, value_access, field_name);
+                }
+            }
+            else
+            {
+                if (is_static_count)
+                    fprintf(source,
+                            "    { size_t _i; for (_i = 0; _i < (size_t)%s; ++_i) {\n",
+                            array->length);
+                else
+                    fprintf(source,
+                            "    { size_t _i; for (_i = 0; _i < %s%s%s_length; ++_i) {\n",
+                            value_expr, value_access, field_name);
+
+                if (array->delimited && !array->trailing_delimiter)
+                    fprintf(source, "        if (_i > 0) total += 1;\n");
+
+                if (is_struct)
+                {
+                    if (struct_has_storage(structs, structs_count, type_name))
+                        fprintf(source, "        total += %s_size(&%s%s%s[_i]);\n",
+                                type_name, value_expr, value_access, field_name);
+                    else
+                        fprintf(source, "        total += %s_size();\n", type_name);
+                }
+                else if (strcmp(type_name, "string") == 0 ||
+                         strcmp(type_name, "encoded_string") == 0)
+                {
+                    fprintf(source, "        total += %s%s%s[_i] ? strlen(%s%s%s[_i]) : 0;\n",
+                            value_expr, value_access, field_name,
+                            value_expr, value_access, field_name);
+                }
+                else if (strcmp(type_name, "blob") == 0)
+                {
+                    fprintf(source, "        total += %s%s%s[_i].length;\n",
+                            value_expr, value_access, field_name);
+                }
+
+                if (array->delimited && array->trailing_delimiter)
+                    fprintf(source, "        total += 1;\n");
+
+                fprintf(source, "    } }\n");
+            }
+
+            if (array->optional)
+                fprintf(source, "    }\n");
+
+            free(type_name);
+            free(field_name);
+        }
+        else if (element->kind == ELEMENT_SWITCH)
+        {
+            SwitchDef *sw = &element->as.sw;
+            char *field_name = to_snake_case(sw->field);
+            char *field_type = find_field_data_type(elements, sw->field);
+            int has_storage = switch_has_storage(sw);
+            int has_default = 0;
+            int suppress_enum_switch_warning =
+                field_type && enum_exists(enums, enums_count, field_type) &&
+                switch_has_numeric_case(sw);
+
+            if (suppress_enum_switch_warning)
+            {
+                fprintf(source,
+                        "#if defined(__clang__)\n"
+                        "    #pragma clang diagnostic push\n"
+                        "    #pragma clang diagnostic ignored \"-Wswitch\"\n"
+                        "#elif defined(__GNUC__)\n"
+                        "    #pragma GCC diagnostic push\n"
+                        "    #pragma GCC diagnostic ignored \"-Wswitch\"\n"
+                        "#endif\n");
+            }
+            fprintf(source, "    switch (%s%s%s) {\n", value_expr, value_access, field_name);
+
+            for (size_t c = 0; c < sw->cases_count; ++c)
+            {
+                CaseDef *case_def = &sw->cases[c];
+                if (!case_def->has_elements)
+                    continue;
+                int case_has_storage = element_list_has_storage(&case_def->elements);
+                if (case_def->is_default)
+                    has_default = 1;
+                const char *case_name = case_def->is_default ? "default" : case_def->value;
+                char *case_const = to_upper_snake(case_name);
+                char *case_field = to_snake_case(case_name);
+
+                if (case_def->is_default)
+                    fprintf(source, "    default: {\n");
+                else if (case_def->value && is_numeric_string(case_def->value))
+                    fprintf(source, "    case %s: {\n", case_def->value);
+                else if (field_type && enum_exists(enums, enums_count, field_type))
+                {
+                    char *enum_prefix = to_upper_snake(field_type);
+                    fprintf(source, "    case %s_%s: {\n", enum_prefix, case_const);
+                    free(enum_prefix);
+                }
+                else
+                    fprintf(source, "    case %s: {\n", case_def->value ? case_def->value : "0");
+
+                /* Emit the precomputed static size for this case arm as a
+                 * runtime addition, then emit any dynamic parts. */
+                int case_precomputed = compute_elements_precomputed_size(
+                    &case_def->elements, enums, enums_count, structs, structs_count);
+                if (case_precomputed > 0)
+                    fprintf(source, "        total += %d;\n", case_precomputed);
+
+                if (case_has_storage && has_storage)
+                {
+                    char case_value[512];
+                    snprintf(case_value, sizeof(case_value), "%s%s%s_data->%s",
+                             value_expr, value_access, field_name, case_field);
+                    fprintf(source, "        if (%s%s%s_data) {\n",
+                            value_expr, value_access, field_name);
+                    write_size_elements(source, struct_name, &case_def->elements, enums,
+                                        enums_count, structs, structs_count, case_value, ".");
+                    fprintf(source, "        }\n");
+                }
+                else
+                {
+                    write_size_elements(source, struct_name, &case_def->elements, enums,
+                                        enums_count, structs, structs_count,
+                                        value_expr, value_access);
+                }
+                fprintf(source, "        break;\n    }\n");
+                free(case_const);
+                free(case_field);
+            }
+            if (!has_default)
+                fprintf(source, "    default: break;\n");
+            fprintf(source, "    }\n");
+
+            if (suppress_enum_switch_warning)
+            {
+                fprintf(source,
+                        "#if defined(__clang__)\n"
+                        "    #pragma clang diagnostic pop\n"
+                        "#elif defined(__GNUC__)\n"
+                        "    #pragma GCC diagnostic pop\n"
+                        "#endif\n");
+            }
+            free(field_name);
+            free(field_type);
+        }
+    }
+}
+
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
                              EnumDef *enums, size_t enums_count, StructDef *structs,
                              size_t structs_count)
@@ -3005,6 +3471,7 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
                 "EoResult %s_deserialize(%s *out, EoReader *reader);\n",
                 name,
                 name);
+        fprintf(header, "size_t %s_size(const %s *value);\n", name, name);
         if (has_heap)
         {
             fprintf(header, "void %s_free(%s *value);\n", name, name);
@@ -3035,6 +3502,14 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
         fprintf(source, "    eo_reader_set_chunked_reading_mode(reader, previous_chunked);\n");
         fprintf(source, "    return result;\n}\n\n");
 
+        fprintf(source, "size_t %s_size(const %s *value) {\n", name, name);
+        fprintf(source, "    if (!value) return 0;\n");
+        fprintf(source, "    size_t total = %d;\n",
+                compute_elements_precomputed_size(elements, enums, enums_count, structs, structs_count));
+        write_size_elements(source, name, elements, enums, enums_count, structs, structs_count,
+                            "value", "->");
+        fprintf(source, "    return total;\n}\n\n");
+
         if (has_heap)
         {
             fprintf(source, "void %s_free(%s *value) {\n", name, name);
@@ -3050,8 +3525,9 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
             "EoResult %s_serialize(EoWriter *writer);\n",
             name);
     fprintf(header,
-            "EoResult %s_deserialize(EoReader *reader);\n\n",
+            "EoResult %s_deserialize(EoReader *reader);\n",
             name);
+    fprintf(header, "size_t %s_size(void);\n\n", name);
 
     fprintf(source, "EoResult %s_serialize(EoWriter *writer) {\n", name);
     fprintf(source, "    EoResult result = EO_SUCCESS;\n");
@@ -3075,6 +3551,12 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
 
     fprintf(source, "    eo_reader_set_chunked_reading_mode(reader, previous_chunked);\n");
     fprintf(source, "    return result;\n}\n\n");
+
+    fprintf(source, "size_t %s_size(void) {\n", name);
+    fprintf(source, "    size_t total = %d;\n",
+            compute_elements_precomputed_size(elements, enums, enums_count, structs, structs_count));
+    write_size_elements(source, name, elements, enums, enums_count, structs, structs_count, "", "");
+    fprintf(source, "    return total;\n}\n\n");
 }
 
 static void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
