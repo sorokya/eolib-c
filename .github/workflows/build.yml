@@ -159,8 +159,9 @@ jobs:
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgGitCommitId: 62159a45e18f3a9ac0548628dcaf74fcb60c6ff9
-          vcpkgArguments: libxml2
-          vcpkgTriplet: ${{ matrix.vcpkg_triplet }}
+          runVcpkgInstall: true
+          runVcpkgFormatString: >-
+            ["install","libxml2","--triplet","${{ matrix.vcpkg_triplet }}"]
 
       - name: Configure (MSVC/ClangCL)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
