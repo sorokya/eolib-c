@@ -34,3 +34,58 @@ Utilities:
 - String encoding
 - Data encryption
 - Packet sequencer
+
+## Requirements
+
+- CMake 3.16+
+- C compiler
+- libxml2
+- json-c
+
+### Install dependencies
+
+macOS (Homebrew):
+
+```bash
+brew install libxml2 json-c
+```
+
+Ubuntu/Debian:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y libxml2-dev libjson-c-dev ninja-build
+```
+
+Windows (MSVC):
+
+- Use vcpkg with the provided manifest (`vcpkg.json`). CMake will pick it up if you configure with the toolchain file.
+
+Windows (MinGW / MSYS2):
+
+```bash
+pacman -S --needed mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-libxml2 mingw-w64-x86_64-json-c
+```
+
+## Build
+
+```bash
+cmake . -DCMAKE_BUILD_TYPE=Release
+make
+```
+
+## Run tests
+
+```bash
+make test
+```
+
+## Install
+
+```bash
+make install
+```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
