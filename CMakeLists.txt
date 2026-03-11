@@ -27,25 +27,29 @@ add_executable(code_gen tools/code_gen.c)
 target_include_directories(code_gen PRIVATE ${LIBXML2_INCLUDE_DIRS})
 target_link_libraries(code_gen PRIVATE ${LIBXML2_LIBRARIES})
 
+set(EOLIB_PROTOCOL_C ${CMAKE_CURRENT_SOURCE_DIR}/src/protocol.c)
+set(EOLIB_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/include/protocol.h)
+
 add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/codegen.stamp
+	OUTPUT ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H}
 	COMMAND code_gen
-	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/codegen.stamp
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	DEPENDS code_gen
 	COMMENT "Generating protocol sources"
 )
 
 add_custom_target(generate_protocol ALL
-	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/codegen.stamp
+	DEPENDS ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H}
 )
 
 add_library(eolib SHARED
     src/eo_data.c
     src/encrypt.c
 	src/sequencer.c
-    src/protocol.c
+	${EOLIB_PROTOCOL_C}
 )
+
+set_source_files_properties(${EOLIB_PROTOCOL_C} PROPERTIES GENERATED TRUE)
 
 target_include_directories(eolib PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

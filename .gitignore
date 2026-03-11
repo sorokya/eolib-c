@@ -29,3 +29,4 @@ src/protocol.c
 *.o
 
 docs
+build
