@@ -623,7 +623,7 @@ int eo_reader_get_string(EoReader *reader, char **out_value)
     size_t length = eo_reader_remaining(reader);
     if (length == 0)
     {
-        *out_value = NULL; // strdup("");
+        *out_value = strdup("");
         return 0;
     }
 
@@ -640,7 +640,7 @@ int eo_reader_get_encoded_string(EoReader *reader, char **out_value)
     size_t length = eo_reader_remaining(reader);
     if (length == 0)
     {
-        *out_value = NULL;
+        *out_value = strdup("");
         return 0;
     }
 
@@ -659,7 +659,7 @@ int eo_reader_get_fixed_string(EoReader *reader, size_t length, char **out_value
     {
         if (reader->chunked_reading_mode)
         {
-            *out_value = NULL;
+            *out_value = strdup("");
             return 0;
         }
 
@@ -689,7 +689,7 @@ int eo_reader_get_fixed_encoded_string(EoReader *reader, size_t length, char **o
     {
         if (reader->chunked_reading_mode)
         {
-            *out_value = NULL;
+            *out_value = strdup("");
             return 0;
         }
 

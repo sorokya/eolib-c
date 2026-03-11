@@ -2975,6 +2975,511 @@ static void write_byte_array_literal(FILE *f, const uint8_t *data, size_t len)
     fprintf(f, "}");
 }
 
+/* ---- Property assertion helpers ---- */
+
+/*
+ * Map from (struct_name, field_name) to static array size.
+ * Used to distinguish fixed-size C arrays like SomeType name[N] from EoArray.
+ */
+typedef struct
+{
+    char *struct_name;
+    char *field_name;
+    int   size;
+} FixedArrayEntry;
+
+typedef struct
+{
+    FixedArrayEntry *entries;
+    size_t           count;
+    size_t           capacity;
+} FixedArrayMap;
+
+static void fixed_array_map_push(FixedArrayMap *map, const char *struct_name,
+                                 const char *field_name, int size)
+{
+    if (map->count >= map->capacity)
+    {
+        map->capacity = ARRAY_GROW_CAPACITY(map->capacity);
+        map->entries  = realloc(map->entries, map->capacity * sizeof(FixedArrayEntry));
+        if (!map->entries)
+        {
+            fprintf(stderr, "Out of memory\n");
+            exit(1);
+        }
+    }
+    map->entries[map->count].struct_name = xstrdup(struct_name ? struct_name : "");
+    map->entries[map->count].field_name  = xstrdup(field_name  ? field_name  : "");
+    map->entries[map->count].size        = size;
+    map->count++;
+}
+
+/* Returns the static array size if (struct_name, field_name) is a fixed-size C array, 0 otherwise. */
+static int fixed_array_lookup(const FixedArrayMap *map, const char *struct_name,
+                               const char *field_name)
+{
+    if (!struct_name || !field_name)
+        return 0;
+    for (size_t i = 0; i < map->count; ++i)
+    {
+        if (strcmp(map->entries[i].struct_name, struct_name) == 0 &&
+            strcmp(map->entries[i].field_name,  field_name)  == 0)
+        {
+            return map->entries[i].size;
+        }
+    }
+    return 0;
+}
+
+static void collect_fixed_arrays_from_elements(const char *struct_name,
+                                               ElementList *elements,
+                                               FixedArrayMap *map);
+
+static void collect_fixed_arrays_from_elements(const char *struct_name,
+                                               ElementList *elements,
+                                               FixedArrayMap *map)
+{
+    for (size_t i = 0; i < elements->elements_count; ++i)
+    {
+        StructElement *el = &elements->elements[i];
+        if (el->kind == ELEMENT_ARRAY)
+        {
+            ArrayDef *arr = &el->as.array;
+            if (arr->name && is_static_length(arr->length))
+            {
+                char *field_name = to_snake_case(arr->name);
+                int   size       = atoi(arr->length);
+                fixed_array_map_push(map, struct_name, field_name, size);
+                free(field_name);
+            }
+        }
+        else if (el->kind == ELEMENT_CHUNKED)
+        {
+            collect_fixed_arrays_from_elements(struct_name, &el->as.chunked, map);
+        }
+        else if (el->kind == ELEMENT_SWITCH)
+        {
+            SwitchDef *sw = &el->as.sw;
+            for (size_t c = 0; c < sw->cases_count; ++c)
+            {
+                if (sw->cases[c].has_elements)
+                {
+                    collect_fixed_arrays_from_elements(struct_name,
+                                                       &sw->cases[c].elements, map);
+                }
+            }
+        }
+    }
+}
+
+static void build_fixed_array_map(ProtocolDef *protocols, size_t protocol_count,
+                                  FixedArrayMap *map)
+{
+    for (size_t p = 0; p < protocol_count; ++p)
+    {
+        ProtocolDef *proto = &protocols[p];
+        for (size_t s = 0; s < proto->structs_count; ++s)
+        {
+            collect_fixed_arrays_from_elements(proto->structs[s].name,
+                                               &proto->structs[s].elements, map);
+        }
+        for (size_t pk = 0; pk < proto->packets_count; ++pk)
+        {
+            PacketDef *pkt = &proto->packets[pk];
+            const char *dir_suffix = (strstr(proto->path, "/server/") ||
+                                      strstr(proto->path, "/server/protocol.xml"))
+                                         ? "Server"
+                                         : "Client";
+            char pkt_struct[256];
+            snprintf(pkt_struct, sizeof(pkt_struct), "%s%s%sPacket",
+                     pkt->family, pkt->action, dir_suffix);
+            collect_fixed_arrays_from_elements(pkt_struct, &pkt->elements, map);
+        }
+    }
+}
+
+/* Returns a pointer into 'type_str' past the last '::' separator, or type_str if none. */
+static const char *strip_type_namespace(const char *type_str)
+{
+    const char *last = NULL;
+    const char *p = type_str;
+    while (*p)
+    {
+        if (p[0] == ':' && p[1] == ':')
+        {
+            last = p + 2;
+            p += 2;
+        }
+        else
+        {
+            ++p;
+        }
+    }
+    return last ? last : type_str;
+}
+
+/* Converts snake_case to PascalCase. Returns malloc'd string. */
+static char *to_pascal_case(const char *snake)
+{
+    if (!snake)
+        return xstrdup("");
+    size_t len = strlen(snake);
+    char *out = xmalloc(len + 2);
+    size_t out_len = 0;
+    int capitalize = 1;
+    for (size_t i = 0; i < len; ++i)
+    {
+        char ch = snake[i];
+        if (ch == '_')
+        {
+            capitalize = 1;
+        }
+        else if (capitalize)
+        {
+            out[out_len++] = (char)(ch >= 'a' && ch <= 'z' ? ch - 'a' + 'A' : ch);
+            capitalize = 0;
+        }
+        else
+        {
+            out[out_len++] = ch;
+        }
+    }
+    out[out_len] = '\0';
+    return out;
+}
+
+/* Fills 'out' with the names of all named struct types across all protocols. */
+static void collect_known_structs(ProtocolDef *protocols, size_t protocol_count,
+                                  StringList *out)
+{
+    for (size_t p = 0; p < protocol_count; ++p)
+    {
+        for (size_t s = 0; s < protocols[p].structs_count; ++s)
+        {
+            string_list_push_unique(out, protocols[p].structs[s].name);
+        }
+    }
+}
+
+/*
+ * Given a type like "LoginReplyReplyCodeDataOk" and field name "reply_code_data",
+ * derives the C union variant name (e.g. "ok").
+ * Returns a malloc'd string.
+ */
+static char *extract_union_variant(const char *local_type, const char *field_name)
+{
+    char *pascal_field = to_pascal_case(field_name);
+    const char *pos = strstr(local_type, pascal_field);
+    char *variant;
+    if (pos)
+    {
+        const char *suffix = pos + strlen(pascal_field);
+        variant = to_snake_case(suffix);
+    }
+    else
+    {
+        /* Fallback: use the entire local_type suffix lowercased */
+        variant = to_snake_case(local_type);
+    }
+    free(pascal_field);
+    return variant;
+}
+
+/* Writes a C string literal with proper escaping. */
+static void write_escaped_c_string(FILE *f, const char *s)
+{
+    fputc('"', f);
+    for (; *s; ++s)
+    {
+        switch (*s)
+        {
+        case '"':  fputs("\\\"", f); break;
+        case '\\': fputs("\\\\", f); break;
+        case '\n': fputs("\\n",  f); break;
+        case '\r': fputs("\\r",  f); break;
+        case '\t': fputs("\\t",  f); break;
+        default:   fputc(*s, f);     break;
+        }
+    }
+    fputc('"', f);
+}
+
+/* Forward declaration */
+static void write_property_assertions(FILE *f, struct json_object *properties,
+                                      const char *c_path, const char *assert_path,
+                                      const char *current_struct,
+                                      StringList *known_structs,
+                                      FixedArrayMap *fixed_arrays);
+
+static void write_single_property_assertions(FILE *f, struct json_object *prop,
+                                             const char *c_path,
+                                             const char *assert_path,
+                                             const char *current_struct,
+                                             StringList *known_structs,
+                                             FixedArrayMap *fixed_arrays)
+{
+    struct json_object *name_obj = NULL, *type_obj = NULL;
+    struct json_object *value_obj = NULL, *children_obj = NULL;
+    json_object_object_get_ex(prop, "name",     &name_obj);
+    json_object_object_get_ex(prop, "type",     &type_obj);
+    json_object_object_get_ex(prop, "value",    &value_obj);
+    json_object_object_get_ex(prop, "children", &children_obj);
+
+    const char *name     = name_obj  ? json_object_get_string(name_obj)  : NULL;
+    const char *type_str = type_obj  ? json_object_get_string(type_obj)  : NULL;
+
+    /* Skip unnamed entries (raw array elements handled by their parent) */
+    if (!name)
+        return;
+
+    /* Build the C accessor expression and a human-readable assertion label */
+    char c_expr[2048];
+    snprintf(c_expr, sizeof(c_expr), "%s%s", c_path, name);
+
+    char label[1024];
+    snprintf(label, sizeof(label), "%s %s", assert_path, name);
+
+    /* --- Emit value assertion --- */
+    if (value_obj && type_str)
+    {
+        if (strcmp(type_str, "string") == 0)
+        {
+            const char *str_val = json_object_get_string(value_obj);
+            fprintf(f, "    expect_equal_str(\"%s\", %s, ", label, c_expr);
+            write_escaped_c_string(f, str_val ? str_val : "");
+            fprintf(f, ");\n");
+        }
+        else if (strcmp(type_str, "bool") == 0)
+        {
+            int bool_val = json_object_get_boolean(value_obj);
+            fprintf(f, "    expect_equal_int(\"%s\", (int)%s, %d);\n",
+                    label, c_expr, bool_val);
+        }
+        else if (strcmp(type_str, "[]byte") == 0)
+        {
+            const char *b64 = json_object_get_string(value_obj);
+            if (b64 && *b64)
+            {
+                uint8_t *blob = NULL;
+                int blob_len = base64_decode(b64, &blob);
+                if (blob_len >= 0)
+                {
+                    fprintf(f, "    {\n");
+                    fprintf(f, "        static const uint8_t expected_bytes[] = ");
+                    write_byte_array_literal(f, blob, (size_t)blob_len);
+                    fprintf(f, ";\n");
+                    fprintf(f,
+                            "        expect_equal_bytes(\"%s\", %s.data, expected_bytes, %d);\n",
+                            label, c_expr, blob_len);
+                    fprintf(f,
+                            "        expect_equal_size(\"%s length\", %s.length, %zu);\n",
+                            label, c_expr, (size_t)blob_len);
+                    fprintf(f, "    }\n");
+                    free(blob);
+                }
+            }
+        }
+        else
+        {
+            /* int, byte, or enum type -- treat as numeric */
+            int64_t num_val = json_object_get_int64(value_obj);
+            fprintf(f, "    expect_equal_int(\"%s\", (int)%s, %d);\n",
+                    label, c_expr, (int)num_val);
+        }
+    }
+
+    /* --- Emit children assertions --- */
+    if (type_str && type_str[0] == '[' && type_str[1] == ']'
+        && strcmp(type_str + 2, "byte") != 0)
+    {
+        int child_count = children_obj ? json_object_array_length(children_obj) : 0;
+        const char *elem_type = type_str + 2;
+
+        if (strcmp(elem_type, "int") == 0)
+        {
+            /* []int: fixed-size C array or dynamic EoArray */
+            int fixed_size = fixed_array_lookup(fixed_arrays, current_struct, name);
+            if (fixed_size > 0)
+            {
+                for (int j = 0; j < child_count; ++j)
+                {
+                    struct json_object *child = json_object_array_get_idx(children_obj, j);
+                    struct json_object *child_val = NULL;
+                    json_object_object_get_ex(child, "value", &child_val);
+                    if (child_val)
+                    {
+                        int64_t v = json_object_get_int64(child_val);
+                        fprintf(f, "    expect_equal_int(\"%s[%d]\", (int)%s[%d], %d);\n",
+                                label, j, c_expr, j, (int)v);
+                    }
+                }
+            }
+            else
+            {
+                fprintf(f, "    expect_equal_size(\"%s length\", %s.length, %d);\n",
+                        label, c_expr, child_count);
+                for (int j = 0; j < child_count; ++j)
+                {
+                    struct json_object *child = json_object_array_get_idx(children_obj, j);
+                    struct json_object *child_val = NULL;
+                    json_object_object_get_ex(child, "value", &child_val);
+                    if (child_val)
+                    {
+                        int64_t v = json_object_get_int64(child_val);
+                        fprintf(f, "    expect_equal_int(\"%s[%d]\", (int)((int32_t *)%s.items)[%d], %d);\n",
+                                label, j, c_expr, j, (int)v);
+                    }
+                }
+            }
+        }
+        else if (strcmp(elem_type, "string") == 0)
+        {
+            /* []string: fixed-size C array or dynamic EoArray */
+            int fixed_size = fixed_array_lookup(fixed_arrays, current_struct, name);
+            if (fixed_size > 0)
+            {
+                for (int j = 0; j < child_count; ++j)
+                {
+                    struct json_object *child = json_object_array_get_idx(children_obj, j);
+                    struct json_object *child_val = NULL;
+                    json_object_object_get_ex(child, "value", &child_val);
+                    if (child_val)
+                    {
+                        const char *sv = json_object_get_string(child_val);
+                        fprintf(f, "    expect_equal_str(\"%s[%d]\", %s[%d], ",
+                                label, j, c_expr, j);
+                        write_escaped_c_string(f, sv ? sv : "");
+                        fprintf(f, ");\n");
+                    }
+                }
+            }
+            else
+            {
+                fprintf(f, "    expect_equal_size(\"%s length\", %s.length, %d);\n",
+                        label, c_expr, child_count);
+                for (int j = 0; j < child_count; ++j)
+                {
+                    struct json_object *child = json_object_array_get_idx(children_obj, j);
+                    struct json_object *child_val = NULL;
+                    json_object_object_get_ex(child, "value", &child_val);
+                    if (child_val)
+                    {
+                        const char *sv = json_object_get_string(child_val);
+                        fprintf(f, "    expect_equal_str(\"%s[%d]\", ((char **)%s.items)[%d], ",
+                                label, j, c_expr, j);
+                        write_escaped_c_string(f, sv ? sv : "");
+                        fprintf(f, ");\n");
+                    }
+                }
+            }
+        }
+        else
+        {
+            /* []SomeName: fixed-size C array or dynamic EoArray of structs */
+            const char *local_elem = strip_type_namespace(elem_type);
+            int fixed_size = fixed_array_lookup(fixed_arrays, current_struct, name);
+
+            if (fixed_size > 0)
+            {
+                /* Fixed-size C array: SomeType name[N] -- no length field */
+                for (int j = 0; j < child_count; ++j)
+                {
+                    struct json_object *child = json_object_array_get_idx(children_obj, j);
+                    struct json_object *child_children = NULL;
+                    json_object_object_get_ex(child, "children", &child_children);
+
+                    char elem_c_path[2048];
+                    snprintf(elem_c_path, sizeof(elem_c_path), "%s%s[%d].", c_path, name, j);
+
+                    char elem_label[1024];
+                    snprintf(elem_label, sizeof(elem_label), "%s[%d]", label, j);
+
+                    if (child_children)
+                    {
+                        write_property_assertions(f, child_children, elem_c_path,
+                                                  elem_label, local_elem,
+                                                  known_structs, fixed_arrays);
+                    }
+                }
+            }
+            else
+            {
+                /* Dynamic EoArray: always assert length, even when children absent */
+                fprintf(f, "    expect_equal_size(\"%s length\", %s.length, %d);\n",
+                        label, c_expr, child_count);
+                for (int j = 0; j < child_count; ++j)
+                {
+                    struct json_object *child = json_object_array_get_idx(children_obj, j);
+                    struct json_object *child_children = NULL;
+                    json_object_object_get_ex(child, "children", &child_children);
+
+                    char elem_c_path[2048];
+                    snprintf(elem_c_path, sizeof(elem_c_path),
+                             "((%s *)%s.items)[%d].", local_elem, c_expr, j);
+
+                    char elem_label[1024];
+                    snprintf(elem_label, sizeof(elem_label), "%s[%d]", label, j);
+
+                    if (child_children)
+                    {
+                        write_property_assertions(f, child_children, elem_c_path,
+                                                  elem_label, local_elem,
+                                                  known_structs, fixed_arrays);
+                    }
+                }
+            }
+        }
+    }
+    else if (children_obj && type_str)
+    {
+        int child_count = json_object_array_length(children_obj);
+        (void)child_count;
+
+        /* Struct or union-pointer type */
+        const char *local_type = strip_type_namespace(type_str);
+        char child_c_path[2048];
+        const char *child_struct;
+
+        if (string_list_contains(known_structs, local_type))
+        {
+            /* Inline named struct: access with "." */
+            snprintf(child_c_path, sizeof(child_c_path), "%s%s.", c_path, name);
+            child_struct = local_type;
+        }
+        else
+        {
+            /* Anonymous union sub-struct: access with "->variant." */
+            char *variant = extract_union_variant(local_type, name);
+            snprintf(child_c_path, sizeof(child_c_path),
+                     "%s%s->%s.", c_path, name, variant);
+            free(variant);
+            /* Fixed arrays inside anonymous union sub-structs are stored under the
+             * parent struct name in FixedArrayMap, so keep current_struct. */
+            child_struct = current_struct;
+        }
+
+        write_property_assertions(f, children_obj, child_c_path, label,
+                                  child_struct, known_structs, fixed_arrays);
+    }
+}
+
+static void write_property_assertions(FILE *f, struct json_object *properties,
+                                      const char *c_path, const char *assert_path,
+                                      const char *current_struct,
+                                      StringList *known_structs,
+                                      FixedArrayMap *fixed_arrays)
+{
+    if (!properties)
+        return;
+    int n = json_object_array_length(properties);
+    for (int i = 0; i < n; ++i)
+    {
+        struct json_object *prop = json_object_array_get_idx(properties, i);
+        write_single_property_assertions(f, prop, c_path, assert_path,
+                                         current_struct, known_structs, fixed_arrays);
+    }
+}
+
 static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
 {
     if (ensure_dir("tests") != 0)
@@ -2999,6 +3504,12 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
     }
 
     PacketStorageMap map = build_packet_storage_map(protocols, protocol_count);
+
+    StringList known_structs = {0};
+    collect_known_structs(protocols, protocol_count, &known_structs);
+
+    FixedArrayMap fixed_arrays = {0};
+    build_fixed_array_map(protocols, protocol_count, &fixed_arrays);
 
     fprintf(f, "%s", CODEGEN_WARNING);
     fprintf(f, "#include \"test_utils.h\"\n");
@@ -3031,6 +3542,7 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
             }
 
             struct json_object *family_obj = NULL, *action_obj = NULL, *expected_obj = NULL;
+            struct json_object *properties_obj = NULL;
             if (!json_object_object_get_ex(root, "family", &family_obj) ||
                 !json_object_object_get_ex(root, "action", &action_obj) ||
                 !json_object_object_get_ex(root, "expected", &expected_obj))
@@ -3043,6 +3555,7 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
             const char *family = json_object_get_string(family_obj);
             const char *action = json_object_get_string(action_obj);
             const char *expected_b64 = json_object_get_string(expected_obj);
+            json_object_object_get_ex(root, "properties", &properties_obj);
 
             const char *suffix = d == 0 ? "Client" : "Server";
             char packet_name[256];
@@ -3106,6 +3619,13 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
                         packet_name);
                 fprintf(f, "    if (deser_result == -1) return;\n");
                 fprintf(f, "\n");
+                if (properties_obj)
+                {
+                    write_property_assertions(f, properties_obj, "packet.",
+                                              name_start, packet_name,
+                                              &known_structs, &fixed_arrays);
+                    fprintf(f, "\n");
+                }
                 fprintf(f, "    EoWriter writer = eo_writer_init_with_capacity("
                            "expected_len > 0 ? expected_len : 1);\n");
                 fprintf(f,

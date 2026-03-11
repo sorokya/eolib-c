@@ -263,7 +263,8 @@ static void test_eo_reader_string_reads()
     out = NULL;
     reader.offset = reader.length;
     expect_equal_int("eo_reader_get_string empty", eo_reader_get_string(&reader, &out), 0);
-    expect("eo_reader_get_string empty value", out == NULL);
+    expect("eo_reader_get_string empty value", out != NULL && strcmp(out, "") == 0);
+    free(out);
 }
 
 static void test_eo_reader_get_bytes()
