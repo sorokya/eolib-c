@@ -1595,18 +1595,13 @@ static void write_struct_fields_with_indent(FILE *header, const char *struct_nam
 
             write_doc_comment(header, field->comment, indent);
 
-            if (field->optional)
-            {
-                fprintf(header, "%sbool has_%s;\n", indent, field_name);
-            }
-
             if (enum_exists(enums, enums_count, type_name))
             {
-                fprintf(header, "%s%s %s;\n", indent, type_name, field_name);
+                fprintf(header, "%s%s %s%s;\n", indent, type_name, field->optional ? "*" : "", field_name);
             }
             else if (struct_exists(structs, structs_count, type_name))
             {
-                fprintf(header, "%s%s %s;\n", indent, type_name, field_name);
+                fprintf(header, "%s%s %s%s;\n", indent, type_name, field->optional ? "*" : "", field_name);
             }
             else if (strcmp(type_name, "blob") == 0)
             {
@@ -1615,7 +1610,15 @@ static void write_struct_fields_with_indent(FILE *header, const char *struct_nam
             }
             else
             {
-                fprintf(header, "%s%s %s;\n", indent, mapped_type, field_name);
+                int is_string_type = strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0;
+                if (field->optional && !is_string_type)
+                {
+                    fprintf(header, "%s%s *%s;\n", indent, mapped_type, field_name);
+                }
+                else
+                {
+                    fprintf(header, "%s%s %s;\n", indent, mapped_type, field_name);
+                }
             }
 
             free(type_name);
@@ -1634,11 +1637,6 @@ static void write_struct_fields_with_indent(FILE *header, const char *struct_nam
             }
 
             write_doc_comment(header, array->comment, indent);
-
-            if (array->optional)
-            {
-                fprintf(header, "%sbool has_%s;\n", indent, field_name);
-            }
 
             if (is_static_length(array->length))
             {
@@ -1860,9 +1858,8 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
 
             if (field->optional)
             {
-                fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access, field_name);
+                fprintf(source, "    if (%s%s%s) {\n", value_expr, value_access, field_name);
             }
-
             if (is_enum)
             {
                 const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
@@ -1886,8 +1883,8 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 }
                 else
                 {
-                    snprintf(value_buffer, sizeof(value_buffer), "%s%s%s", value_expr,
-                             value_access, field_name);
+                    snprintf(value_buffer, sizeof(value_buffer), field->optional ? "*%s%s%s" : "%s%s%s",
+                             value_expr, value_access, field_name);
                 }
                 fprintf(source,
                         "    if ((result = %s(writer, %s)) != 0) return result;\n",
@@ -1899,9 +1896,14 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             {
                 if (struct_has_storage(structs, structs_count, type_name))
                 {
-                    fprintf(source,
-                            "    if ((result = %s_serialize(&%s%s%s, writer)) != 0) return result;\n",
-                            type_name, value_expr, value_access, field_name);
+                    if (field->optional)
+                        fprintf(source,
+                                "    if ((result = %s_serialize(%s%s%s, writer)) != 0) return result;\n",
+                                type_name, value_expr, value_access, field_name);
+                    else
+                        fprintf(source,
+                                "    if ((result = %s_serialize(&%s%s%s, writer)) != 0) return result;\n",
+                                type_name, value_expr, value_access, field_name);
                 }
                 else
                 {
@@ -1930,8 +1932,12 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 }
                 else
                 {
-                    snprintf(value_buffer, sizeof(value_buffer), "%s%s%s ? 1 : 0", value_expr,
-                             value_access, field_name);
+                    if (field->optional)
+                        snprintf(value_buffer, sizeof(value_buffer), "*%s%s%s ? 1 : 0", value_expr,
+                                 value_access, field_name);
+                    else
+                        snprintf(value_buffer, sizeof(value_buffer), "%s%s%s ? 1 : 0", value_expr,
+                                 value_access, field_name);
                 }
                 fprintf(source,
                         "    if ((result = eo_writer_add_char(writer, %s)) != 0) return result;\n",
@@ -1981,8 +1987,13 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 }
                 else
                 {
-                    snprintf(value_buffer, sizeof(value_buffer), "%s%s%s", value_expr,
-                             value_access, field_name);
+                    int is_string_type_el = strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0;
+                    if (field->optional && !is_string_type_el)
+                        snprintf(value_buffer, sizeof(value_buffer), "*%s%s%s", value_expr,
+                                 value_access, field_name);
+                    else
+                        snprintf(value_buffer, sizeof(value_buffer), "%s%s%s", value_expr,
+                                 value_access, field_name);
                 }
                 fprintf(source,
                         "    if ((result = %s(writer, %s)) != 0) return result;\n",
@@ -2044,7 +2055,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
 
             if (length->optional)
             {
-                fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access,
+                fprintf(source, "    if (%s%s%s) {\n", value_expr, value_access,
                         length->name);
             }
 
@@ -2079,7 +2090,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
 
             if (array->optional)
             {
-                fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access, field_name);
+                fprintf(source, "    if (%s%s%s) {\n", value_expr, value_access, field_name);
             }
 
             if (is_static)
@@ -2413,8 +2424,17 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             if (field->optional)
             {
                 fprintf(source, "    if (eo_reader_remaining(reader) > 0) {\n");
-                fprintf(source, "        %s%shas_%s = true;\n", out_expr, out_access, field_name);
+                if (is_struct)
+                    fprintf(source, "        %s%s%s = calloc(1, sizeof(%s));\n", out_expr, out_access, field_name, type_name);
+                else
+                    fprintf(source, "        %s%s%s = malloc(sizeof(*%s%s%s));\n", out_expr, out_access, field_name, out_expr, out_access, field_name);
             }
+
+            char addr_buffer[256];
+            if (field->optional)
+                snprintf(addr_buffer, sizeof(addr_buffer), "%s%s%s", out_expr, out_access, field_name);
+            else
+                snprintf(addr_buffer, sizeof(addr_buffer), "&%s%s%s", out_expr, out_access, field_name);
 
             if (is_enum)
             {
@@ -2423,8 +2443,8 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 const char *effective_type = type_override ? type_override : enum_data_type;
                 const char *enum_c_type = map_primitive_type(effective_type);
                 fprintf(source,
-                        "    if ((result = %s(reader, (%s *)&%s%s%s)) != 0) return result;\n",
-                        map_reader_fn(effective_type), enum_c_type, out_expr, out_access, field_name);
+                        "    if ((result = %s(reader, (%s *)%s)) != 0) return result;\n",
+                        map_reader_fn(effective_type), enum_c_type, addr_buffer);
                 free(type_override);
             }
             else if (is_struct)
@@ -2432,8 +2452,8 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 if (struct_has_storage(structs, structs_count, type_name))
                 {
                     fprintf(source,
-                            "    if ((result = %s_deserialize(&%s%s%s, reader)) != 0) return result;\n",
-                            type_name, out_expr, out_access, field_name);
+                            "    if ((result = %s_deserialize(%s, reader)) != 0) return result;\n",
+                            type_name, addr_buffer);
                 }
                 else
                 {
@@ -2444,9 +2464,14 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             }
             else if (strcmp(type_name, "bool") == 0)
             {
-                fprintf(source,
-                        "    int32_t raw_%s = 0; if ((result = eo_reader_get_char(reader, &raw_%s)) != 0) return result; %s%s%s = raw_%s == 1;\n",
-                        field_name, field_name, out_expr, out_access, field_name, field_name);
+                if (field->optional)
+                    fprintf(source,
+                            "    int32_t raw_%s = 0; if ((result = eo_reader_get_char(reader, &raw_%s)) != 0) return result; *%s%s%s = raw_%s == 1;\n",
+                            field_name, field_name, out_expr, out_access, field_name, field_name);
+                else
+                    fprintf(source,
+                            "    int32_t raw_%s = 0; if ((result = eo_reader_get_char(reader, &raw_%s)) != 0) return result; %s%s%s = raw_%s == 1;\n",
+                            field_name, field_name, out_expr, out_access, field_name, field_name);
             }
             else if (strcmp(type_name, "blob") == 0)
             {
@@ -2465,14 +2490,13 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             else
             {
                 fprintf(source,
-                        "    if ((result = %s(reader, &%s%s%s)) != 0) return result;\n",
-                        map_reader_fn(type_name), out_expr, out_access, field_name);
+                        "    if ((result = %s(reader, %s)) != 0) return result;\n",
+                        map_reader_fn(type_name), addr_buffer);
             }
 
             if (field->optional)
             {
-                fprintf(source, "    } else { %s%shas_%s = false; }\n", out_expr, out_access,
-                        field_name);
+                fprintf(source, "    }\n");
             }
 
             free(type_name);
@@ -2495,7 +2519,6 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             if (array->optional)
             {
                 fprintf(source, "    if (eo_reader_remaining(reader) > 0) {\n");
-                fprintf(source, "        %s%shas_%s = true;\n", out_expr, out_access, field_name);
             }
 
             if (is_static)
@@ -2692,8 +2715,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             fprintf(source, "    }\n");
             if (array->optional)
             {
-                fprintf(source, "    } else { %s%shas_%s = false; }\n", out_expr, out_access,
-                        field_name);
+                fprintf(source, "    }\n");
             }
 
             free(type_name);
@@ -2826,11 +2848,28 @@ static void write_free_elements(FILE *source, const char *struct_name,
             {
                 fprintf(source, "    free(%s%s%s);\n", value_expr, value_access, field_name);
             }
-            else if (!is_primitive_type(type_name) && !enum_exists(enums, enums_count, type_name) &&
-                     struct_has_heap(structs, structs_count, type_name, enums, enums_count))
+            else if (!is_primitive_type(type_name) && !enum_exists(enums, enums_count, type_name))
             {
-                fprintf(source, "    %s_free(&%s%s%s);\n", type_name, value_expr, value_access,
-                        field_name);
+                if (field->optional)
+                {
+                    if (struct_has_heap(structs, structs_count, type_name, enums, enums_count))
+                        fprintf(source, "    if (%s%s%s) { %s_free(%s%s%s); free(%s%s%s); }\n",
+                                value_expr, value_access, field_name,
+                                type_name, value_expr, value_access, field_name,
+                                value_expr, value_access, field_name);
+                    else
+                        fprintf(source, "    free(%s%s%s);\n", value_expr, value_access, field_name);
+                }
+                else
+                {
+                    if (struct_has_heap(structs, structs_count, type_name, enums, enums_count))
+                        fprintf(source, "    %s_free(&%s%s%s);\n", type_name, value_expr, value_access,
+                                field_name);
+                }
+            }
+            else if (field->optional)
+            {
+                fprintf(source, "    free(%s%s%s);\n", value_expr, value_access, field_name);
             }
             free(type_name);
             free(field_name);
@@ -3172,7 +3211,7 @@ static void write_size_elements(FILE *source, const char *struct_name,
             char *field_name = to_snake_case(length->name);
             int sz = primitive_byte_size(length->data_type);
             if (sz <= 0) sz = 1;
-            fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access, field_name);
+            fprintf(source, "    if (%s%s%s) {\n", value_expr, value_access, field_name);
             fprintf(source, "        total += %d;\n", sz);
             fprintf(source, "    }\n");
             free(field_name);
@@ -3208,13 +3247,19 @@ static void write_size_elements(FILE *source, const char *struct_name,
             }
 
             if (field->optional && field_name)
-                fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access, field_name);
+                fprintf(source, "    if (%s%s%s) {\n", value_expr, value_access, field_name);
 
             if (is_struct)
             {
                 if (field_name && struct_has_storage(structs, structs_count, type_name))
-                    fprintf(source, "    total += %s_size(&%s%s%s);\n",
-                            type_name, value_expr, value_access, field_name);
+                {
+                    if (field->optional)
+                        fprintf(source, "    total += %s_size(%s%s%s);\n",
+                                type_name, value_expr, value_access, field_name);
+                    else
+                        fprintf(source, "    total += %s_size(&%s%s%s);\n",
+                                type_name, value_expr, value_access, field_name);
+                }
                 else
                     fprintf(source, "    total += %s_size();\n", type_name);
             }
@@ -3287,7 +3332,7 @@ static void write_size_elements(FILE *source, const char *struct_name,
             }
 
             if (array->optional)
-                fprintf(source, "    if (%s%shas_%s) {\n", value_expr, value_access, field_name);
+                fprintf(source, "    if (%s%s%s) {\n", value_expr, value_access, field_name);
 
             if (!is_dynamic_elem && elem_size > 0)
             {
@@ -4169,9 +4214,18 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
     if (!name)
         return;
 
+    /* Optional fields are now pointers — dereference for scalar assertions */
+    struct json_object *optional_obj = NULL;
+    json_object_object_get_ex(prop, "optional", &optional_obj);
+    int is_optional = optional_obj && json_object_get_boolean(optional_obj);
+
     /* Build the C accessor expression and a human-readable assertion label */
     char c_expr[2048];
-    snprintf(c_expr, sizeof(c_expr), "%s%s", c_path, name);
+    if (is_optional && type_str &&
+        strcmp(type_str, "string") != 0 && type_str[0] != '[')
+        snprintf(c_expr, sizeof(c_expr), "*%s%s", c_path, name);
+    else
+        snprintf(c_expr, sizeof(c_expr), "%s%s", c_path, name);
 
     char label[1024];
     snprintf(label, sizeof(label), "%s %s", assert_path, name);
