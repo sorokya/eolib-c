@@ -23,6 +23,15 @@
 #define EOLIB_PATH_MAX PATH_MAX
 #endif
 
+static int eolib_mkdir(const char *path)
+{
+#if defined(_WIN32)
+    return mkdir(path);
+#else
+    return mkdir(path, 0755);
+#endif
+}
+
 #define ARRAY_GROW_CAPACITY(current) ((current) < 8 ? 8 : (current) * 2)
 
 static const char *CODEGEN_WARNING =
@@ -937,7 +946,7 @@ static int ensure_dir(const char *path)
         if (*p == '/')
         {
             *p = '\0';
-            if (mkdir(temp, 0755) != 0 && errno != EEXIST)
+            if (eolib_mkdir(temp) != 0 && errno != EEXIST)
             {
                 return -1;
             }
@@ -945,7 +954,7 @@ static int ensure_dir(const char *path)
         }
     }
 
-    if (mkdir(temp, 0755) != 0 && errno != EEXIST)
+    if (eolib_mkdir(temp) != 0 && errno != EEXIST)
     {
         return -1;
     }
