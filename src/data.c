@@ -8,6 +8,140 @@
 
 static size_t eo_reader_next_break_index(const EoReader *reader);
 
+/*
+ * Unicode code points for Windows-1252 bytes 0x80-0x9F.
+ * Index 0 maps to byte 0x80, index 31 maps to byte 0x9F.
+ * A value of 0 means the byte is undefined in Windows-1252.
+ */
+static const uint32_t cp1252_unicode_extras[32] = {
+    0x20AC, 0,      0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+    0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0,      0x017D, 0,
+    0,      0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+    0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0,      0x017E, 0x0178,
+};
+
+static uint8_t unicode_to_cp1252(uint32_t codepoint)
+{
+    if (codepoint <= 0x7F)
+        return (uint8_t)codepoint;
+
+    if (codepoint >= 0xA0 && codepoint <= 0xFF)
+        return (uint8_t)codepoint;
+
+    for (int i = 0; i < 32; ++i)
+    {
+        if (cp1252_unicode_extras[i] == codepoint)
+            return (uint8_t)(0x80 + i);
+    }
+
+    return '?';
+}
+
+/*
+ * Converts a UTF-8 string to Windows-1252 in-place into `output`.
+ * `output` must be at least `input_len + 1` bytes.
+ * Returns the number of bytes written (excluding the null terminator).
+ * Valid UTF-8 multi-byte sequences are decoded and mapped to Windows-1252.
+ * Characters with no Windows-1252 representation are replaced with '?'.
+ * Bytes that do not form a valid UTF-8 sequence are passed through as-is.
+ */
+static size_t normalize_to_cp1252(const char *input, char *output, size_t input_len)
+{
+    size_t out_pos = 0;
+    size_t i = 0;
+
+    while (i < input_len)
+    {
+        uint8_t b0 = (uint8_t)input[i];
+
+        if (b0 < 0x80)
+        {
+            output[out_pos++] = (char)b0;
+            i++;
+        }
+        else if (b0 >= 0xC2 && b0 <= 0xDF && i + 1 < input_len)
+        {
+            uint8_t b1 = (uint8_t)input[i + 1];
+            if ((b1 & 0xC0) == 0x80)
+            {
+                uint32_t cp = ((uint32_t)(b0 & 0x1F) << 6) | (b1 & 0x3F);
+                output[out_pos++] = (char)unicode_to_cp1252(cp);
+                i += 2;
+            }
+            else
+            {
+                output[out_pos++] = (char)b0;
+                i++;
+            }
+        }
+        else if (b0 >= 0xE0 && b0 <= 0xEF && i + 2 < input_len)
+        {
+            uint8_t b1 = (uint8_t)input[i + 1];
+            uint8_t b2 = (uint8_t)input[i + 2];
+            if ((b1 & 0xC0) == 0x80 && (b2 & 0xC0) == 0x80)
+            {
+                uint32_t cp = ((uint32_t)(b0 & 0x0F) << 12)
+                            | ((uint32_t)(b1 & 0x3F) << 6)
+                            | (b2 & 0x3F);
+                output[out_pos++] = (char)unicode_to_cp1252(cp);
+                i += 3;
+            }
+            else
+            {
+                output[out_pos++] = (char)b0;
+                i++;
+            }
+        }
+        else if (b0 >= 0xF0 && b0 <= 0xF4 && i + 3 < input_len)
+        {
+            uint8_t b1 = (uint8_t)input[i + 1];
+            uint8_t b2 = (uint8_t)input[i + 2];
+            uint8_t b3 = (uint8_t)input[i + 3];
+            if ((b1 & 0xC0) == 0x80 && (b2 & 0xC0) == 0x80 && (b3 & 0xC0) == 0x80)
+            {
+                /* Code points above U+FFFF have no Windows-1252 representation. */
+                output[out_pos++] = '?';
+                i += 4;
+            }
+            else
+            {
+                output[out_pos++] = (char)b0;
+                i++;
+            }
+        }
+        else
+        {
+            /* Continuation byte in isolation, or other non-UTF-8 byte: treat as raw CP1252. */
+            output[out_pos++] = (char)b0;
+            i++;
+        }
+    }
+
+    output[out_pos] = '\0';
+    return out_pos;
+}
+
+EoResult eo_string_to_windows_1252(const char *value, char **out_value)
+{
+    if (!out_value)
+        return EO_NULL_PTR;
+
+    if (!value)
+    {
+        *out_value = NULL;
+        return EO_SUCCESS;
+    }
+
+    size_t in_len = strlen(value);
+    char *out = (char *)malloc(in_len + 1);
+    if (!out)
+        return EO_ALLOC_FAILED;
+
+    normalize_to_cp1252(value, out, in_len);
+    *out_value = out;
+    return EO_SUCCESS;
+}
+
 const char *eo_result_string(EoResult result)
 {
     switch (result)
@@ -384,33 +518,36 @@ EoResult eo_writer_add_string(EoWriter *writer, const char *value)
         return EO_SUCCESS;
     }
 
-    size_t length = strlen(value);
+    size_t in_len = strlen(value);
+    char *normalized = (char *)malloc(in_len + 1);
+    if (!normalized)
+    {
+        return EO_ALLOC_FAILED;
+    }
+    size_t length = normalize_to_cp1252(value, normalized, in_len);
+
     EoResult result;
     if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
     {
+        free(normalized);
         return result;
     }
 
     if (writer->string_sanitization_mode)
     {
-        for (const char *c = value; *c != '\0'; ++c)
+        for (size_t k = 0; k < length; ++k)
         {
-            if (*c == (char)EO_BREAK_BYTE)
-            {
-                writer->data[writer->length++] = 0x79;
-            }
-            else
-            {
-                writer->data[writer->length++] = *c;
-            }
+            writer->data[writer->length++] =
+                (normalized[k] == (char)EO_BREAK_BYTE) ? 0x79 : (uint8_t)normalized[k];
         }
     }
     else
     {
-        memcpy(writer->data + writer->length, value, length);
+        memcpy(writer->data + writer->length, normalized, length);
         writer->length += length;
     }
 
+    free(normalized);
     return EO_SUCCESS;
 }
 
@@ -427,40 +564,41 @@ EoResult eo_writer_add_encoded_string(EoWriter *writer, const char *value)
         return EO_SUCCESS;
     }
 
-    size_t length = strlen(value);
+    size_t in_len = strlen(value);
+    char *normalized = (char *)malloc(in_len + 1);
+    if (!normalized)
+    {
+        return EO_ALLOC_FAILED;
+    }
+    size_t length = normalize_to_cp1252(value, normalized, in_len);
+
     EoResult result;
     if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
     {
+        free(normalized);
         return result;
     }
 
     uint8_t *encoded = (uint8_t *)malloc(length);
     if (!encoded)
     {
+        free(normalized);
         return EO_ALLOC_FAILED;
     }
 
     if (writer->string_sanitization_mode)
     {
-        size_t i = 0;
-        for (const char *c = value; *c != '\0'; ++c)
+        for (size_t k = 0; k < length; ++k)
         {
-            char ch = *c;
-            if (ch == (char)EO_BREAK_BYTE)
-            {
-                encoded[i] = 0x79;
-            }
-            else
-            {
-                encoded[i] = *c;
-            }
-            i++;
+            encoded[k] = (normalized[k] == (char)EO_BREAK_BYTE) ? 0x79 : (uint8_t)normalized[k];
         }
     }
     else
     {
-        memcpy(encoded, value, length);
+        memcpy(encoded, normalized, length);
     }
+
+    free(normalized);
 
     eo_encode_string(encoded, length);
     memcpy(writer->data + writer->length, encoded, length);
@@ -484,44 +622,49 @@ EoResult eo_writer_add_fixed_string(EoWriter *writer, const char *value, size_t 
         return EO_SUCCESS;
     }
 
-    size_t value_len = strlen(value);
+    size_t in_len = strlen(value);
+    char *normalized = (char *)malloc(in_len + 1);
+    if (!normalized)
+    {
+        return EO_ALLOC_FAILED;
+    }
+    size_t value_len = normalize_to_cp1252(value, normalized, in_len);
 
     if (padded && value_len > length)
     {
+        free(normalized);
         return EO_STR_OUT_OF_RANGE;
     }
 
     if (!padded && value_len != length)
     {
+        free(normalized);
         return EO_STR_TOO_SHORT;
     }
 
     EoResult result;
     if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
     {
+        free(normalized);
         return result;
     }
 
     if (writer->string_sanitization_mode)
     {
-        for (const char *c = value; *c != '\0'; ++c)
+        for (size_t k = 0; k < value_len; ++k)
         {
-            if (*c == (char)EO_BREAK_BYTE)
-            {
-                writer->data[writer->length++] = 0x79;
-            }
-            else
-            {
-                writer->data[writer->length++] = *c;
-            }
+            writer->data[writer->length++] =
+                (normalized[k] == (char)EO_BREAK_BYTE) ? 0x79 : (uint8_t)normalized[k];
         }
     }
     else
     {
         size_t to_copy = padded ? value_len : length;
-        memcpy(writer->data + writer->length, value, to_copy);
+        memcpy(writer->data + writer->length, normalized, to_copy);
         writer->length += to_copy;
     }
+
+    free(normalized);
 
     if (padded)
     {
@@ -548,51 +691,54 @@ EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value,
         return EO_SUCCESS;
     }
 
-    size_t value_len = strlen(value);
+    size_t in_len = strlen(value);
+    char *normalized = (char *)malloc(in_len + 1);
+    if (!normalized)
+    {
+        return EO_ALLOC_FAILED;
+    }
+    size_t value_len = normalize_to_cp1252(value, normalized, in_len);
 
     if (padded && value_len > length)
     {
+        free(normalized);
         return EO_STR_OUT_OF_RANGE;
     }
 
     if (!padded && value_len != length)
     {
+        free(normalized);
         return EO_STR_TOO_SHORT;
     }
 
     EoResult result;
     if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
     {
+        free(normalized);
         return result;
     }
 
     uint8_t *encoded = (uint8_t *)malloc(length);
     if (!encoded)
     {
+        free(normalized);
         return EO_ALLOC_FAILED;
     }
 
     if (writer->string_sanitization_mode)
     {
-        size_t i = 0;
-        for (const char *c = value; *c != '\0'; ++c)
+        for (size_t k = 0; k < value_len; ++k)
         {
-            if (*c == (char)EO_BREAK_BYTE)
-            {
-                encoded[i] = 0x79;
-            }
-            else
-            {
-                encoded[i] = *c;
-            }
-            i++;
+            encoded[k] = (normalized[k] == (char)EO_BREAK_BYTE) ? 0x79 : (uint8_t)normalized[k];
         }
     }
     else
     {
         size_t to_copy = padded ? value_len : length;
-        memcpy(encoded, value, to_copy);
+        memcpy(encoded, normalized, to_copy);
     }
+
+    free(normalized);
 
     if (padded)
     {

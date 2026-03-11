@@ -41,6 +41,19 @@ typedef struct EoReader
 } EoReader;
 
 /**
+ * Converts a UTF-8 string to Windows-1252 (CP1252) encoding.
+ * @param value UTF-8 input string. If NULL, @p out_value is set to NULL and EO_SUCCESS is returned.
+ * @param out_value Output string in Windows-1252, heap-allocated — caller must free.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if @p out_value is NULL, or
+ *         EO_ALLOC_FAILED if memory allocation fails.
+ * @remarks Valid UTF-8 multi-byte sequences are decoded and mapped to their Windows-1252
+ *          equivalents. Characters with no Windows-1252 representation are replaced with '?'.
+ *          Bytes that do not form a valid UTF-8 sequence are passed through unchanged, so
+ *          strings that are already Windows-1252 encoded are returned as-is.
+ */
+EoResult eo_string_to_windows_1252(const char *value, char **out_value);
+
+/**
  * Initializes a writer with a default initial capacity.
  * @return The initialized writer.
  */

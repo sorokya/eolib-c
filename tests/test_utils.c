@@ -59,12 +59,58 @@ void expect_equal_str(const char *name, const char *actual, const char *expected
         return;
     }
 
-    if (!actual || !expected || strcmp(actual, expected) != 0)
+    int mismatch = 0;
+
+    if (!actual || !expected)
     {
-        fprintf(stderr, "%s failed: actual=%s, expected=%s\n",
-                name,
-                actual ? actual : "(null)",
-                expected ? expected : "(null)");
+        mismatch = 1;
+    }
+    else
+    {
+        size_t actual_len = strlen(actual);
+        size_t expected_len = strlen(expected);
+        if (actual_len != expected_len || memcmp(actual, expected, actual_len) != 0)
+        {
+            mismatch = 1;
+        }
+    }
+
+    if (mismatch)
+    {
+        fprintf(stderr, "%s failed\n", name);
+        fprintf(stderr, "  actual  : ");
+        if (actual)
+        {
+            for (size_t i = 0; actual[i] != '\0'; i++)
+            {
+                uint8_t b = (uint8_t)actual[i];
+                if (b >= 0x20 && b < 0x7F)
+                    fprintf(stderr, "%c", b);
+                else
+                    fprintf(stderr, "\\x%02X", b);
+            }
+        }
+        else
+        {
+            fprintf(stderr, "(null)");
+        }
+        fprintf(stderr, "\n  expected: ");
+        if (expected)
+        {
+            for (size_t i = 0; expected[i] != '\0'; i++)
+            {
+                uint8_t b = (uint8_t)expected[i];
+                if (b >= 0x20 && b < 0x7F)
+                    fprintf(stderr, "%c", b);
+                else
+                    fprintf(stderr, "\\x%02X", b);
+            }
+        }
+        else
+        {
+            fprintf(stderr, "(null)");
+        }
+        fprintf(stderr, "\n");
         test_failures++;
     }
 }

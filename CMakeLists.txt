@@ -152,6 +152,7 @@ set(EOLIB_data_TESTS
 	eo_reader_get_bytes
 	eo_reader_chunked_mode
 	eo_writer_fixed_string
+	eo_string_to_windows_1252
 )
 foreach(test_name IN LISTS EOLIB_data_TESTS)
 	add_test(NAME eolib_data_tests.${test_name} COMMAND eolib_data_tests ${test_name})

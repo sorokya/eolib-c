@@ -346,6 +346,58 @@ static void test_eo_reader_chunked_mode()
     expect_equal_int("eo_reader_get_byte final", value, 5);
 }
 
+static void test_eo_string_to_windows_1252()
+{
+    char *out = NULL;
+
+    /* ASCII strings pass through unchanged */
+    expect_equal_int("eo_string_to_windows_1252 ascii", eo_string_to_windows_1252("Hello", &out), EO_SUCCESS);
+    expect_equal_str("eo_string_to_windows_1252 ascii value", out, "Hello");
+    free(out); out = NULL;
+
+    /* UTF-8 é (U+00E9) -> CP1252 0xE9 */
+    expect_equal_int("eo_string_to_windows_1252 utf8 latin1", eo_string_to_windows_1252("\xC3\xA9", &out), EO_SUCCESS);
+    expect_equal_str("eo_string_to_windows_1252 utf8 latin1 value", out, "\xE9");
+    free(out); out = NULL;
+
+    /* UTF-8 € (U+20AC) -> CP1252 0x80 */
+    expect_equal_int("eo_string_to_windows_1252 utf8 euro", eo_string_to_windows_1252("\xE2\x82\xAC", &out), EO_SUCCESS);
+    expect_equal_str("eo_string_to_windows_1252 utf8 euro value", out, "\x80");
+    free(out); out = NULL;
+
+    /* UTF-8 š (U+0161) -> CP1252 0x9A */
+    expect_equal_int("eo_string_to_windows_1252 utf8 0x9A", eo_string_to_windows_1252("\xC5\xA1", &out), EO_SUCCESS);
+    expect_equal_str("eo_string_to_windows_1252 utf8 0x9A value", out, "\x9A");
+    free(out); out = NULL;
+
+    /* Raw CP1252 bytes pass through as-is */
+    expect_equal_int("eo_string_to_windows_1252 raw cp1252", eo_string_to_windows_1252("\xE9\xF1", &out), EO_SUCCESS);
+    expect_equal_str("eo_string_to_windows_1252 raw cp1252 value", out, "\xE9\xF1");
+    free(out); out = NULL;
+
+    /* 4-byte UTF-8 emoji (U+1F600) has no CP1252 representation -> '?' */
+    expect_equal_int("eo_string_to_windows_1252 emoji", eo_string_to_windows_1252("\xF0\x9F\x98\x80", &out), EO_SUCCESS);
+    expect_equal_str("eo_string_to_windows_1252 emoji value", out, "?");
+    free(out); out = NULL;
+
+    /* Unicode code point with no CP1252 mapping (U+0400, Cyrillic Є) -> '?' */
+    expect_equal_int("eo_string_to_windows_1252 no mapping", eo_string_to_windows_1252("\xD0\x80", &out), EO_SUCCESS);
+    expect_equal_str("eo_string_to_windows_1252 no mapping value", out, "?");
+    free(out); out = NULL;
+
+    /* Mixed ASCII and UTF-8 */
+    expect_equal_int("eo_string_to_windows_1252 mixed", eo_string_to_windows_1252("caf\xC3\xA9", &out), EO_SUCCESS);
+    expect_equal_str("eo_string_to_windows_1252 mixed value", out, "caf\xE9");
+    free(out); out = NULL;
+
+    /* NULL input returns NULL output */
+    expect_equal_int("eo_string_to_windows_1252 null input", eo_string_to_windows_1252(NULL, &out), EO_SUCCESS);
+    expect("eo_string_to_windows_1252 null input value", out == NULL);
+
+    /* NULL out_value returns EO_NULL_PTR */
+    expect_equal_int("eo_string_to_windows_1252 null out", eo_string_to_windows_1252("test", NULL), EO_NULL_PTR);
+}
+
 static const TestCase eo_data_tests[] = {
     {"eo_writer_init_with_capacity", test_eo_writer_init_with_capacity},
     {"eo_writer_ensure_capacity", test_eo_writer_ensure_capacity},
@@ -361,6 +413,7 @@ static const TestCase eo_data_tests[] = {
     {"eo_reader_string_reads", test_eo_reader_string_reads},
     {"eo_reader_get_bytes", test_eo_reader_get_bytes},
     {"eo_reader_chunked_mode", test_eo_reader_chunked_mode},
+    {"eo_string_to_windows_1252", test_eo_string_to_windows_1252},
 };
 
 int main(int argc, char **argv)
