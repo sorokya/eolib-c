@@ -165,11 +165,23 @@ static void test_eo_writer_add_strings_and_bytes()
 
 static void test_eo_writer_string_sanitization_mode()
 {
-    EoWriter writer = eo_writer_init_with_capacity(0);
+    EoWriter writer = eo_writer_init_with_capacity(3);
     expect("eo_writer_get_string_sanitization_mode defaults false", !eo_writer_get_string_sanitization_mode(&writer));
+    eo_writer_add_string(&writer, "he\xFF");
+    expect_equal_str("eo_writer_add_string should not sanitize when mode is disabled", (const char *)writer.data, "he\xFF");
+    free(writer.data);
 
+    writer = eo_writer_init_with_capacity(3);
     eo_writer_set_string_sanitization_mode(&writer, true);
     expect("eo_writer_set_string_sanitization_mode true", eo_writer_get_string_sanitization_mode(&writer));
+    eo_writer_add_string(&writer, "he\xFF");
+    expect_equal_str("eo_writer_add_string should sanitize when mode is enabled", (const char *)writer.data, "hey");
+
+    free(writer.data);
+    writer = eo_writer_init_with_capacity(3);
+    eo_writer_set_string_sanitization_mode(&writer, true);
+    eo_writer_add_encoded_string(&writer, "he\xFF");
+    expect_equal_str("eo_writer_add_encoded_string should sanitize when mode is enabled", (const char *)writer.data, "T:e");
 
     eo_writer_set_string_sanitization_mode(&writer, false);
     expect("eo_writer_set_string_sanitization_mode false", !eo_writer_get_string_sanitization_mode(&writer));

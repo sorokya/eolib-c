@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "result.h"
+
 typedef struct Sequencer
 {
     int32_t start;
@@ -17,11 +19,14 @@ typedef struct Sequencer
 Sequencer sequencer_init(int32_t start);
 
 /**
- * Gets the next value in the sequence and advances the counter.
- * @param sequencer The sequencer to get the next value from.
- * @return The next value in the sequence or -1 if the sequencer is NULL.
+ * Gets the next value in the sequence, advances the counter, and writes it
+ * to out_value.
+ * @param sequencer The sequencer to advance.
+ * @param out_value Output for the next sequence value. May be NULL to advance
+ *                  without capturing the value.
+ * @return EO_SUCCESS on success, or EO_NULL_PTR if sequencer is NULL.
  */
-int32_t sequencer_next(Sequencer *sequencer);
+EoResult sequencer_next(Sequencer *sequencer, int32_t *out_value);
 
 /**
  * Generates a random starting value for a sequencer.
@@ -50,16 +55,20 @@ int32_t sequence_start_from_ping(int32_t s1, int32_t s2);
  * Initializes a sequence of bytes based on the starting value.
  * @param start The starting value for the sequence.
  * @param out_bytes A pointer to the buffer where the initialized byte sequence will be stored. Must have space for at least 2 bytes.
- * @return 0 on success, -1 on failure.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if out_bytes is NULL,
+ *         EO_INVALID_SEQUENCE_RANGE if the derived range is empty, or
+ *         EO_SEQUENCE_OUT_OF_RANGE if seq2 cannot be encoded as a single EO byte.
  */
-int sequence_init_bytes(int32_t start, uint8_t *out_bytes);
+EoResult sequence_init_bytes(int32_t start, uint8_t *out_bytes);
 
 /**
  * Generates a sequence of bytes for the ping packet based on the starting value.
  * @param start The starting value for the sequence.
  * @param out_bytes A pointer to the buffer where the ping byte sequence will be stored. Must have space for at least 2 bytes.
- * @return 0 on success, -1 on failure.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if out_bytes is NULL,
+ *         EO_INVALID_SEQUENCE_RANGE if the derived range is empty, or
+ *         EO_SEQUENCE_OUT_OF_RANGE if seq2 cannot be encoded as a single EO byte.
  */
-int sequence_ping_bytes(int32_t start, uint8_t *out_bytes);
+EoResult sequence_ping_bytes(int32_t start, uint8_t *out_bytes);
 
 #endif

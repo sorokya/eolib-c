@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 static size_t eo_reader_next_break_index(const EoReader *reader);
 
@@ -338,8 +339,26 @@ EoResult eo_writer_add_string(EoWriter *writer, const char *value)
     {
         return result;
     }
-    memcpy(writer->data + writer->length, value, length);
-    writer->length += length;
+
+    if (writer->string_sanitization_mode)
+    {
+        for (const char *c = value; *c != '\0'; ++c)
+        {
+            if (*c == (char)0xff)
+            {
+                writer->data[writer->length++] = 0x79;
+            }
+            else
+            {
+                writer->data[writer->length++] = *c;
+            }
+        }
+    }
+    else
+    {
+        memcpy(writer->data + writer->length, value, length);
+        writer->length += length;
+    }
 
     return EO_SUCCESS;
 }
@@ -370,7 +389,28 @@ EoResult eo_writer_add_encoded_string(EoWriter *writer, const char *value)
         return EO_ALLOC_FAILED;
     }
 
-    memcpy(encoded, value, length);
+    if (writer->string_sanitization_mode)
+    {
+        size_t i = 0;
+        for (const char *c = value; *c != '\0'; ++c)
+        {
+            char ch = *c;
+            if (ch == (char)0xff)
+            {
+                encoded[i] = 0x79;
+            }
+            else
+            {
+                encoded[i] = *c;
+            }
+            i++;
+        }
+    }
+    else
+    {
+        memcpy(encoded, value, length);
+    }
+
     eo_encode_string(encoded, length);
     memcpy(writer->data + writer->length, encoded, length);
     writer->length += length;

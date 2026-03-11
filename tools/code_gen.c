@@ -2207,7 +2207,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 const char *expected = dummy->value ? dummy->value : "";
                 fprintf(source,
                         "    { char *tmp = NULL; if ((result = %s(reader, &tmp)) != 0) return result; "
-                        "if (!tmp || strcmp(tmp, \"%s\") != 0) { free(tmp); return -1; } free(tmp); }\n",
+                        "if (!tmp || strcmp(tmp, \"%s\") != 0) { free(tmp); return EO_INVALID_DATA; } free(tmp); }\n",
                         read_fn, expected);
             }
             else
@@ -2215,7 +2215,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 const char *expected = dummy->value ? dummy->value : "0";
                 fprintf(source,
                         "    { %s tmp = 0; if ((result = %s(reader, &tmp)) != 0) return result; "
-                        "if (tmp != (%s)(%s)) return -1; }\n",
+                        "if (tmp != (%s)(%s)) return EO_INVALID_DATA; }\n",
                         map_primitive_type(dummy->data_type), map_reader_fn(dummy->data_type),
                         map_primitive_type(dummy->data_type), expected);
             }
@@ -2250,7 +2250,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                     const char *expected = field->value ? field->value : "";
                     fprintf(source,
                             "    { char *tmp = NULL; if ((result = %s(reader, &tmp)) != 0) return result; "
-                            "if (!tmp || strcmp(tmp, \"%s\") != 0) { free(tmp); return -1; } free(tmp); }\n",
+                            "if (!tmp || strcmp(tmp, \"%s\") != 0) { free(tmp); return EO_INVALID_DATA; } free(tmp); }\n",
                             read_fn, expected);
                 }
                 else
@@ -2258,7 +2258,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                     const char *expected = field->value ? field->value : "0";
                     fprintf(source,
                             "    { %s tmp = 0; if ((result = %s(reader, &tmp)) != 0) return result; "
-                            "if (tmp != (%s)(%s)) return -1; }\n",
+                            "if (tmp != (%s)(%s)) return EO_INVALID_DATA; }\n",
                             map_primitive_type(type_name), map_reader_fn(type_name),
                             map_primitive_type(type_name), expected);
                 }
@@ -2373,7 +2373,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                         out_expr, out_access, field_name, item_c_type,
                         out_expr, out_access, field_name, item_c_type);
                 fprintf(source,
-                        "    if (!%s%s%s && %s%s%s_length > 0) return -1;\n",
+                        "    if (!%s%s%s && %s%s%s_length > 0) return EO_ALLOC_FAILED;\n",
                         out_expr, out_access, field_name, out_expr, out_access, field_name);
                 fprintf(source, "    for (size_t i = 0; i < %s%s%s_length; ++i) {\n",
                         out_expr, out_access, field_name);
@@ -2484,7 +2484,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                         "            %s *new_items = realloc(%s%s%s, new_capacity * sizeof(%s));\n",
                         item_c_type, out_expr, out_access, field_name, item_c_type);
                 fprintf(source,
-                        "            if (!new_items) return -1;\n            %s%s%s = new_items;\n            %s_capacity = new_capacity;\n",
+                        "            if (!new_items) return EO_ALLOC_FAILED;\n            %s%s%s = new_items;\n            %s_capacity = new_capacity;\n",
                         out_expr, out_access, field_name, field_name);
                 fprintf(source, "        }\n");
                 if (is_enum)
@@ -2622,7 +2622,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 if (case_has_storage && has_storage)
                 {
                     fprintf(source,
-                            "        if (!%s%s%s_data) { %s%s%s_data = calloc(1, sizeof(*%s%s%s_data)); if (!%s%s%s_data) return -1; }\n",
+                            "        if (!%s%s%s_data) { %s%s%s_data = calloc(1, sizeof(*%s%s%s_data)); if (!%s%s%s_data) return EO_ALLOC_FAILED; }\n",
                             out_expr, out_access, field_name, out_expr, out_access, field_name,
                             out_expr, out_access, field_name, out_expr, out_access, field_name);
                     {
@@ -2677,16 +2677,16 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
         fprintf(header, "} %s;\n\n", name);
 
         fprintf(header,
-                "int %s_serialize(const %s *value, EoWriter *writer);\n",
+                "EoResult %s_serialize(const %s *value, EoWriter *writer);\n",
                 name,
                 name);
         fprintf(header,
-                "int %s_deserialize(%s *out, EoReader *reader);\n\n",
+                "EoResult %s_deserialize(%s *out, EoReader *reader);\n\n",
                 name,
                 name);
 
-        fprintf(source, "int %s_serialize(const %s *value, EoWriter *writer) {\n", name, name);
-        fprintf(source, "    int result = 0;\n");
+        fprintf(source, "EoResult %s_serialize(const %s *value, EoWriter *writer) {\n", name, name);
+        fprintf(source, "    EoResult result = EO_SUCCESS;\n");
         fprintf(source,
                 "    bool previous_sanitization = eo_writer_get_string_sanitization_mode(writer);\n");
 
@@ -2697,8 +2697,8 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
                 "    eo_writer_set_string_sanitization_mode(writer, previous_sanitization);\n");
         fprintf(source, "    return result;\n}\n\n");
 
-        fprintf(source, "int %s_deserialize(%s *out, EoReader *reader) {\n", name, name);
-        fprintf(source, "    int result = 0;\n");
+        fprintf(source, "EoResult %s_deserialize(%s *out, EoReader *reader) {\n", name, name);
+        fprintf(source, "    EoResult result = EO_SUCCESS;\n");
         fprintf(source,
                 "    bool previous_chunked = eo_reader_get_chunked_reading_mode(reader);\n");
         fprintf(source, "    memset(out, 0, sizeof(*out));\n");
@@ -2712,14 +2712,14 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
     }
 
     fprintf(header,
-            "int %s_serialize(EoWriter *writer);\n",
+            "EoResult %s_serialize(EoWriter *writer);\n",
             name);
     fprintf(header,
-            "int %s_deserialize(EoReader *reader);\n\n",
+            "EoResult %s_deserialize(EoReader *reader);\n\n",
             name);
 
-    fprintf(source, "int %s_serialize(EoWriter *writer) {\n", name);
-    fprintf(source, "    int result = 0;\n");
+    fprintf(source, "EoResult %s_serialize(EoWriter *writer) {\n", name);
+    fprintf(source, "    EoResult result = EO_SUCCESS;\n");
     fprintf(source,
             "    bool previous_sanitization = eo_writer_get_string_sanitization_mode(writer);\n");
 
@@ -2730,8 +2730,8 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
             "    eo_writer_set_string_sanitization_mode(writer, previous_sanitization);\n");
     fprintf(source, "    return result;\n}\n\n");
 
-    fprintf(source, "int %s_deserialize(EoReader *reader) {\n", name);
-    fprintf(source, "    int result = 0;\n");
+    fprintf(source, "EoResult %s_deserialize(EoReader *reader) {\n", name);
+    fprintf(source, "    EoResult result = EO_SUCCESS;\n");
     fprintf(source,
             "    bool previous_chunked = eo_reader_get_chunked_reading_mode(reader);\n");
 

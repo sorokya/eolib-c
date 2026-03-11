@@ -16,6 +16,7 @@ CPackConfig.cmake
 CPackSourceConfig.cmake
 eolibTargets.cmake
 eolibTargets-*.cmake
+.cmake
 
 code_gen
 eolib**tests
