@@ -84,8 +84,10 @@ Data Fields</h2></td></tr>
 <tr class="separator:ac5fa2128ef76fee67a9e1e95141a043c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2183d013343e98c4faea7f79763a8b51"><td class="memItemLeft" >union {</td></tr>
 <tr class="memitem:afb1379e6518b4325e0efe98f179e1e34"><td class="memItemLeft" >&#160;&#160;&#160;struct {</td></tr>
-<tr class="memitem:a25b3027df7383a42a3dd7ec8e465564e"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structEoArray.html">EoArray</a>&#160;&#160;&#160;<a class="el" href="structLoginReplyServerPacket.html#aea7ba1d6a9d230c504dc3d2bb92b7957">characters</a></td></tr>
-<tr class="separator:a25b3027df7383a42a3dd7ec8e465564e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89191178192c101783095715993154c5"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;size_t&#160;&#160;&#160;<a class="el" href="structLoginReplyServerPacket.html#ad63a01b6ca91815af1a4403a03fa4f05">characters_length</a></td></tr>
+<tr class="separator:a89191178192c101783095715993154c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94950c0d33eb38911ec29fb59c0c6766"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structCharacterSelectionListEntry.html">CharacterSelectionListEntry</a> *&#160;&#160;&#160;<a class="el" href="structLoginReplyServerPacket.html#a7fb9597c0c1922f465454f0d0225792d">characters</a></td></tr>
+<tr class="separator:a94950c0d33eb38911ec29fb59c0c6766"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb1379e6518b4325e0efe98f179e1e34"><td class="memItemLeft" valign="top">&#160;&#160;&#160;}&#160;&#160;&#160;<a class="el" href="structLoginReplyServerPacket.html#a20ac95965ef3935c2a7d70a9bc42b7ce">ok</a></td></tr>
 <tr class="separator:afb1379e6518b4325e0efe98f179e1e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2183d013343e98c4faea7f79763a8b51"><td class="memItemLeft" valign="top">} *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLoginReplyServerPacket.html#a2183d013343e98c4faea7f79763a8b51">reply_code_data</a></td></tr>
@@ -93,21 +95,37 @@ Data Fields</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03184">3184</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03211">3211</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a id="aea7ba1d6a9d230c504dc3d2bb92b7957" name="aea7ba1d6a9d230c504dc3d2bb92b7957"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea7ba1d6a9d230c504dc3d2bb92b7957">&#9670;&#160;</a></span>characters</h2>
+<a id="a7fb9597c0c1922f465454f0d0225792d" name="a7fb9597c0c1922f465454f0d0225792d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fb9597c0c1922f465454f0d0225792d">&#9670;&#160;</a></span>characters</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> LoginReplyServerPacket::characters</td>
+          <td class="memname"><a class="el" href="structCharacterSelectionListEntry.html">CharacterSelectionListEntry</a>* LoginReplyServerPacket::characters</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03188">3188</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03216">3216</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="ad63a01b6ca91815af1a4403a03fa4f05" name="ad63a01b6ca91815af1a4403a03fa4f05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad63a01b6ca91815af1a4403a03fa4f05">&#9670;&#160;</a></span>characters_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t LoginReplyServerPacket::characters_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03215">3215</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -137,7 +155,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03185">3185</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03212">3212</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

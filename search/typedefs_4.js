@@ -17,13 +17,14 @@ var searchData=
   ['emotereportclientpacket_14',['EmoteReportClientPacket',['../protocol_8h.html#a9ea45e09592cfc4564efe7b196291322',1,'protocol.h']]],
   ['enf_15',['Enf',['../protocol_8h.html#ad4a67519654551ac08cd55e129f12f14',1,'protocol.h']]],
   ['enfrecord_16',['EnfRecord',['../protocol_8h.html#afc8ea3b4d6bc8de54835b277f5f01eaf',1,'protocol.h']]],
-  ['eoreader_17',['EoReader',['../eo__data_8h.html#a65459f6d2e413ead340052d70be16108',1,'eo_data.h']]],
-  ['eowriter_18',['EoWriter',['../eo__data_8h.html#a220b9577f76dad45966319812ce7ded1',1,'eo_data.h']]],
-  ['equipmentchange_19',['EquipmentChange',['../protocol_8h.html#a12bf00fe32ac71be4bf727fa15ec3a15',1,'protocol.h']]],
-  ['equipmentcharacterselect_20',['EquipmentCharacterSelect',['../protocol_8h.html#ab75717d584d2bf78563142f7a8d9b9fe',1,'protocol.h']]],
-  ['equipmentmapinfo_21',['EquipmentMapInfo',['../protocol_8h.html#a90ffe9f74104c73e221803ed2815e3f6',1,'protocol.h']]],
-  ['equipmentpaperdoll_22',['EquipmentPaperdoll',['../protocol_8h.html#a5e0b80ea19f73b7fbb428e0f80527c9f',1,'protocol.h']]],
-  ['equipmentwelcome_23',['EquipmentWelcome',['../protocol_8h.html#a689485ea8be0c28fe23726de3e1d93d0',1,'protocol.h']]],
-  ['esf_24',['Esf',['../protocol_8h.html#a6dc87cc318c06e221f34ba08f4c10249',1,'protocol.h']]],
-  ['esfrecord_25',['EsfRecord',['../protocol_8h.html#a77cd42e0e0cb6bb82204b5766d2c9543',1,'protocol.h']]]
+  ['eoreader_17',['EoReader',['../data_8h.html#a65459f6d2e413ead340052d70be16108',1,'data.h']]],
+  ['eoresult_18',['EoResult',['../result_8h.html#a00dc4545767ec5a71b9f7449f06d32c7',1,'result.h']]],
+  ['eowriter_19',['EoWriter',['../data_8h.html#a220b9577f76dad45966319812ce7ded1',1,'data.h']]],
+  ['equipmentchange_20',['EquipmentChange',['../protocol_8h.html#a12bf00fe32ac71be4bf727fa15ec3a15',1,'protocol.h']]],
+  ['equipmentcharacterselect_21',['EquipmentCharacterSelect',['../protocol_8h.html#ab75717d584d2bf78563142f7a8d9b9fe',1,'protocol.h']]],
+  ['equipmentmapinfo_22',['EquipmentMapInfo',['../protocol_8h.html#a90ffe9f74104c73e221803ed2815e3f6',1,'protocol.h']]],
+  ['equipmentpaperdoll_23',['EquipmentPaperdoll',['../protocol_8h.html#a5e0b80ea19f73b7fbb428e0f80527c9f',1,'protocol.h']]],
+  ['equipmentwelcome_24',['EquipmentWelcome',['../protocol_8h.html#a689485ea8be0c28fe23726de3e1d93d0',1,'protocol.h']]],
+  ['esf_25',['Esf',['../protocol_8h.html#a6dc87cc318c06e221f34ba08f4c10249',1,'protocol.h']]],
+  ['esfrecord_26',['EsfRecord',['../protocol_8h.html#a77cd42e0e0cb6bb82204b5766d2c9543',1,'protocol.h']]]
 ];

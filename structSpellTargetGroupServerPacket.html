@@ -88,12 +88,14 @@ Data Fields</h2></td></tr>
 <tr class="separator:a9847eb79d5baaeef8d560020ab21fa50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ad402be26c96925ae936f6ccfdf6caf"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetGroupServerPacket.html#a5ad402be26c96925ae936f6ccfdf6caf">spell_heal_hp</a></td></tr>
 <tr class="separator:a5ad402be26c96925ae936f6ccfdf6caf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fa544aeb3a0640876443702707a1d12"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetGroupServerPacket.html#a7fa544aeb3a0640876443702707a1d12">players</a></td></tr>
-<tr class="separator:a7fa544aeb3a0640876443702707a1d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87a1b0ae09364eb3c6a2d695e7cbeca0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetGroupServerPacket.html#a87a1b0ae09364eb3c6a2d695e7cbeca0">players_length</a></td></tr>
+<tr class="separator:a87a1b0ae09364eb3c6a2d695e7cbeca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad27e223b79c148ee10b0a9c7a0a60ac2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGroupHealTargetPlayer.html">GroupHealTargetPlayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSpellTargetGroupServerPacket.html#ad27e223b79c148ee10b0a9c7a0a60ac2">players</a></td></tr>
+<tr class="separator:ad27e223b79c148ee10b0a9c7a0a60ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04371">4371</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04426">4426</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="ac573c7e90adebddfab2c01a9a8a05350" name="ac573c7e90adebddfab2c01a9a8a05350"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac573c7e90adebddfab2c01a9a8a05350">&#9670;&#160;</a></span>caster_id</h2>
@@ -107,7 +109,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04373">4373</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04428">4428</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -123,23 +125,39 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04374">4374</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04429">4429</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="a7fa544aeb3a0640876443702707a1d12" name="a7fa544aeb3a0640876443702707a1d12"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7fa544aeb3a0640876443702707a1d12">&#9670;&#160;</a></span>players</h2>
+<a id="ad27e223b79c148ee10b0a9c7a0a60ac2" name="ad27e223b79c148ee10b0a9c7a0a60ac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad27e223b79c148ee10b0a9c7a0a60ac2">&#9670;&#160;</a></span>players</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> SpellTargetGroupServerPacket::players</td>
+          <td class="memname"><a class="el" href="structGroupHealTargetPlayer.html">GroupHealTargetPlayer</a>* SpellTargetGroupServerPacket::players</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04376">4376</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04432">4432</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a87a1b0ae09364eb3c6a2d695e7cbeca0" name="a87a1b0ae09364eb3c6a2d695e7cbeca0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87a1b0ae09364eb3c6a2d695e7cbeca0">&#9670;&#160;</a></span>players_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t SpellTargetGroupServerPacket::players_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04431">4431</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -155,7 +173,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04375">4375</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04430">4430</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -171,7 +189,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04372">4372</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04427">4427</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

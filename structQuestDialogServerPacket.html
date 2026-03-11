@@ -88,14 +88,18 @@ Data Fields</h2></td></tr>
 <tr class="separator:af8de1bc17ed9d6060cd28cf789b0a732"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab82682cc462fe148896f9120260dfc90"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuestDialogServerPacket.html#ab82682cc462fe148896f9120260dfc90">dialog_id</a></td></tr>
 <tr class="separator:ab82682cc462fe148896f9120260dfc90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7c004a2ee5c11ed1270ff61bdada603"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuestDialogServerPacket.html#ae7c004a2ee5c11ed1270ff61bdada603">quest_entries</a></td></tr>
-<tr class="separator:ae7c004a2ee5c11ed1270ff61bdada603"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a221588d9a88b6481d0ac2a4ab2efdeb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuestDialogServerPacket.html#a221588d9a88b6481d0ac2a4ab2efdeb9">dialog_entries</a></td></tr>
-<tr class="separator:a221588d9a88b6481d0ac2a4ab2efdeb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5edf6f55d44cf74d758d8d2743e8880"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuestDialogServerPacket.html#af5edf6f55d44cf74d758d8d2743e8880">quest_entries_length</a></td></tr>
+<tr class="separator:af5edf6f55d44cf74d758d8d2743e8880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f1fcb7e8253fa0ec60997379096c96f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDialogQuestEntry.html">DialogQuestEntry</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuestDialogServerPacket.html#a1f1fcb7e8253fa0ec60997379096c96f">quest_entries</a></td></tr>
+<tr class="separator:a1f1fcb7e8253fa0ec60997379096c96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abab60e8e0899ce71dbe92de95954f2e3"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuestDialogServerPacket.html#abab60e8e0899ce71dbe92de95954f2e3">dialog_entries_length</a></td></tr>
+<tr class="separator:abab60e8e0899ce71dbe92de95954f2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad95cab7dc91024817e160cdb062adb33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDialogEntry.html">DialogEntry</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuestDialogServerPacket.html#ad95cab7dc91024817e160cdb062adb33">dialog_entries</a></td></tr>
+<tr class="separator:ad95cab7dc91024817e160cdb062adb33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04610">4610</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04670">4670</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a0194b3f9a925e808f7badecbc80f172f" name="a0194b3f9a925e808f7badecbc80f172f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0194b3f9a925e808f7badecbc80f172f">&#9670;&#160;</a></span>behavior_id</h2>
@@ -109,23 +113,39 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04611">4611</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04671">4671</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="a221588d9a88b6481d0ac2a4ab2efdeb9" name="a221588d9a88b6481d0ac2a4ab2efdeb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a221588d9a88b6481d0ac2a4ab2efdeb9">&#9670;&#160;</a></span>dialog_entries</h2>
+<a id="ad95cab7dc91024817e160cdb062adb33" name="ad95cab7dc91024817e160cdb062adb33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad95cab7dc91024817e160cdb062adb33">&#9670;&#160;</a></span>dialog_entries</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> QuestDialogServerPacket::dialog_entries</td>
+          <td class="memname"><a class="el" href="structDialogEntry.html">DialogEntry</a>* QuestDialogServerPacket::dialog_entries</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04616">4616</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04678">4678</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="abab60e8e0899ce71dbe92de95954f2e3" name="abab60e8e0899ce71dbe92de95954f2e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abab60e8e0899ce71dbe92de95954f2e3">&#9670;&#160;</a></span>dialog_entries_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t QuestDialogServerPacket::dialog_entries_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04677">4677</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -141,23 +161,39 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04614">4614</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04674">4674</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="ae7c004a2ee5c11ed1270ff61bdada603" name="ae7c004a2ee5c11ed1270ff61bdada603"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae7c004a2ee5c11ed1270ff61bdada603">&#9670;&#160;</a></span>quest_entries</h2>
+<a id="a1f1fcb7e8253fa0ec60997379096c96f" name="a1f1fcb7e8253fa0ec60997379096c96f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f1fcb7e8253fa0ec60997379096c96f">&#9670;&#160;</a></span>quest_entries</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> QuestDialogServerPacket::quest_entries</td>
+          <td class="memname"><a class="el" href="structDialogQuestEntry.html">DialogQuestEntry</a>* QuestDialogServerPacket::quest_entries</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04615">4615</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04676">4676</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="af5edf6f55d44cf74d758d8d2743e8880" name="af5edf6f55d44cf74d758d8d2743e8880"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5edf6f55d44cf74d758d8d2743e8880">&#9670;&#160;</a></span>quest_entries_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t QuestDialogServerPacket::quest_entries_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04675">4675</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -173,7 +209,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04612">4612</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04672">4672</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -189,7 +225,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04613">4613</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04673">4673</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

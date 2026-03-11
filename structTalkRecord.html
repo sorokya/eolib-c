@@ -84,26 +84,44 @@ Data Fields</h2></td></tr>
 <tr class="separator:a681520e5237f9d32605e7b7e5bab82e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a768ea723fca662fc294edc29c6acf846"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTalkRecord.html#a768ea723fca662fc294edc29c6acf846">rate</a></td></tr>
 <tr class="separator:a768ea723fca662fc294edc29c6acf846"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7b793da09431141bb0d6481842d2e22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTalkRecord.html#af7b793da09431141bb0d6481842d2e22">messages</a></td></tr>
-<tr class="separator:af7b793da09431141bb0d6481842d2e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cb37abbe42df9d9b02f596962936af4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTalkRecord.html#a2cb37abbe42df9d9b02f596962936af4">messages_length</a></td></tr>
+<tr class="separator:a2cb37abbe42df9d9b02f596962936af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae4654f770f827bf425d54e8ccd30fc9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTalkMessageRecord.html">TalkMessageRecord</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTalkRecord.html#aae4654f770f827bf425d54e8ccd30fc9">messages</a></td></tr>
+<tr class="separator:aae4654f770f827bf425d54e8ccd30fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l01984">1984</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l02003">2003</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a id="af7b793da09431141bb0d6481842d2e22" name="af7b793da09431141bb0d6481842d2e22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7b793da09431141bb0d6481842d2e22">&#9670;&#160;</a></span>messages</h2>
+<a id="aae4654f770f827bf425d54e8ccd30fc9" name="aae4654f770f827bf425d54e8ccd30fc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae4654f770f827bf425d54e8ccd30fc9">&#9670;&#160;</a></span>messages</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> TalkRecord::messages</td>
+          <td class="memname"><a class="el" href="structTalkMessageRecord.html">TalkMessageRecord</a>* TalkRecord::messages</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l01993">1993</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l02013">2013</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a2cb37abbe42df9d9b02f596962936af4" name="a2cb37abbe42df9d9b02f596962936af4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cb37abbe42df9d9b02f596962936af4">&#9670;&#160;</a></span>messages_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t TalkRecord::messages_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l02012">2012</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -120,7 +138,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p >ID of the NPC that will talk </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l01988">1988</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l02007">2007</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -137,7 +155,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p >Chance that the NPC will talk (0-100) </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l01992">1992</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l02011">2011</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

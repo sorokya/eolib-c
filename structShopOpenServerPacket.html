@@ -84,28 +84,48 @@ Data Fields</h2></td></tr>
 <tr class="separator:a8516e9ead093c25e7112748d06e73a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ed06bb8bb4f4170d2294d03ba7f838c"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structShopOpenServerPacket.html#a8ed06bb8bb4f4170d2294d03ba7f838c">shop_name</a></td></tr>
 <tr class="separator:a8ed06bb8bb4f4170d2294d03ba7f838c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29ee5ab8506fee1e6ec1168b4650e6d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structShopOpenServerPacket.html#a29ee5ab8506fee1e6ec1168b4650e6d4">trade_items</a></td></tr>
-<tr class="separator:a29ee5ab8506fee1e6ec1168b4650e6d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e7786643846d3216f870ad77e1ca789"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structShopOpenServerPacket.html#a8e7786643846d3216f870ad77e1ca789">craft_items</a></td></tr>
-<tr class="separator:a8e7786643846d3216f870ad77e1ca789"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6c7857e6609b356ce002424d133be63"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structShopOpenServerPacket.html#aa6c7857e6609b356ce002424d133be63">trade_items_length</a></td></tr>
+<tr class="separator:aa6c7857e6609b356ce002424d133be63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ab6549fca757a34cda7c69b01f08759"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structShopTradeItem.html">ShopTradeItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structShopOpenServerPacket.html#a9ab6549fca757a34cda7c69b01f08759">trade_items</a></td></tr>
+<tr class="separator:a9ab6549fca757a34cda7c69b01f08759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cb7606539924f885c9d7addd840f3fc"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structShopOpenServerPacket.html#a8cb7606539924f885c9d7addd840f3fc">craft_items_length</a></td></tr>
+<tr class="separator:a8cb7606539924f885c9d7addd840f3fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb3d9e3aaede00117a3262dd7a0845f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structShopCraftItem.html">ShopCraftItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structShopOpenServerPacket.html#afb3d9e3aaede00117a3262dd7a0845f3">craft_items</a></td></tr>
+<tr class="separator:afb3d9e3aaede00117a3262dd7a0845f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03715">3715</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03756">3756</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a id="a8e7786643846d3216f870ad77e1ca789" name="a8e7786643846d3216f870ad77e1ca789"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e7786643846d3216f870ad77e1ca789">&#9670;&#160;</a></span>craft_items</h2>
+<a id="afb3d9e3aaede00117a3262dd7a0845f3" name="afb3d9e3aaede00117a3262dd7a0845f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb3d9e3aaede00117a3262dd7a0845f3">&#9670;&#160;</a></span>craft_items</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> ShopOpenServerPacket::craft_items</td>
+          <td class="memname"><a class="el" href="structShopCraftItem.html">ShopCraftItem</a>* ShopOpenServerPacket::craft_items</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03719">3719</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03762">3762</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a8cb7606539924f885c9d7addd840f3fc" name="a8cb7606539924f885c9d7addd840f3fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cb7606539924f885c9d7addd840f3fc">&#9670;&#160;</a></span>craft_items_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t ShopOpenServerPacket::craft_items_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03761">3761</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -121,7 +141,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03716">3716</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03757">3757</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -137,23 +157,39 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03717">3717</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03758">3758</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="a29ee5ab8506fee1e6ec1168b4650e6d4" name="a29ee5ab8506fee1e6ec1168b4650e6d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a29ee5ab8506fee1e6ec1168b4650e6d4">&#9670;&#160;</a></span>trade_items</h2>
+<a id="a9ab6549fca757a34cda7c69b01f08759" name="a9ab6549fca757a34cda7c69b01f08759"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ab6549fca757a34cda7c69b01f08759">&#9670;&#160;</a></span>trade_items</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> ShopOpenServerPacket::trade_items</td>
+          <td class="memname"><a class="el" href="structShopTradeItem.html">ShopTradeItem</a>* ShopOpenServerPacket::trade_items</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03718">3718</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03760">3760</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="aa6c7857e6609b356ce002424d133be63" name="aa6c7857e6609b356ce002424d133be63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6c7857e6609b356ce002424d133be63">&#9670;&#160;</a></span>trade_items_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t ShopOpenServerPacket::trade_items_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03759">3759</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

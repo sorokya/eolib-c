@@ -84,12 +84,14 @@ Data Fields</h2></td></tr>
 <tr class="separator:a708241182c419fba123c1d3d4365324f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9179bf0c87f01dc3bc1e127482ee579c"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStatSkillOpenServerPacket.html#a9179bf0c87f01dc3bc1e127482ee579c">shop_name</a></td></tr>
 <tr class="separator:a9179bf0c87f01dc3bc1e127482ee579c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90e7e81e30b2707ce9d8a7d30a03b545"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStatSkillOpenServerPacket.html#a90e7e81e30b2707ce9d8a7d30a03b545">skills</a></td></tr>
-<tr class="separator:a90e7e81e30b2707ce9d8a7d30a03b545"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bffa541059e8bb692e0d5939d07a725"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStatSkillOpenServerPacket.html#a8bffa541059e8bb692e0d5939d07a725">skills_length</a></td></tr>
+<tr class="separator:a8bffa541059e8bb692e0d5939d07a725"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59481c10299756b8fe7dfa1cc219b739"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structSkillLearn.html">SkillLearn</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStatSkillOpenServerPacket.html#a59481c10299756b8fe7dfa1cc219b739">skills</a></td></tr>
+<tr class="separator:a59481c10299756b8fe7dfa1cc219b739"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03725">3725</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03768">3768</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a708241182c419fba123c1d3d4365324f" name="a708241182c419fba123c1d3d4365324f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a708241182c419fba123c1d3d4365324f">&#9670;&#160;</a></span>session_id</h2>
@@ -103,7 +105,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03726">3726</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03769">3769</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -119,23 +121,39 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03727">3727</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03770">3770</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="a90e7e81e30b2707ce9d8a7d30a03b545" name="a90e7e81e30b2707ce9d8a7d30a03b545"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a90e7e81e30b2707ce9d8a7d30a03b545">&#9670;&#160;</a></span>skills</h2>
+<a id="a59481c10299756b8fe7dfa1cc219b739" name="a59481c10299756b8fe7dfa1cc219b739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59481c10299756b8fe7dfa1cc219b739">&#9670;&#160;</a></span>skills</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> StatSkillOpenServerPacket::skills</td>
+          <td class="memname"><a class="el" href="structSkillLearn.html">SkillLearn</a>* StatSkillOpenServerPacket::skills</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03728">3728</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03772">3772</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a8bffa541059e8bb692e0d5939d07a725" name="a8bffa541059e8bb692e0d5939d07a725"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bffa541059e8bb692e0d5939d07a725">&#9670;&#160;</a></span>skills_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t StatSkillOpenServerPacket::skills_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03771">3771</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

@@ -84,12 +84,14 @@ Data Fields</h2></td></tr>
 <tr class="separator:a1f83f08e5ef11cd012f2188205ef0891"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad49fc5431029a647053644b6c6bf0e7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structWeight.html">Weight</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLockerReplyServerPacket.html#ad49fc5431029a647053644b6c6bf0e7d">weight</a></td></tr>
 <tr class="separator:ad49fc5431029a647053644b6c6bf0e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a330c385a3c0514bb639144e1fb581021"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLockerReplyServerPacket.html#a330c385a3c0514bb639144e1fb581021">locker_items</a></td></tr>
-<tr class="separator:a330c385a3c0514bb639144e1fb581021"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca5b5e80d0987ca09ce9284dfb68e5de"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLockerReplyServerPacket.html#aca5b5e80d0987ca09ce9284dfb68e5de">locker_items_length</a></td></tr>
+<tr class="separator:aca5b5e80d0987ca09ce9284dfb68e5de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe9be69eb634722cae3a4178ca64e8e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structThreeItem.html">ThreeItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLockerReplyServerPacket.html#abe9be69eb634722cae3a4178ca64e8e2">locker_items</a></td></tr>
+<tr class="separator:abe9be69eb634722cae3a4178ca64e8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03609">3609</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03647">3647</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a1f83f08e5ef11cd012f2188205ef0891" name="a1f83f08e5ef11cd012f2188205ef0891"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f83f08e5ef11cd012f2188205ef0891">&#9670;&#160;</a></span>deposited_item</h2>
@@ -103,23 +105,39 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03610">3610</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03648">3648</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="a330c385a3c0514bb639144e1fb581021" name="a330c385a3c0514bb639144e1fb581021"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a330c385a3c0514bb639144e1fb581021">&#9670;&#160;</a></span>locker_items</h2>
+<a id="abe9be69eb634722cae3a4178ca64e8e2" name="abe9be69eb634722cae3a4178ca64e8e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe9be69eb634722cae3a4178ca64e8e2">&#9670;&#160;</a></span>locker_items</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> LockerReplyServerPacket::locker_items</td>
+          <td class="memname"><a class="el" href="structThreeItem.html">ThreeItem</a>* LockerReplyServerPacket::locker_items</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03612">3612</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03651">3651</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="aca5b5e80d0987ca09ce9284dfb68e5de" name="aca5b5e80d0987ca09ce9284dfb68e5de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca5b5e80d0987ca09ce9284dfb68e5de">&#9670;&#160;</a></span>locker_items_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t LockerReplyServerPacket::locker_items_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03650">3650</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -135,7 +153,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03611">3611</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l03649">3649</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

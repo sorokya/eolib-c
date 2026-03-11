@@ -80,12 +80,18 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a5eaf8f517737fd087f69a76613d89d25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a5eaf8f517737fd087f69a76613d89d25">positions</a></td></tr>
-<tr class="separator:a5eaf8f517737fd087f69a76613d89d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38ecaba253029d610ee5d7afeafe774e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a38ecaba253029d610ee5d7afeafe774e">attacks</a></td></tr>
-<tr class="separator:a38ecaba253029d610ee5d7afeafe774e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fe19b2d06e1ed860e423445de9db0f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEoArray.html">EoArray</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a8fe19b2d06e1ed860e423445de9db0f1">chats</a></td></tr>
-<tr class="separator:a8fe19b2d06e1ed860e423445de9db0f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65c825e868c15e9daea08c7d44774129"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a65c825e868c15e9daea08c7d44774129">positions_length</a></td></tr>
+<tr class="separator:a65c825e868c15e9daea08c7d44774129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a039153c0ee8b2fac5461bf2b2169e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNpcUpdatePosition.html">NpcUpdatePosition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a2a039153c0ee8b2fac5461bf2b2169e7">positions</a></td></tr>
+<tr class="separator:a2a039153c0ee8b2fac5461bf2b2169e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32793567765a8f2a812783ba97a96a66"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a32793567765a8f2a812783ba97a96a66">attacks_length</a></td></tr>
+<tr class="separator:a32793567765a8f2a812783ba97a96a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae72e05c75047f508f2f2930203c1a7b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNpcUpdateAttack.html">NpcUpdateAttack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#ae72e05c75047f508f2f2930203c1a7b8">attacks</a></td></tr>
+<tr class="separator:ae72e05c75047f508f2f2930203c1a7b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ba0c67dafc55427a67ddd3e4f5bf8c4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a9ba0c67dafc55427a67ddd3e4f5bf8c4">chats_length</a></td></tr>
+<tr class="separator:a9ba0c67dafc55427a67ddd3e4f5bf8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9845bff9eec7ac49d51398bd6108f837"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNpcUpdateChat.html">NpcUpdateChat</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a9845bff9eec7ac49d51398bd6108f837">chats</a></td></tr>
+<tr class="separator:a9845bff9eec7ac49d51398bd6108f837"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a597572cbbd3981af4749098103fdc2a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#a597572cbbd3981af4749098103fdc2a9">has_hp</a></td></tr>
 <tr class="separator:a597572cbbd3981af4749098103fdc2a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9c705aaa0f889333f27aea5064a4b60"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNpcPlayerServerPacket.html#ae9c705aaa0f889333f27aea5064a4b60">hp</a></td></tr>
@@ -97,37 +103,69 @@ Data Fields</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04581">4581</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04637">4637</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a id="a38ecaba253029d610ee5d7afeafe774e" name="a38ecaba253029d610ee5d7afeafe774e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a38ecaba253029d610ee5d7afeafe774e">&#9670;&#160;</a></span>attacks</h2>
+<a id="ae72e05c75047f508f2f2930203c1a7b8" name="ae72e05c75047f508f2f2930203c1a7b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae72e05c75047f508f2f2930203c1a7b8">&#9670;&#160;</a></span>attacks</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> NpcPlayerServerPacket::attacks</td>
+          <td class="memname"><a class="el" href="structNpcUpdateAttack.html">NpcUpdateAttack</a>* NpcPlayerServerPacket::attacks</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04583">4583</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04641">4641</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="a8fe19b2d06e1ed860e423445de9db0f1" name="a8fe19b2d06e1ed860e423445de9db0f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fe19b2d06e1ed860e423445de9db0f1">&#9670;&#160;</a></span>chats</h2>
+<a id="a32793567765a8f2a812783ba97a96a66" name="a32793567765a8f2a812783ba97a96a66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32793567765a8f2a812783ba97a96a66">&#9670;&#160;</a></span>attacks_length</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> NpcPlayerServerPacket::chats</td>
+          <td class="memname">size_t NpcPlayerServerPacket::attacks_length</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04584">4584</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04640">4640</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a9845bff9eec7ac49d51398bd6108f837" name="a9845bff9eec7ac49d51398bd6108f837"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9845bff9eec7ac49d51398bd6108f837">&#9670;&#160;</a></span>chats</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNpcUpdateChat.html">NpcUpdateChat</a>* NpcPlayerServerPacket::chats</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04643">4643</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a9ba0c67dafc55427a67ddd3e4f5bf8c4" name="a9ba0c67dafc55427a67ddd3e4f5bf8c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ba0c67dafc55427a67ddd3e4f5bf8c4">&#9670;&#160;</a></span>chats_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t NpcPlayerServerPacket::chats_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04642">4642</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -143,7 +181,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04585">4585</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04644">4644</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -159,7 +197,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04587">4587</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04646">4646</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -175,23 +213,39 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04586">4586</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04645">4645</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="a5eaf8f517737fd087f69a76613d89d25" name="a5eaf8f517737fd087f69a76613d89d25"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5eaf8f517737fd087f69a76613d89d25">&#9670;&#160;</a></span>positions</h2>
+<a id="a2a039153c0ee8b2fac5461bf2b2169e7" name="a2a039153c0ee8b2fac5461bf2b2169e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a039153c0ee8b2fac5461bf2b2169e7">&#9670;&#160;</a></span>positions</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> NpcPlayerServerPacket::positions</td>
+          <td class="memname"><a class="el" href="structNpcUpdatePosition.html">NpcUpdatePosition</a>* NpcPlayerServerPacket::positions</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04582">4582</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04639">4639</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a65c825e868c15e9daea08c7d44774129" name="a65c825e868c15e9daea08c7d44774129"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65c825e868c15e9daea08c7d44774129">&#9670;&#160;</a></span>positions_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t NpcPlayerServerPacket::positions_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04638">4638</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -207,7 +261,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04588">4588</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04647">4647</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

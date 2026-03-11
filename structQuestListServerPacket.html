@@ -86,13 +86,17 @@ Data Fields</h2></td></tr>
 <tr class="separator:a4f7b256d70bfb522f968154da9c439b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7a4cdf4deaabe8e3490f264b44c0c93"><td class="memItemLeft" >union {</td></tr>
 <tr class="memitem:ab7236c53fbd057823e7e2b311eee31ca"><td class="memItemLeft" >&#160;&#160;&#160;struct {</td></tr>
-<tr class="memitem:a8439da340fc158df04301dd185707727"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structEoArray.html">EoArray</a>&#160;&#160;&#160;<a class="el" href="structQuestListServerPacket.html#aecdff68408782a5b258a0914a6c2f590">quest_progress_entries</a></td></tr>
-<tr class="separator:a8439da340fc158df04301dd185707727"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8450dc53488e89db8d4ecd25d8ee0951"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;size_t&#160;&#160;&#160;<a class="el" href="structQuestListServerPacket.html#a11a7b3a8e59973aa6a8f933a3c07e9e3">quest_progress_entries_length</a></td></tr>
+<tr class="separator:a8450dc53488e89db8d4ecd25d8ee0951"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5586ed66f116941f5ffdc7d5d50b6102"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structQuestProgressEntry.html">QuestProgressEntry</a> *&#160;&#160;&#160;<a class="el" href="structQuestListServerPacket.html#a6664a502900781377550561e1f0c35a0">quest_progress_entries</a></td></tr>
+<tr class="separator:a5586ed66f116941f5ffdc7d5d50b6102"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7236c53fbd057823e7e2b311eee31ca"><td class="memItemLeft" valign="top">&#160;&#160;&#160;}&#160;&#160;&#160;<a class="el" href="structQuestListServerPacket.html#a5f30584274319ab78ab036114f519e04">progress</a></td></tr>
 <tr class="separator:ab7236c53fbd057823e7e2b311eee31ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0438f6755d8906f5b9cb7df69e8f461"><td class="memItemLeft" >&#160;&#160;&#160;struct {</td></tr>
-<tr class="memitem:a79eb6a3a4d984c2d534f7d1d52e7b762"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="structEoArray.html">EoArray</a>&#160;&#160;&#160;<a class="el" href="structQuestListServerPacket.html#a90d8142aafbf5fe05f72bc4660ea721b">completed_quests</a></td></tr>
-<tr class="separator:a79eb6a3a4d984c2d534f7d1d52e7b762"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bf922af0e8b8e71fc3631430fa86c14"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;size_t&#160;&#160;&#160;<a class="el" href="structQuestListServerPacket.html#a36ffb72d33192bd8c6061a2efbc7bc3e">completed_quests_length</a></td></tr>
+<tr class="separator:a5bf922af0e8b8e71fc3631430fa86c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55663054719db4970a288f7c5ea4c7dd"><td class="memItemLeft" >&#160;&#160;&#160;&#160;&#160;&#160;char **&#160;&#160;&#160;<a class="el" href="structQuestListServerPacket.html#a49671ff878febedd0079c44773ddb376">completed_quests</a></td></tr>
+<tr class="separator:a55663054719db4970a288f7c5ea4c7dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0438f6755d8906f5b9cb7df69e8f461"><td class="memItemLeft" valign="top">&#160;&#160;&#160;}&#160;&#160;&#160;<a class="el" href="structQuestListServerPacket.html#a6356054890496a97829819fa7418824e">history</a></td></tr>
 <tr class="separator:ae0438f6755d8906f5b9cb7df69e8f461"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7a4cdf4deaabe8e3490f264b44c0c93"><td class="memItemLeft" valign="top">} *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuestListServerPacket.html#aa7a4cdf4deaabe8e3490f264b44c0c93">page_data</a></td></tr>
@@ -100,21 +104,37 @@ Data Fields</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04622">4622</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04684">4684</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a id="a90d8142aafbf5fe05f72bc4660ea721b" name="a90d8142aafbf5fe05f72bc4660ea721b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a90d8142aafbf5fe05f72bc4660ea721b">&#9670;&#160;</a></span>completed_quests</h2>
+<a id="a49671ff878febedd0079c44773ddb376" name="a49671ff878febedd0079c44773ddb376"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49671ff878febedd0079c44773ddb376">&#9670;&#160;</a></span>completed_quests</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> QuestListServerPacket::completed_quests</td>
+          <td class="memname">char* * QuestListServerPacket::completed_quests</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04630">4630</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04694">4694</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a36ffb72d33192bd8c6061a2efbc7bc3e" name="a36ffb72d33192bd8c6061a2efbc7bc3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36ffb72d33192bd8c6061a2efbc7bc3e">&#9670;&#160;</a></span>completed_quests_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t QuestListServerPacket::completed_quests_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04693">4693</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -144,7 +164,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04623">4623</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04685">4685</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -176,19 +196,35 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a id="aecdff68408782a5b258a0914a6c2f590" name="aecdff68408782a5b258a0914a6c2f590"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecdff68408782a5b258a0914a6c2f590">&#9670;&#160;</a></span>quest_progress_entries</h2>
+<a id="a6664a502900781377550561e1f0c35a0" name="a6664a502900781377550561e1f0c35a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6664a502900781377550561e1f0c35a0">&#9670;&#160;</a></span>quest_progress_entries</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structEoArray.html">EoArray</a> QuestListServerPacket::quest_progress_entries</td>
+          <td class="memname"><a class="el" href="structQuestProgressEntry.html">QuestProgressEntry</a>* QuestListServerPacket::quest_progress_entries</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04627">4627</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04690">4690</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a11a7b3a8e59973aa6a8f933a3c07e9e3" name="a11a7b3a8e59973aa6a8f933a3c07e9e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11a7b3a8e59973aa6a8f933a3c07e9e3">&#9670;&#160;</a></span>quest_progress_entries_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t QuestListServerPacket::quest_progress_entries_length</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04689">4689</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -204,7 +240,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04624">4624</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l04686">4686</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
