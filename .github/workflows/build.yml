@@ -140,10 +140,6 @@ jobs:
           echo "CC=${gcc_path:-gcc}" >> "$GITHUB_ENV"
           echo "CXX=${gxx_path:-g++}" >> "$GITHUB_ENV"
 
-      - name: Setup Ninja (macOS)
-        if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'macos')
-        run: brew install ninja
-
       - name: Setup libxml2 (macOS)
         if: startsWith(matrix.os, 'macos')
         run: |
