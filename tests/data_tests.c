@@ -2,6 +2,7 @@
 #include "data.h"
 
 #include <limits.h>
+#include <stdlib.h>
 #include <string.h>
 
 static void test_eo_writer_init_with_capacity()
@@ -168,20 +169,38 @@ static void test_eo_writer_string_sanitization_mode()
     EoWriter writer = eo_writer_init_with_capacity(3);
     expect("eo_writer_get_string_sanitization_mode defaults false", !eo_writer_get_string_sanitization_mode(&writer));
     eo_writer_add_string(&writer, "he\xFF");
-    expect_equal_str("eo_writer_add_string should not sanitize when mode is disabled", (const char *)writer.data, "he\xFF");
+    {
+        char *tmp = malloc(writer.length + 1);
+        memcpy(tmp, writer.data, writer.length);
+        tmp[writer.length] = '\0';
+        expect_equal_str("eo_writer_add_string should not sanitize when mode is disabled", tmp, "he\xFF");
+        free(tmp);
+    }
     free(writer.data);
 
     writer = eo_writer_init_with_capacity(3);
     eo_writer_set_string_sanitization_mode(&writer, true);
     expect("eo_writer_set_string_sanitization_mode true", eo_writer_get_string_sanitization_mode(&writer));
     eo_writer_add_string(&writer, "he\xFF");
-    expect_equal_str("eo_writer_add_string should sanitize when mode is enabled", (const char *)writer.data, "hey");
+    {
+        char *tmp = malloc(writer.length + 1);
+        memcpy(tmp, writer.data, writer.length);
+        tmp[writer.length] = '\0';
+        expect_equal_str("eo_writer_add_string should sanitize when mode is enabled", tmp, "hey");
+        free(tmp);
+    }
 
     free(writer.data);
     writer = eo_writer_init_with_capacity(3);
     eo_writer_set_string_sanitization_mode(&writer, true);
     eo_writer_add_encoded_string(&writer, "he\xFF");
-    expect_equal_str("eo_writer_add_encoded_string should sanitize when mode is enabled", (const char *)writer.data, "T:e");
+    {
+        char *tmp = malloc(writer.length + 1);
+        memcpy(tmp, writer.data, writer.length);
+        tmp[writer.length] = '\0';
+        expect_equal_str("eo_writer_add_encoded_string should sanitize when mode is enabled", tmp, "T:e");
+        free(tmp);
+    }
 
     eo_writer_set_string_sanitization_mode(&writer, false);
     expect("eo_writer_set_string_sanitization_mode false", !eo_writer_get_string_sanitization_mode(&writer));
@@ -195,12 +214,24 @@ static void test_eo_writer_fixed_string()
     expect_equal_int("eo_writer_add_fixed_string short string", eo_writer_add_fixed_string(&writer, "hi", 5, false), EO_STR_TOO_SHORT);
     expect_equal_int("eo_writer_add_fixed_string long string", eo_writer_add_fixed_string(&writer, "hello world", 5, true), EO_STR_OUT_OF_RANGE);
     expect_equal_int("eo_writer_add_fixed_string exact length", eo_writer_add_fixed_string(&writer, "hello", 5, false), EO_SUCCESS);
-    expect_equal_str("eo_writer_add_fixed_string exact length bytes", (const char *)writer.data, "hello");
+    {
+        char *tmp = malloc(writer.length + 1);
+        memcpy(tmp, writer.data, writer.length);
+        tmp[writer.length] = '\0';
+        expect_equal_str("eo_writer_add_fixed_string exact length bytes", tmp, "hello");
+        free(tmp);
+    }
 
     free(writer.data);
     writer = eo_writer_init_with_capacity(5);
     expect_equal_int("eo_writer_add_fixed_string padded short string", eo_writer_add_fixed_string(&writer, "hi", 5, true), EO_SUCCESS);
-    expect_equal_str("eo_writer_add_fixed_string padded short string bytes", (const char *)writer.data, "hi\xFF\xFF\xFF");
+    {
+        char *tmp = malloc(writer.length + 1);
+        memcpy(tmp, writer.data, writer.length);
+        tmp[writer.length] = '\0';
+        expect_equal_str("eo_writer_add_fixed_string padded short string bytes", tmp, "hi\xFF\xFF\xFF");
+        free(tmp);
+    }
 
     free(writer.data);
     writer = eo_writer_init_with_capacity(24);
@@ -211,7 +242,13 @@ static void test_eo_writer_fixed_string()
     expect_equal_bytes("eo_writer_add_fixed_encoded_string padded short string bytes", writer.data, expected_encoded, 24);
 
     eo_decode_string(writer.data, 24);
-    expect_equal_str("eo_writer_add_fixed_encoded_string padded short string bytes", (const char *)writer.data, "Aeven\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+    {
+        char *tmp = malloc(writer.length + 1);
+        memcpy(tmp, writer.data, writer.length);
+        tmp[writer.length] = '\0';
+        expect_equal_str("eo_writer_add_fixed_encoded_string padded short string bytes", tmp, "Aeven\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+        free(tmp);
+    }
 
     free(writer.data);
 }
@@ -353,42 +390,50 @@ static void test_eo_string_to_windows_1252()
     /* ASCII strings pass through unchanged */
     expect_equal_int("eo_string_to_windows_1252 ascii", eo_string_to_windows_1252("Hello", &out), EO_SUCCESS);
     expect_equal_str("eo_string_to_windows_1252 ascii value", out, "Hello");
-    free(out); out = NULL;
+    free(out);
+    out = NULL;
 
     /* UTF-8 é (U+00E9) -> CP1252 0xE9 */
     expect_equal_int("eo_string_to_windows_1252 utf8 latin1", eo_string_to_windows_1252("\xC3\xA9", &out), EO_SUCCESS);
     expect_equal_str("eo_string_to_windows_1252 utf8 latin1 value", out, "\xE9");
-    free(out); out = NULL;
+    free(out);
+    out = NULL;
 
     /* UTF-8 € (U+20AC) -> CP1252 0x80 */
     expect_equal_int("eo_string_to_windows_1252 utf8 euro", eo_string_to_windows_1252("\xE2\x82\xAC", &out), EO_SUCCESS);
     expect_equal_str("eo_string_to_windows_1252 utf8 euro value", out, "\x80");
-    free(out); out = NULL;
+    free(out);
+    out = NULL;
 
     /* UTF-8 š (U+0161) -> CP1252 0x9A */
     expect_equal_int("eo_string_to_windows_1252 utf8 0x9A", eo_string_to_windows_1252("\xC5\xA1", &out), EO_SUCCESS);
     expect_equal_str("eo_string_to_windows_1252 utf8 0x9A value", out, "\x9A");
-    free(out); out = NULL;
+    free(out);
+    out = NULL;
 
     /* Raw CP1252 bytes pass through as-is */
     expect_equal_int("eo_string_to_windows_1252 raw cp1252", eo_string_to_windows_1252("\xE9\xF1", &out), EO_SUCCESS);
     expect_equal_str("eo_string_to_windows_1252 raw cp1252 value", out, "\xE9\xF1");
-    free(out); out = NULL;
+    free(out);
+    out = NULL;
 
     /* 4-byte UTF-8 emoji (U+1F600) has no CP1252 representation -> '?' */
     expect_equal_int("eo_string_to_windows_1252 emoji", eo_string_to_windows_1252("\xF0\x9F\x98\x80", &out), EO_SUCCESS);
     expect_equal_str("eo_string_to_windows_1252 emoji value", out, "?");
-    free(out); out = NULL;
+    free(out);
+    out = NULL;
 
     /* Unicode code point with no CP1252 mapping (U+0400, Cyrillic Є) -> '?' */
     expect_equal_int("eo_string_to_windows_1252 no mapping", eo_string_to_windows_1252("\xD0\x80", &out), EO_SUCCESS);
     expect_equal_str("eo_string_to_windows_1252 no mapping value", out, "?");
-    free(out); out = NULL;
+    free(out);
+    out = NULL;
 
     /* Mixed ASCII and UTF-8 */
     expect_equal_int("eo_string_to_windows_1252 mixed", eo_string_to_windows_1252("caf\xC3\xA9", &out), EO_SUCCESS);
     expect_equal_str("eo_string_to_windows_1252 mixed value", out, "caf\xE9");
-    free(out); out = NULL;
+    free(out);
+    out = NULL;
 
     /* NULL input returns NULL output */
     expect_equal_int("eo_string_to_windows_1252 null input", eo_string_to_windows_1252(NULL, &out), EO_SUCCESS);
