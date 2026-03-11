@@ -59,6 +59,7 @@ jobs:
             compiler: msvc
             generator: Visual Studio 17 2022
             msvc_arch: x64
+            vcpkg_triplet: x64-windows
             build_type: Release
 
           - os: windows-2025
@@ -66,6 +67,7 @@ jobs:
             generator: Visual Studio 17 2022
             msvc_arch: x64
             toolset: ClangCL
+            vcpkg_triplet: x64-windows
             build_type: Release
 
           - os: windows-2025
@@ -73,13 +75,14 @@ jobs:
             msys_system: mingw64
             cc: gcc
             cxx: g++
-            generator: MinGW Makefiles
+            generator: Ninja
             build_type: Release
 
           - os: windows-11-arm
             compiler: msvc
             generator: Visual Studio 17 2022
             msvc_arch: ARM64
+            vcpkg_triplet: arm64-windows
             build_type: Release
 
           - os: windows-11-arm
@@ -87,6 +90,7 @@ jobs:
             generator: Visual Studio 17 2022
             msvc_arch: ARM64
             toolset: ClangCL
+            vcpkg_triplet: arm64-windows
             build_type: Release
 
     runs-on: ${{ matrix.os }}
@@ -111,6 +115,7 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-libxml2
 
       - name: Setup Clang (Linux)
         if: matrix.compiler == 'clang' && startsWith(matrix.os, 'ubuntu')
@@ -130,8 +135,8 @@ jobs:
         if: matrix.compiler == 'gcc' && startsWith(matrix.os, 'macos')
         run: |
           brew install gcc
-          gcc_path=$(ls -1 /opt/homebrew/bin/gcc-* /usr/local/bin/gcc-* 2>/dev/null | sort -V | tail -1)
-          gxx_path=$(ls -1 /opt/homebrew/bin/g++-* /usr/local/bin/g++-* 2>/dev/null | sort -V | tail -1)
+          gcc_path=$(ls -1 /opt/homebrew/bin/gcc-[0-9]* /usr/local/bin/gcc-[0-9]* 2>/dev/null | sort -V | tail -1)
+          gxx_path=$(ls -1 /opt/homebrew/bin/g++-[0-9]* /usr/local/bin/g++-[0-9]* 2>/dev/null | sort -V | tail -1)
           echo "CC=${gcc_path:-gcc}" >> "$GITHUB_ENV"
           echo "CXX=${gxx_path:-g++}" >> "$GITHUB_ENV"
 
@@ -139,11 +144,29 @@ jobs:
         if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'macos')
         run: brew install ninja
 
+      - name: Setup libxml2 (macOS)
+        if: startsWith(matrix.os, 'macos')
+        run: |
+          brew install libxml2
+          if [[ -d /opt/homebrew/opt/libxml2/lib/pkgconfig ]]; then
+            echo "PKG_CONFIG_PATH=/opt/homebrew/opt/libxml2/lib/pkgconfig" >> "$GITHUB_ENV"
+          elif [[ -d /usr/local/opt/libxml2/lib/pkgconfig ]]; then
+            echo "PKG_CONFIG_PATH=/usr/local/opt/libxml2/lib/pkgconfig" >> "$GITHUB_ENV"
+          fi
+
+      - name: Setup libxml2 (Windows)
+        if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgArguments: libxml2
+          vcpkgTriplet: ${{ matrix.vcpkg_triplet }}
+
       - name: Configure (MSVC/ClangCL)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         run: >-
           cmake -S . -B build -G "${{ matrix.generator }}"
           -A ${{ matrix.msvc_arch }}
+          -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\\scripts\\buildsystems\\vcpkg.cmake
           ${{ matrix.toolset && format('-T {0}', matrix.toolset) || '' }}
 
       - name: Build (MSVC/ClangCL)
