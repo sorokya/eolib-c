@@ -11,11 +11,12 @@ static void test_sequencer_next_wraps()
 
     for (size_t i = 0; i < sizeof(expected) / sizeof(expected[0]); i++)
     {
-        int32_t value = sequencer_next(&seq);
+        int32_t value;
+        sequencer_next(&seq, &value);
         expect_equal_int32("sequencer_next wrap", value, expected[i]);
     }
 
-    expect_equal_int32("sequencer_next null", sequencer_next(NULL), -1);
+    expect_equal_int32("sequencer_next null", sequencer_next(NULL, NULL), EO_NULL_PTR);
 }
 
 static void test_generate_sequence_start_range()
@@ -37,9 +38,9 @@ static void test_sequence_init_bytes_roundtrip()
     for (size_t i = 0; i < sizeof(starts) / sizeof(starts[0]); i++)
     {
         uint8_t bytes[2] = {0};
-        int result = sequence_init_bytes(starts[i], bytes);
-        expect_equal_int("sequence_init_bytes result", result, 0);
-        if (result != 0)
+        EoResult result = sequence_init_bytes(starts[i], bytes);
+        expect_equal_int("sequence_init_bytes result", result, EO_SUCCESS);
+        if (result != EO_SUCCESS)
         {
             continue;
         }
@@ -59,9 +60,9 @@ static void test_sequence_ping_bytes_roundtrip()
     for (size_t i = 0; i < sizeof(starts) / sizeof(starts[0]); i++)
     {
         uint8_t bytes[2] = {0};
-        int result = sequence_ping_bytes(starts[i], bytes);
-        expect_equal_int("sequence_ping_bytes result", result, 0);
-        if (result != 0)
+        EoResult result = sequence_ping_bytes(starts[i], bytes);
+        expect_equal_int("sequence_ping_bytes result", result, EO_SUCCESS);
+        if (result != EO_SUCCESS)
         {
             continue;
         }
@@ -75,7 +76,7 @@ static void test_sequence_ping_bytes_roundtrip()
     uint8_t bytes[2] = {0};
     expect_equal_int("sequence_ping_bytes invalid high",
                      sequence_ping_bytes(EO_CHAR_MAX, bytes),
-                     -1);
+                     EO_INVALID_SEQUENCE_RANGE);
 }
 
 static const TestCase sequencer_tests[] = {

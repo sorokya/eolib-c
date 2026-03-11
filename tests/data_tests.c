@@ -1,5 +1,5 @@
 #include "test_utils.h"
-#include "eo_data.h"
+#include "data.h"
 
 #include <limits.h>
 #include <string.h>
@@ -31,7 +31,7 @@ static void test_eo_writer_ensure_capacity()
     expect_equal_size("eo_writer_ensure_capacity should increase capacity when needed", writer.capacity, 8);
 
     // Test ensuring capacity with NULL writer
-    expect("eo_writer_ensure_capacity should fail with NULL writer", eo_writer_ensure_capacity(NULL, 1) == -1);
+    expect("eo_writer_ensure_capacity should fail with NULL writer", eo_writer_ensure_capacity(NULL, 1) == EO_NULL_PTR);
 
     free(writer.data);
 }
@@ -68,7 +68,7 @@ static void test_eo_encode_decode_number_roundtrip()
         expect_equal_int32("eo_encode_number roundtrip", eo_decode_number(bytes, 4), values[i]);
     }
 
-    expect_equal_int("eo_encode_number should fail with NULL out_bytes", eo_encode_number(5, NULL), -1);
+    expect_equal_int("eo_encode_number should fail with NULL out_bytes", eo_encode_number(5, NULL), EO_NULL_PTR);
     expect_equal_int32("eo_decode_number should treat NULL bytes as zero", eo_decode_number(NULL, 0), 0);
 }
 
@@ -279,7 +279,7 @@ static void test_eo_reader_get_bytes()
     free(out);
 
     out = NULL;
-    expect_equal_int("eo_reader_get_bytes overrun", eo_reader_get_bytes(&reader, 4, &out), -1);
+    expect_equal_int("eo_reader_get_bytes overrun", eo_reader_get_bytes(&reader, 4, &out), EO_BUFFER_UNDERRUN);
 }
 
 static void test_eo_reader_chunked_mode()

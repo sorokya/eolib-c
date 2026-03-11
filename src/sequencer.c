@@ -11,15 +11,20 @@ Sequencer sequencer_init(int32_t start)
     return seq;
 }
 
-int32_t sequencer_next(Sequencer *sequencer)
+EoResult sequencer_next(Sequencer *sequencer, int32_t *out_value)
 {
     if (!sequencer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     sequencer->counter = (sequencer->counter + 1) % 10;
-    return sequencer->start + sequencer->counter;
+    if (out_value)
+    {
+        *out_value = sequencer->start + sequencer->counter;
+    }
+
+    return EO_SUCCESS;
 }
 
 int32_t generate_sequence_start()
@@ -37,11 +42,11 @@ int32_t sequence_start_from_ping(int32_t s1, int32_t s2)
     return s1 - s2;
 }
 
-int sequence_init_bytes(int32_t start, uint8_t *out_bytes)
+EoResult sequence_init_bytes(int32_t start, uint8_t *out_bytes)
 {
     if (!out_bytes)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     int32_t seq1_min = (start - (EO_CHAR_MAX - 1) + 13 + 6) / 7;
@@ -58,7 +63,7 @@ int sequence_init_bytes(int32_t start, uint8_t *out_bytes)
 
     if (seq1_max < seq1_min)
     {
-        return -1;
+        return EO_INVALID_SEQUENCE_RANGE;
     }
 
     int32_t range = seq1_max - seq1_min + 1;
@@ -67,19 +72,19 @@ int sequence_init_bytes(int32_t start, uint8_t *out_bytes)
 
     if (seq2 < 0 || seq2 > (EO_CHAR_MAX - 1))
     {
-        return -1;
+        return EO_SEQUENCE_OUT_OF_RANGE;
     }
 
     out_bytes[0] = (uint8_t)seq1;
     out_bytes[1] = (uint8_t)seq2;
-    return 0;
+    return EO_SUCCESS;
 }
 
-int sequence_ping_bytes(int32_t start, uint8_t *out_bytes)
+EoResult sequence_ping_bytes(int32_t start, uint8_t *out_bytes)
 {
     if (!out_bytes)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     int32_t low = start;
@@ -96,7 +101,7 @@ int sequence_ping_bytes(int32_t start, uint8_t *out_bytes)
 
     if (high < low)
     {
-        return -1;
+        return EO_INVALID_SEQUENCE_RANGE;
     }
 
     int32_t range = high - low + 1;
@@ -105,10 +110,10 @@ int sequence_ping_bytes(int32_t start, uint8_t *out_bytes)
 
     if (seq2 < 0 || seq2 > (EO_CHAR_MAX - 1))
     {
-        return -1;
+        return EO_SEQUENCE_OUT_OF_RANGE;
     }
 
     out_bytes[0] = (uint8_t)seq1;
     out_bytes[1] = (uint8_t)seq2;
-    return 0;
+    return EO_SUCCESS;
 }

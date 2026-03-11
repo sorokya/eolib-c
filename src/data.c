@@ -1,4 +1,4 @@
-#include "eo_data.h"
+#include "data.h"
 
 #include <limits.h>
 #include <stdlib.h>
@@ -16,41 +16,41 @@ EoWriter eo_writer_init_with_capacity(size_t capacity)
     return writer;
 }
 
-int eo_writer_ensure_capacity(EoWriter *writer, size_t additional)
+EoResult eo_writer_ensure_capacity(EoWriter *writer, size_t additional)
 {
     if (!writer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (SIZE_MAX - writer->length < additional)
     {
-        return -1;
+        return EO_OVERFLOW;
     }
 
     size_t required = writer->length + additional;
     if (writer->capacity >= required)
     {
-        return 0;
+        return EO_SUCCESS;
     }
 
     size_t new_capacity = required == 0 ? 1 : required;
     uint8_t *new_data = (uint8_t *)realloc(writer->data, new_capacity);
     if (!new_data)
     {
-        return -1;
+        return EO_ALLOC_FAILED;
     }
 
     writer->data = new_data;
     writer->capacity = new_capacity;
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_encode_number(int32_t number, uint8_t out_bytes[4])
+EoResult eo_encode_number(int32_t number, uint8_t out_bytes[4])
 {
     if (!out_bytes)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     out_bytes[0] = 254;
@@ -67,7 +67,7 @@ int eo_encode_number(int32_t number, uint8_t out_bytes[4])
     int64_t original = value;
     if (original >= (int64_t)EO_INT_MAX)
     {
-        return -1;
+        return EO_NUMBER_TOO_LARGE;
     }
 
     if (original >= (int64_t)EO_THREE_MAX)
@@ -89,7 +89,7 @@ int eo_encode_number(int32_t number, uint8_t out_bytes[4])
     }
 
     out_bytes[0] = (uint8_t)value + 1;
-    return 0;
+    return EO_SUCCESS;
 }
 
 int32_t eo_decode_number(const uint8_t *bytes, size_t length)
@@ -201,109 +201,114 @@ void eo_writer_set_string_sanitization_mode(EoWriter *writer, bool enabled)
     }
 }
 
-int eo_writer_add_byte(EoWriter *writer, uint8_t value)
+EoResult eo_writer_add_byte(EoWriter *writer, uint8_t value)
 {
     if (!writer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
-    if (eo_writer_ensure_capacity(writer, 1) != 0)
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, 1)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     writer->data[writer->length++] = value;
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_writer_add_char(EoWriter *writer, int32_t value)
+EoResult eo_writer_add_char(EoWriter *writer, int32_t value)
 {
     if (!writer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
-    if (eo_writer_ensure_capacity(writer, 1) != 0)
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, 1)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     uint8_t bytes[4];
-    if (eo_encode_number(value, bytes) != 0)
+    if ((result = eo_encode_number(value, bytes)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     writer->data[writer->length++] = bytes[0];
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_writer_add_short(EoWriter *writer, int32_t value)
+EoResult eo_writer_add_short(EoWriter *writer, int32_t value)
 {
     if (!writer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
-    if (eo_writer_ensure_capacity(writer, 2) != 0)
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, 2)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     uint8_t bytes[4];
-    if (eo_encode_number(value, bytes) != 0)
+    if ((result = eo_encode_number(value, bytes)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     writer->data[writer->length++] = bytes[0];
     writer->data[writer->length++] = bytes[1];
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_writer_add_three(EoWriter *writer, int32_t value)
+EoResult eo_writer_add_three(EoWriter *writer, int32_t value)
 {
     if (!writer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
-    if (eo_writer_ensure_capacity(writer, 3) != 0)
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, 3)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     uint8_t bytes[4];
-    if (eo_encode_number(value, bytes) != 0)
+    if ((result = eo_encode_number(value, bytes)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     writer->data[writer->length++] = bytes[0];
     writer->data[writer->length++] = bytes[1];
     writer->data[writer->length++] = bytes[2];
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_writer_add_int(EoWriter *writer, int32_t value)
+EoResult eo_writer_add_int(EoWriter *writer, int32_t value)
 {
     if (!writer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
-    if (eo_writer_ensure_capacity(writer, 4) != 0)
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, 4)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     uint8_t bytes[4];
-    if (eo_encode_number(value, bytes) != 0)
+    if ((result = eo_encode_number(value, bytes)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     writer->data[writer->length++] = bytes[0];
@@ -311,56 +316,58 @@ int eo_writer_add_int(EoWriter *writer, int32_t value)
     writer->data[writer->length++] = bytes[2];
     writer->data[writer->length++] = bytes[3];
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_writer_add_string(EoWriter *writer, const char *value)
+EoResult eo_writer_add_string(EoWriter *writer, const char *value)
 {
     if (!writer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     // Ignore NULL strings, treat them as empty strings
     if (!value)
     {
-        return 0;
+        return EO_SUCCESS;
     }
 
     size_t length = strlen(value);
-    if (eo_writer_ensure_capacity(writer, length) != 0)
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
     memcpy(writer->data + writer->length, value, length);
     writer->length += length;
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_writer_add_encoded_string(EoWriter *writer, const char *value)
+EoResult eo_writer_add_encoded_string(EoWriter *writer, const char *value)
 {
     if (!writer)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     // Ignore NULL strings, treat them as empty strings
     if (!value)
     {
-        return 0;
+        return EO_SUCCESS;
     }
 
     size_t length = strlen(value);
-    if (eo_writer_ensure_capacity(writer, length) != 0)
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     uint8_t *encoded = (uint8_t *)malloc(length);
     if (!encoded)
     {
-        return -1;
+        return EO_ALLOC_FAILED;
     }
 
     memcpy(encoded, value, length);
@@ -370,25 +377,26 @@ int eo_writer_add_encoded_string(EoWriter *writer, const char *value)
 
     free(encoded);
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_writer_add_bytes(EoWriter *writer, const uint8_t *data, size_t length)
+EoResult eo_writer_add_bytes(EoWriter *writer, const uint8_t *data, size_t length)
 {
     if (!writer || !data)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
-    if (eo_writer_ensure_capacity(writer, length) != 0)
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
     {
-        return -1;
+        return result;
     }
 
     memcpy(writer->data + writer->length, data, length);
     writer->length += length;
 
-    return 0;
+    return EO_SUCCESS;
 }
 
 bool eo_reader_get_chunked_reading_mode(const EoReader *reader)
@@ -434,11 +442,16 @@ size_t eo_reader_remaining(const EoReader *reader)
     return reader->length - reader->offset;
 }
 
-int eo_reader_next_chunk(EoReader *reader)
+EoResult eo_reader_next_chunk(EoReader *reader)
 {
-    if (!reader || !reader->chunked_reading_mode)
+    if (!reader)
     {
-        return -1;
+        return EO_NULL_PTR;
+    }
+
+    if (!reader->chunked_reading_mode)
+    {
+        return EO_CHUNKED_MODE_DISABLED;
     }
 
     reader->offset = reader->next_chunk_offset;
@@ -450,7 +463,7 @@ int eo_reader_next_chunk(EoReader *reader)
     reader->chunk_offset = reader->offset;
     reader->next_chunk_offset = eo_reader_next_break_index(reader);
 
-    return 0;
+    return EO_SUCCESS;
 }
 
 static size_t eo_reader_next_break_index(const EoReader *reader)
@@ -471,11 +484,11 @@ static size_t eo_reader_next_break_index(const EoReader *reader)
     return reader->length;
 }
 
-int eo_reader_get_byte(EoReader *reader, uint8_t *out_value)
+EoResult eo_reader_get_byte(EoReader *reader, uint8_t *out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (reader->offset > reader->length || reader->length - reader->offset < 1)
@@ -483,10 +496,10 @@ int eo_reader_get_byte(EoReader *reader, uint8_t *out_value)
         if (reader->chunked_reading_mode)
         {
             *out_value = 0;
-            return 0;
+            return EO_SUCCESS;
         }
 
-        return -1;
+        return EO_BUFFER_UNDERRUN;
     }
 
     uint8_t value = reader->data[reader->offset++];
@@ -495,14 +508,14 @@ int eo_reader_get_byte(EoReader *reader, uint8_t *out_value)
         *out_value = value;
     }
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_reader_get_char(EoReader *reader, int32_t *out_value)
+EoResult eo_reader_get_char(EoReader *reader, int32_t *out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (reader->offset > reader->length || reader->length - reader->offset < 1)
@@ -510,10 +523,10 @@ int eo_reader_get_char(EoReader *reader, int32_t *out_value)
         if (reader->chunked_reading_mode)
         {
             *out_value = 0;
-            return 0;
+            return EO_SUCCESS;
         }
 
-        return -1;
+        return EO_BUFFER_UNDERRUN;
     }
 
     uint8_t bytes[1] = {reader->data[reader->offset++]};
@@ -522,14 +535,14 @@ int eo_reader_get_char(EoReader *reader, int32_t *out_value)
         *out_value = eo_decode_number(bytes, 1);
     }
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_reader_get_short(EoReader *reader, int32_t *out_value)
+EoResult eo_reader_get_short(EoReader *reader, int32_t *out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (reader->offset > reader->length || reader->length - reader->offset < 2)
@@ -537,10 +550,10 @@ int eo_reader_get_short(EoReader *reader, int32_t *out_value)
         if (reader->chunked_reading_mode)
         {
             *out_value = 0;
-            return 0;
+            return EO_SUCCESS;
         }
 
-        return -1;
+        return EO_BUFFER_UNDERRUN;
     }
 
     uint8_t bytes[2] = {reader->data[reader->offset++], reader->data[reader->offset++]};
@@ -549,14 +562,14 @@ int eo_reader_get_short(EoReader *reader, int32_t *out_value)
         *out_value = eo_decode_number(bytes, 2);
     }
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_reader_get_three(EoReader *reader, int32_t *out_value)
+EoResult eo_reader_get_three(EoReader *reader, int32_t *out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (reader->offset > reader->length || reader->length - reader->offset < 3)
@@ -564,10 +577,10 @@ int eo_reader_get_three(EoReader *reader, int32_t *out_value)
         if (reader->chunked_reading_mode)
         {
             *out_value = 0;
-            return 0;
+            return EO_SUCCESS;
         }
 
-        return -1;
+        return EO_BUFFER_UNDERRUN;
     }
 
     uint8_t bytes[3] = {
@@ -579,14 +592,14 @@ int eo_reader_get_three(EoReader *reader, int32_t *out_value)
         *out_value = eo_decode_number(bytes, 3);
     }
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_reader_get_int(EoReader *reader, int32_t *out_value)
+EoResult eo_reader_get_int(EoReader *reader, int32_t *out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (reader->offset > reader->length || reader->length - reader->offset < 4)
@@ -594,10 +607,10 @@ int eo_reader_get_int(EoReader *reader, int32_t *out_value)
         if (reader->chunked_reading_mode)
         {
             *out_value = 0;
-            return 0;
+            return EO_SUCCESS;
         }
 
-        return -1;
+        return EO_BUFFER_UNDERRUN;
     }
 
     uint8_t bytes[4] = {
@@ -610,48 +623,48 @@ int eo_reader_get_int(EoReader *reader, int32_t *out_value)
         *out_value = eo_decode_number(bytes, 4);
     }
 
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_reader_get_string(EoReader *reader, char **out_value)
+EoResult eo_reader_get_string(EoReader *reader, char **out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     size_t length = eo_reader_remaining(reader);
     if (length == 0)
     {
         *out_value = strdup("");
-        return 0;
+        return EO_SUCCESS;
     }
 
     return eo_reader_get_fixed_string(reader, length, out_value);
 }
 
-int eo_reader_get_encoded_string(EoReader *reader, char **out_value)
+EoResult eo_reader_get_encoded_string(EoReader *reader, char **out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     size_t length = eo_reader_remaining(reader);
     if (length == 0)
     {
         *out_value = strdup("");
-        return 0;
+        return EO_SUCCESS;
     }
 
     return eo_reader_get_fixed_encoded_string(reader, length, out_value);
 }
 
-int eo_reader_get_fixed_string(EoReader *reader, size_t length, char **out_value)
+EoResult eo_reader_get_fixed_string(EoReader *reader, size_t length, char **out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (reader->offset > reader->length ||
@@ -660,29 +673,29 @@ int eo_reader_get_fixed_string(EoReader *reader, size_t length, char **out_value
         if (reader->chunked_reading_mode)
         {
             *out_value = strdup("");
-            return 0;
+            return EO_SUCCESS;
         }
 
-        return -1;
+        return EO_BUFFER_UNDERRUN;
     }
 
     *out_value = (char *)malloc(length + 1);
     if (!*out_value)
     {
-        return -1;
+        return EO_ALLOC_FAILED;
     }
 
     memcpy(*out_value, reader->data + reader->offset, length);
     (*out_value)[length] = '\0';
     reader->offset += length;
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_reader_get_fixed_encoded_string(EoReader *reader, size_t length, char **out_value)
+EoResult eo_reader_get_fixed_encoded_string(EoReader *reader, size_t length, char **out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (reader->offset > reader->length || reader->length - reader->offset < length)
@@ -690,30 +703,30 @@ int eo_reader_get_fixed_encoded_string(EoReader *reader, size_t length, char **o
         if (reader->chunked_reading_mode)
         {
             *out_value = strdup("");
-            return 0;
+            return EO_SUCCESS;
         }
 
-        return -1;
+        return EO_BUFFER_UNDERRUN;
     }
 
     *out_value = (char *)malloc(length + 1);
     if (!*out_value)
     {
-        return -1;
+        return EO_ALLOC_FAILED;
     }
 
     memcpy(*out_value, reader->data + reader->offset, length);
     eo_decode_string((uint8_t *)*out_value, length);
     (*out_value)[length] = '\0';
     reader->offset += length;
-    return 0;
+    return EO_SUCCESS;
 }
 
-int eo_reader_get_bytes(EoReader *reader, size_t length, uint8_t **out_value)
+EoResult eo_reader_get_bytes(EoReader *reader, size_t length, uint8_t **out_value)
 {
     if (!reader || !out_value)
     {
-        return -1;
+        return EO_NULL_PTR;
     }
 
     if (reader->offset > reader->length || reader->length - reader->offset < length)
@@ -721,19 +734,19 @@ int eo_reader_get_bytes(EoReader *reader, size_t length, uint8_t **out_value)
         if (reader->chunked_reading_mode)
         {
             *out_value = NULL;
-            return 0;
+            return EO_SUCCESS;
         }
 
-        return -1;
+        return EO_BUFFER_UNDERRUN;
     }
 
     *out_value = (uint8_t *)malloc(length);
     if (!*out_value)
     {
-        return -1;
+        return EO_ALLOC_FAILED;
     }
 
     memcpy(*out_value, reader->data + reader->offset, length);
     reader->offset += length;
-    return 0;
+    return EO_SUCCESS;
 }
