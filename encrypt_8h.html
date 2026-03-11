@@ -139,7 +139,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00098">98</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00138">138</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>
@@ -183,7 +183,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00042">42</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00082">82</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>
@@ -201,9 +201,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Generates a random swap multiple between 6 and 12 inclusive. </p><dl class="section return"><dt>Returns</dt><dd>The generated swap multiple. </dd></dl>
+<p >Generates a cryptographically random swap multiple between 6 and 12 inclusive. </p><dl class="section return"><dt>Returns</dt><dd>The generated swap multiple. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00037">37</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00077">77</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>
@@ -224,13 +224,14 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p >Calculates the server verification hash for the given challenge value. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">challenge</td><td>The server challenge value. </td></tr>
+    <tr><td class="paramname">challenge</td><td>The server challenge value (from ServerInitInitServerPacket). </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The verification hash. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The verification hash to be sent back to the server. </dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>Implements the EO protocol challenge-response formula: hash = 110905 + ((c%9)+1) * ((11092004-c) % (((c%11)+1)*119)) * 119 + (c%2004) where c = challenge + 1. The constants are protocol-defined magic values. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00003">3</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00029">29</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>
@@ -274,7 +275,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00009">9</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00036">36</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>

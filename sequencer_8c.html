@@ -81,12 +81,14 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="sequencer_8h_source.html">sequencer.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="data_8h_source.html">data.h</a>&quot;</code><br />
-<code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;sys/random.h&gt;</code><br />
 </div>
 <p><a href="sequencer_8c_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ade6a4c07c7c89dd70af9558497f6b160"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sequencer_8c.html#ade6a4c07c7c89dd70af9558497f6b160">csprng_uniform</a> (uint32_t upper_bound)</td></tr>
+<tr class="separator:ade6a4c07c7c89dd70af9558497f6b160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83fbe4f30778cc2871b636f33791cc74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structSequencer.html">Sequencer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sequencer_8c.html#a83fbe4f30778cc2871b636f33791cc74">sequencer_init</a> (int32_t start)</td></tr>
 <tr class="separator:a83fbe4f30778cc2871b636f33791cc74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13f2c048348cd7b196e2c958791ce52a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sequencer_8c.html#a13f2c048348cd7b196e2c958791ce52a">sequencer_next</a> (<a class="el" href="structSequencer.html">Sequencer</a> *sequencer, int32_t *out_value)</td></tr>
@@ -103,6 +105,34 @@ Functions</h2></td></tr>
 <tr class="separator:aba2db09bb1e336b93fd4f65c88b86f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ade6a4c07c7c89dd70af9558497f6b160" name="ade6a4c07c7c89dd70af9558497f6b160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade6a4c07c7c89dd70af9558497f6b160">&#9670;&#160;</a></span>csprng_uniform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint32_t csprng_uniform </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>upper_bound</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00021">21</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
+
+</div>
+</div>
 <a id="a72c43e279bb603f26550e8dd070e8e92" name="a72c43e279bb603f26550e8dd070e8e92"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a72c43e279bb603f26550e8dd070e8e92">&#9670;&#160;</a></span>generate_sequence_start()</h2>
 
@@ -117,10 +147,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Generates a random starting value for a sequencer. </p><dl class="section return"><dt>Returns</dt><dd>A random starting value. </dd></dl>
+<p >Generates a cryptographically random starting value for a sequencer. </p><dl class="section return"><dt>Returns</dt><dd>A random starting value. </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>The value is guaranteed to fit in the ServerInitInitPacket sequence fields. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00030">30</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00053">53</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
 
 </div>
 </div>
@@ -158,7 +188,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if out_bytes is NULL, EO_INVALID_SEQUENCE_RANGE if the derived range is empty, or EO_SEQUENCE_OUT_OF_RANGE if seq2 cannot be encoded as a single EO byte. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00045">45</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00070">70</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
 
 </div>
 </div>
@@ -196,7 +226,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if out_bytes is NULL, EO_INVALID_SEQUENCE_RANGE if the derived range is empty, or EO_SEQUENCE_OUT_OF_RANGE if seq2 cannot be encoded as a single EO byte. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00083">83</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00111">111</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
 
 </div>
 </div>
@@ -234,7 +264,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The calculated starting sequence value. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00035">35</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00058">58</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
 
 </div>
 </div>
@@ -272,7 +302,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The calculated starting sequence value. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00040">40</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00065">65</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
 
 </div>
 </div>
@@ -299,7 +329,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The initialized sequencer. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00006">6</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00029">29</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
 
 </div>
 </div>
@@ -337,7 +367,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, or EO_NULL_PTR if sequencer is NULL. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00014">14</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sequencer_8c_source.html#l00037">37</a> of file <a class="el" href="sequencer_8c_source.html">sequencer.c</a>.</p>
 
 </div>
 </div>

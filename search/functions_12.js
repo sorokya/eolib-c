@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['version_5fdeserialize_0',['Version_deserialize',['../protocol_8h.html#a7e10d4c4780cbbdd2541ba79bcef5138',1,'Version_deserialize(Version *out, EoReader *reader):&#160;protocol.c'],['../protocol_8c.html#a7e10d4c4780cbbdd2541ba79bcef5138',1,'Version_deserialize(Version *out, EoReader *reader):&#160;protocol.c']]],
-  ['version_5fserialize_1',['Version_serialize',['../protocol_8h.html#a9ffa67618f5911588da8cd906f2d5220',1,'Version_serialize(const Version *value, EoWriter *writer):&#160;protocol.c'],['../protocol_8c.html#a9ffa67618f5911588da8cd906f2d5220',1,'Version_serialize(const Version *value, EoWriter *writer):&#160;protocol.c']]]
+  ['unicode_5fto_5fcp1252_0',['unicode_to_cp1252',['../data_8c.html#a55a8136a54ea3e872311bb79e36d6c84',1,'data.c']]]
 ];

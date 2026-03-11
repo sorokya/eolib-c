@@ -79,12 +79,16 @@ $(function() {
   <div class="headertitle"><div class="title">encrypt.c File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="encrypt_8h_source.html">encrypt.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="data_8h_source.html">data.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="encrypt_8h_source.html">encrypt.h</a>&quot;</code><br />
+<code>#include &lt;sys/random.h&gt;</code><br />
 </div>
 <p><a href="encrypt_8c_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ade6a4c07c7c89dd70af9558497f6b160"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160">csprng_uniform</a> (uint32_t upper_bound)</td></tr>
+<tr class="separator:ade6a4c07c7c89dd70af9558497f6b160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0de01014a69a9b12752668ffddde73b"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="encrypt_8c.html#aa0de01014a69a9b12752668ffddde73b">server_verification_hash</a> (int32_t challenge)</td></tr>
 <tr class="separator:aa0de01014a69a9b12752668ffddde73b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad21bad4580c256f8691e4bda3c4fdb59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="encrypt_8c.html#ad21bad4580c256f8691e4bda3c4fdb59">swap_multiples</a> (uint8_t *data, size_t length, uint8_t multiple)</td></tr>
@@ -97,6 +101,34 @@ Functions</h2></td></tr>
 <tr class="separator:a4a115cab56c52682fc03837920aeb402"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ade6a4c07c7c89dd70af9558497f6b160" name="ade6a4c07c7c89dd70af9558497f6b160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade6a4c07c7c89dd70af9558497f6b160">&#9670;&#160;</a></span>csprng_uniform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint32_t csprng_uniform </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>upper_bound</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00021">21</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+
+</div>
+</div>
 <a id="a4a115cab56c52682fc03837920aeb402" name="a4a115cab56c52682fc03837920aeb402"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4a115cab56c52682fc03837920aeb402">&#9670;&#160;</a></span>decrypt_packet()</h2>
 
@@ -137,7 +169,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00098">98</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00138">138</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>
@@ -181,7 +213,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00042">42</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00082">82</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>
@@ -199,9 +231,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Generates a random swap multiple between 6 and 12 inclusive. </p><dl class="section return"><dt>Returns</dt><dd>The generated swap multiple. </dd></dl>
+<p >Generates a cryptographically random swap multiple between 6 and 12 inclusive. </p><dl class="section return"><dt>Returns</dt><dd>The generated swap multiple. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00037">37</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00077">77</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>
@@ -222,13 +254,14 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p >Calculates the server verification hash for the given challenge value. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">challenge</td><td>The server challenge value. </td></tr>
+    <tr><td class="paramname">challenge</td><td>The server challenge value (from ServerInitInitServerPacket). </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The verification hash. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The verification hash to be sent back to the server. </dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>Implements the EO protocol challenge-response formula: hash = 110905 + ((c%9)+1) * ((11092004-c) % (((c%11)+1)*119)) * 119 + (c%2004) where c = challenge + 1. The constants are protocol-defined magic values. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00003">3</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00029">29</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>
@@ -272,7 +305,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00009">9</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="encrypt_8c_source.html#l00036">36</a> of file <a class="el" href="encrypt_8c_source.html">encrypt.c</a>.</p>
 
 </div>
 </div>

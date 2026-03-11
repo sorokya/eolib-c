@@ -76,7 +76,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">result.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -108,6 +109,11 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:a80b9d1a97427ad2c8d1f68935e33c52b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a4c905a2a32256dcd09294b8f8586dd62"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="result_8h.html#a4c905a2a32256dcd09294b8f8586dd62">eo_result_string</a> (<a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result)</td></tr>
+<tr class="separator:a4c905a2a32256dcd09294b8f8586dd62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a00dc4545767ec5a71b9f7449f06d32c7" name="a00dc4545767ec5a71b9f7449f06d32c7"></a>
@@ -179,6 +185,34 @@ Enumerations</h2></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="result_8h_source.html#l00011">11</a> of file <a class="el" href="result_8h_source.html">result.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a4c905a2a32256dcd09294b8f8586dd62" name="a4c905a2a32256dcd09294b8f8586dd62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c905a2a32256dcd09294b8f8586dd62">&#9670;&#160;</a></span>eo_result_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eo_result_string </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Returns a human-readable string describing an EoResult value. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>The result code to describe. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A static string describing the result. Never returns NULL. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00145">145</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
