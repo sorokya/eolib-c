@@ -56,9 +56,9 @@ target_include_directories(eolib PUBLIC
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 add_dependencies(eolib generate_protocol)
-set_target_properties(eolib PROPERTIES OUTPUT_NAME "eolib" PREFIX "")
+set_target_properties(eolib PROPERTIES OUTPUT_NAME "eo")
 if(WIN32)
-	set_target_properties(eolib PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+	set_target_properties(eolib PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON PREFIX "lib")
 endif()
 
 install(TARGETS eolib
@@ -136,11 +136,11 @@ set(CPACK_PACKAGE_VENDOR "sorokya")
 set(CPACK_PACKAGE_VERSION ${EOLIB_VERSION})
 set(CPACK_PACKAGE_CONTACT "https://github.com/sorokya/eolib-c")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
-set(CPACK_PACKAGE_FILE_NAME "eolib-${EOLIB_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
-if(WIN32)
-	set(CPACK_GENERATOR "ZIP")
+if(DEFINED EOLIB_PACKAGE_PLATFORM)
+	set(CPACK_PACKAGE_FILE_NAME "eolib-${EOLIB_VERSION}-${EOLIB_PACKAGE_PLATFORM}")
 else()
-	set(CPACK_GENERATOR "TXZ")
+	set(CPACK_PACKAGE_FILE_NAME "eolib-${EOLIB_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 endif()
+set(CPACK_GENERATOR "ZIP")
 
 include(CPack)

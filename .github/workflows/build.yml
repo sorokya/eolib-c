@@ -16,44 +16,52 @@ jobs:
             compiler: gcc
             cc: gcc
             cxx: g++
+            package_platform: Linux-AMD64
             build_type: Release
 
           - os: ubuntu-24.04
             compiler: clang
             cc: clang
             cxx: clang++
+            package_platform: Linux-AMD64
             build_type: Release
 
           - os: ubuntu-24.04-arm
             compiler: gcc
             cc: gcc
             cxx: g++
+            package_platform: Linux-ARM64
             build_type: Release
 
           - os: ubuntu-24.04-arm
             compiler: clang
             cc: clang
             cxx: clang++
+            package_platform: Linux-ARM64
             build_type: Release
 
           - os: macos-26
             compiler: clang
             cc: clang
             cxx: clang++
+            package_platform: macOS-ARM64
             build_type: Release
 
           - os: macos-26
             compiler: gcc
+            package_platform: macOS-ARM64
             build_type: Release
 
           - os: macos-26-intel
             compiler: clang
             cc: clang
             cxx: clang++
+            package_platform: macOS-AMD64
             build_type: Release
 
           - os: macos-26-intel
             compiler: gcc
+            package_platform: macOS-AMD64
             build_type: Release
 
           - os: windows-2025
@@ -61,6 +69,7 @@ jobs:
             generator: Visual Studio 17 2022
             msvc_arch: x64
             vcpkg_triplet: x64-windows
+            package_platform: Windows-AMD64
             build_type: Release
 
           - os: windows-2025
@@ -69,6 +78,7 @@ jobs:
             msvc_arch: x64
             toolset: ClangCL
             vcpkg_triplet: x64-windows
+            package_platform: Windows-AMD64
             build_type: Release
 
           - os: windows-2025
@@ -77,6 +87,7 @@ jobs:
             cc: gcc
             cxx: g++
             generator: Ninja
+            package_platform: Windows-AMD64
             build_type: Release
 
           - os: windows-11-arm
@@ -84,6 +95,7 @@ jobs:
             generator: Visual Studio 17 2022
             msvc_arch: ARM64
             vcpkg_triplet: arm64-windows
+            package_platform: Windows-ARM64
             build_type: Release
 
           - os: windows-11-arm
@@ -92,6 +104,7 @@ jobs:
             msvc_arch: ARM64
             toolset: ClangCL
             vcpkg_triplet: arm64-windows
+            package_platform: Windows-ARM64
             build_type: Release
 
     runs-on: ${{ matrix.os }}
@@ -170,7 +183,7 @@ jobs:
           cmake -S . -B build -G "${{ matrix.generator }}"
           -A ${{ matrix.msvc_arch }}
           -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\\scripts\\buildsystems\\vcpkg.cmake
-          -DCPACK_PACKAGE_FILE_NAME=eolib-${{ matrix.os }}-${{ matrix.compiler }}
+          -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}
           ${{ matrix.toolset && format('-T {0}', matrix.toolset) || '' }}
 
       - name: Build (MSVC/ClangCL)
@@ -183,7 +196,7 @@ jobs:
         run: >-
           cmake -S . -B build -G "${{ matrix.generator }}"
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DCPACK_PACKAGE_FILE_NAME=eolib-${{ matrix.os }}-${{ matrix.compiler }}
+          -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}
 
       - name: Build (MinGW)
         if: matrix.compiler == 'mingw'
@@ -197,7 +210,7 @@ jobs:
           -DCMAKE_C_COMPILER=$CC
           -DCMAKE_CXX_COMPILER=$CXX
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DCPACK_PACKAGE_FILE_NAME=eolib-${{ matrix.os }}-${{ matrix.compiler }}
+          -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}
 
       - name: Build (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
@@ -216,18 +229,18 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         shell: pwsh
         run: >-
-          Get-ChildItem -Path build/package -File | ForEach-Object
-          {"$((Get-FileHash -Algorithm SHA256 $_.FullName).Hash)  $($_.Name)"}
-          | Set-Content -Path build/package/sha256.txt
+          Get-ChildItem -Path build/package -File | Where-Object { $_.Extension -ne '.sha256' }
+          | ForEach-Object
+          {"$((Get-FileHash -Algorithm SHA256 $_.FullName).Hash)  $($_.Name)" |
+          Set-Content -Path ("$($_.FullName).sha256") }
 
       - name: Package Hashes (Unix)
         if: "!startsWith(matrix.os, 'windows')"
         run: |
           cd build/package
-          rm -f sha256.txt
           for f in *; do
-            if [ -f "$f" ]; then
-              shasum -a 256 "$f" >> sha256.txt
+            if [ -f "$f" ] && [ "${f##*.}" != "sha256" ]; then
+              shasum -a 256 "$f" > "$f.sha256"
             fi
           done
 
