@@ -1478,10 +1478,10 @@ static int element_list_has_storage(ElementList *elements)
 
 /* Forward declaration for mutual recursion between element_list_has_heap and struct_has_heap */
 static int element_list_has_heap(ElementList *elements, EnumDef *enums, size_t enums_count,
-                                  StructDef *structs, size_t structs_count);
+                                 StructDef *structs, size_t structs_count);
 
 static int struct_has_heap(StructDef *structs, size_t structs_count, const char *name,
-                            EnumDef *enums, size_t enums_count)
+                           EnumDef *enums, size_t enums_count)
 {
     for (size_t i = 0; i < structs_count; ++i)
     {
@@ -1495,7 +1495,7 @@ static int struct_has_heap(StructDef *structs, size_t structs_count, const char 
 }
 
 static int element_list_has_heap(ElementList *elements, EnumDef *enums, size_t enums_count,
-                                  StructDef *structs, size_t structs_count)
+                                 StructDef *structs, size_t structs_count)
 {
     for (size_t i = 0; i < elements->elements_count; ++i)
     {
@@ -1552,7 +1552,7 @@ static int element_list_has_heap(ElementList *elements, EnumDef *enums, size_t e
         else if (element->kind == ELEMENT_CHUNKED)
         {
             if (element_list_has_heap(&element->as.chunked, enums, enums_count,
-                                       structs, structs_count))
+                                      structs, structs_count))
                 return 1;
         }
     }
@@ -2885,8 +2885,8 @@ static void write_free_elements(FILE *source, const char *struct_name,
             int is_str = strcmp(type_name, "string") == 0 ||
                          strcmp(type_name, "encoded_string") == 0;
             int elem_has_heap = !is_primitive_type(type_name) &&
-                                 !enum_exists(enums, enums_count, type_name) &&
-                                 struct_has_heap(structs, structs_count, type_name, enums, enums_count);
+                                !enum_exists(enums, enums_count, type_name) &&
+                                struct_has_heap(structs, structs_count, type_name, enums, enums_count);
 
             if (is_str)
             {
@@ -2945,7 +2945,7 @@ static void write_free_elements(FILE *source, const char *struct_name,
                 CaseDef *case_def = &sw->cases[c];
                 if (case_def->has_elements &&
                     element_list_has_heap(&case_def->elements, enums, enums_count,
-                                         structs, structs_count))
+                                          structs, structs_count))
                 {
                     any_case_has_heap = 1;
                     break;
@@ -2977,7 +2977,7 @@ static void write_free_elements(FILE *source, const char *struct_name,
                             continue;
                         int case_has_storage = element_list_has_storage(&case_def->elements);
                         int case_has_heap = element_list_has_heap(&case_def->elements, enums,
-                                                                   enums_count, structs, structs_count);
+                                                                  enums_count, structs, structs_count);
                         if (!case_has_heap)
                             continue;
                         if (case_def->is_default)
@@ -3049,8 +3049,8 @@ static void write_free_elements(FILE *source, const char *struct_name,
  * fields, dynamic-count arrays) are skipped here and emitted by
  * write_size_elements instead. */
 static int compute_elements_precomputed_size(ElementList *elements, EnumDef *enums,
-                                              size_t enums_count, StructDef *structs,
-                                              size_t structs_count)
+                                             size_t enums_count, StructDef *structs,
+                                             size_t structs_count)
 {
     int total = 0;
     for (size_t i = 0; i < elements->elements_count; ++i)
@@ -3060,7 +3060,7 @@ static int compute_elements_precomputed_size(ElementList *elements, EnumDef *enu
         if (element->kind == ELEMENT_CHUNKED)
         {
             total += compute_elements_precomputed_size(&element->as.chunked, enums, enums_count,
-                                                        structs, structs_count);
+                                                       structs, structs_count);
             continue;
         }
 
@@ -3123,7 +3123,8 @@ static int compute_elements_precomputed_size(ElementList *elements, EnumDef *enu
                 const char *edt = find_enum_data_type(enums, enums_count, type_name);
                 const char *eff = type_override ? type_override : edt;
                 int sz = primitive_byte_size(eff);
-                if (sz > 0) total += sz;
+                if (sz > 0)
+                    total += sz;
                 free(type_override);
             }
             else if (struct_exists(structs, structs_count, type_name))
@@ -3133,7 +3134,8 @@ static int compute_elements_precomputed_size(ElementList *elements, EnumDef *enu
             else
             {
                 int sz = primitive_byte_size(type_name);
-                if (sz > 0) total += sz;
+                if (sz > 0)
+                    total += sz;
             }
             free(type_name);
             continue;
@@ -3155,15 +3157,15 @@ static int compute_elements_precomputed_size(ElementList *elements, EnumDef *enu
                 strcmp(type_name, "blob") != 0)
             {
                 int elem_sz = is_enum
-                    ? primitive_byte_size(find_enum_data_type(enums, enums_count, type_name))
-                    : primitive_byte_size(type_name);
+                                  ? primitive_byte_size(find_enum_data_type(enums, enums_count, type_name))
+                                  : primitive_byte_size(type_name);
                 if (elem_sz > 0)
                 {
                     int arr_total = count * elem_sz;
                     if (array->delimited)
                         arr_total += array->trailing_delimiter
-                            ? count
-                            : (count > 1 ? count - 1 : 0);
+                                         ? count
+                                         : (count > 1 ? count - 1 : 0);
                     total += arr_total;
                 }
             }
@@ -3210,7 +3212,8 @@ static void write_size_elements(FILE *source, const char *struct_name,
                 continue; /* precomputed */
             char *field_name = to_snake_case(length->name);
             int sz = primitive_byte_size(length->data_type);
-            if (sz <= 0) sz = 1;
+            if (sz <= 0)
+                sz = 1;
             fprintf(source, "    if (%s%s%s) {\n", value_expr, value_access, field_name);
             fprintf(source, "        total += %d;\n", sz);
             fprintf(source, "    }\n");
@@ -3281,13 +3284,15 @@ static void write_size_elements(FILE *source, const char *struct_name,
                 const char *edt = find_enum_data_type(enums, enums_count, type_name);
                 const char *eff = type_override ? type_override : edt;
                 int sz = primitive_byte_size(eff);
-                if (sz > 0) fprintf(source, "    total += %d;\n", sz);
+                if (sz > 0)
+                    fprintf(source, "    total += %d;\n", sz);
                 free(type_override);
             }
             else
             {
                 int sz = primitive_byte_size(type_name);
-                if (sz > 0) fprintf(source, "    total += %d;\n", sz);
+                if (sz > 0)
+                    fprintf(source, "    total += %d;\n", sz);
             }
 
             if (field->optional && field_name)
@@ -3880,8 +3885,8 @@ static PacketStorageMap build_packet_storage_map(ProtocolDef *protocols, size_t 
                      protocol->packets[i].family, protocol->packets[i].action, suffix);
             int hs = element_list_has_storage(&protocol->packets[i].elements);
             int hh = hs && element_list_has_heap(&protocol->packets[i].elements,
-                                                  all_enums, all_enums_count,
-                                                  all_structs, all_structs_count);
+                                                 all_enums, all_enums_count,
+                                                 all_structs, all_structs_count);
             packet_storage_map_push(&map, name_buf, hs, hh);
         }
     }

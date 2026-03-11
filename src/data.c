@@ -6,6 +6,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#if defined(_WIN32)
+#define strdup _strdup
+#endif
+
 static size_t eo_reader_next_break_index(const EoReader *reader);
 
 /*
@@ -14,10 +18,38 @@ static size_t eo_reader_next_break_index(const EoReader *reader);
  * A value of 0 means the byte is undefined in Windows-1252.
  */
 static const uint32_t cp1252_unicode_extras[32] = {
-    0x20AC, 0,      0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
-    0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0,      0x017D, 0,
-    0,      0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
-    0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0,      0x017E, 0x0178,
+    0x20AC,
+    0,
+    0x201A,
+    0x0192,
+    0x201E,
+    0x2026,
+    0x2020,
+    0x2021,
+    0x02C6,
+    0x2030,
+    0x0160,
+    0x2039,
+    0x0152,
+    0,
+    0x017D,
+    0,
+    0,
+    0x2018,
+    0x2019,
+    0x201C,
+    0x201D,
+    0x2022,
+    0x2013,
+    0x2014,
+    0x02DC,
+    0x2122,
+    0x0161,
+    0x203A,
+    0x0153,
+    0,
+    0x017E,
+    0x0178,
 };
 
 static uint8_t unicode_to_cp1252(uint32_t codepoint)
@@ -80,9 +112,7 @@ static size_t normalize_to_cp1252(const char *input, char *output, size_t input_
             uint8_t b2 = (uint8_t)input[i + 2];
             if ((b1 & 0xC0) == 0x80 && (b2 & 0xC0) == 0x80)
             {
-                uint32_t cp = ((uint32_t)(b0 & 0x0F) << 12)
-                            | ((uint32_t)(b1 & 0x3F) << 6)
-                            | (b2 & 0x3F);
+                uint32_t cp = ((uint32_t)(b0 & 0x0F) << 12) | ((uint32_t)(b1 & 0x3F) << 6) | (b2 & 0x3F);
                 output[out_pos++] = (char)unicode_to_cp1252(cp);
                 i += 3;
             }
