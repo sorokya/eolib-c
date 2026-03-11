@@ -90,23 +90,6 @@ jobs:
             package_platform: Windows-AMD64
             build_type: Release
 
-          - os: windows-11-arm
-            compiler: msvc
-            generator: Visual Studio 17 2022
-            msvc_arch: ARM64
-            vcpkg_triplet: arm64-windows
-            package_platform: Windows-ARM64
-            build_type: Release
-
-          - os: windows-11-arm
-            compiler: clang-cl
-            generator: Visual Studio 17 2022
-            msvc_arch: ARM64
-            toolset: ClangCL
-            vcpkg_triplet: arm64-windows
-            package_platform: Windows-ARM64
-            build_type: Release
-
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
