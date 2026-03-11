@@ -12,6 +12,7 @@
 #endif
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <json-c/json.h>
 #include <stdbool.h>
 #include <ctype.h>
 #include <limits.h>
@@ -2756,6 +2757,331 @@ static void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
     fclose(source);
 }
 
+static int base64_char_to_val(char c)
+{
+    if (c >= 'A' && c <= 'Z') return c - 'A';
+    if (c >= 'a' && c <= 'z') return c - 'a' + 26;
+    if (c >= '0' && c <= '9') return c - '0' + 52;
+    if (c == '+') return 62;
+    if (c == '/') return 63;
+    return -1;
+}
+
+static int base64_decode(const char *input, uint8_t **output)
+{
+    size_t in_len = strlen(input);
+    size_t out_len = (in_len / 4) * 3;
+    if (in_len >= 1 && input[in_len - 1] == '=') out_len--;
+    if (in_len >= 2 && input[in_len - 2] == '=') out_len--;
+
+    *output = (uint8_t *)malloc(out_len + 1);
+    if (!*output)
+        return -1;
+
+    size_t j = 0;
+    for (size_t i = 0; i + 4 <= in_len; i += 4)
+    {
+        int v0 = base64_char_to_val(input[i]);
+        int v1 = base64_char_to_val(input[i + 1]);
+        int v2 = input[i + 2] == '=' ? 0 : base64_char_to_val(input[i + 2]);
+        int v3 = input[i + 3] == '=' ? 0 : base64_char_to_val(input[i + 3]);
+        if (v0 < 0 || v1 < 0)
+        {
+            free(*output);
+            *output = NULL;
+            return -1;
+        }
+        (*output)[j++] = (uint8_t)((v0 << 2) | (v1 >> 4));
+        if (input[i + 2] != '=')
+            (*output)[j++] = (uint8_t)((v1 << 4) | (v2 >> 2));
+        if (input[i + 3] != '=')
+            (*output)[j++] = (uint8_t)((v2 << 6) | v3);
+    }
+
+    return (int)j;
+}
+
+typedef struct
+{
+    char **names;
+    int *has_storage;
+    size_t count;
+    size_t capacity;
+} PacketStorageMap;
+
+static void packet_storage_map_push(PacketStorageMap *map, const char *name, int hs)
+{
+    if (map->count >= map->capacity)
+    {
+        map->capacity = ARRAY_GROW_CAPACITY(map->capacity);
+        map->names = realloc(map->names, map->capacity * sizeof(char *));
+        map->has_storage = realloc(map->has_storage, map->capacity * sizeof(int));
+        if (!map->names || !map->has_storage)
+        {
+            fprintf(stderr, "Out of memory\n");
+            exit(1);
+        }
+    }
+    map->names[map->count] = xstrdup(name);
+    map->has_storage[map->count] = hs;
+    map->count++;
+}
+
+static int packet_storage_map_lookup(const PacketStorageMap *map, const char *name)
+{
+    for (size_t i = 0; i < map->count; ++i)
+    {
+        if (strcmp(map->names[i], name) == 0)
+            return map->has_storage[i];
+    }
+    return 0;
+}
+
+static PacketStorageMap build_packet_storage_map(ProtocolDef *protocols, size_t protocol_count)
+{
+    PacketStorageMap map = {0};
+    for (size_t p = 0; p < protocol_count; ++p)
+    {
+        ProtocolDef *protocol = &protocols[p];
+        for (size_t i = 0; i < protocol->packets_count; ++i)
+        {
+            const char *suffix = "Client";
+            if (strstr(protocol->path, "/server/") ||
+                strstr(protocol->path, "/server/protocol.xml"))
+            {
+                suffix = "Server";
+            }
+            char name_buf[256];
+            snprintf(name_buf, sizeof(name_buf), "%s%s%sPacket",
+                     protocol->packets[i].family, protocol->packets[i].action, suffix);
+            packet_storage_map_push(&map, name_buf,
+                                    element_list_has_storage(&protocol->packets[i].elements));
+        }
+    }
+    return map;
+}
+
+static void list_json_files_in_dir(const char *dir_path, StringList *out)
+{
+#if defined(_WIN32)
+    char search[EOLIB_PATH_MAX];
+    WIN32_FIND_DATAA data;
+    HANDLE handle;
+    snprintf(search, sizeof(search), "%s\\*.json", dir_path);
+    handle = FindFirstFileA(search, &data);
+    if (handle == INVALID_HANDLE_VALUE)
+        return;
+    do
+    {
+        if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        {
+            char path[EOLIB_PATH_MAX];
+            snprintf(path, sizeof(path), "%s/%s", dir_path, data.cFileName);
+            string_list_push_unique(out, path);
+        }
+    } while (FindNextFileA(handle, &data) != 0);
+    FindClose(handle);
+#else
+    DIR *dir = opendir(dir_path);
+    if (!dir)
+        return;
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        const char *name = entry->d_name;
+        size_t name_len = strlen(name);
+        if (name_len <= 5 || strcmp(name + name_len - 5, ".json") != 0)
+            continue;
+        char path[EOLIB_PATH_MAX];
+        snprintf(path, sizeof(path), "%s/%s", dir_path, name);
+        string_list_push_unique(out, path);
+    }
+    closedir(dir);
+#endif
+}
+
+static void write_byte_array_literal(FILE *f, const uint8_t *data, size_t len)
+{
+    fprintf(f, "{");
+    for (size_t i = 0; i < len; ++i)
+    {
+        if (i > 0)
+            fprintf(f, ", ");
+        fprintf(f, "0x%02x", data[i]);
+    }
+    fprintf(f, "}");
+}
+
+static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
+{
+    if (ensure_dir("tests") != 0)
+    {
+        fprintf(stderr, "Failed to create tests directory\n");
+        return;
+    }
+
+    FILE *f = fopen("tests/packet_tests.c", "w");
+    if (!f)
+    {
+        fprintf(stderr, "Failed to open tests/packet_tests.c for writing\n");
+        return;
+    }
+
+    PacketStorageMap map = build_packet_storage_map(protocols, protocol_count);
+
+    fprintf(f, "%s", CODEGEN_WARNING);
+    fprintf(f, "#include \"test_utils.h\"\n");
+    fprintf(f, "#include \"eo_data.h\"\n");
+    fprintf(f, "#include \"protocol.h\"\n");
+    fprintf(f, "#include <stdio.h>\n");
+    fprintf(f, "#include <stdlib.h>\n");
+    fprintf(f, "#include <string.h>\n\n");
+
+    StringList test_names = {0};
+    const char *dirs[] = {"client", "server"};
+    for (int d = 0; d < 2; ++d)
+    {
+        char dir_path[256];
+        snprintf(dir_path, sizeof(dir_path), "eo-captured-packets/%s", dirs[d]);
+
+        StringList json_paths = {0};
+        list_json_files_in_dir(dir_path, &json_paths);
+
+        for (size_t i = 0; i < json_paths.count; ++i)
+        {
+            const char *path = json_paths.items[i];
+
+            struct json_object *root = json_object_from_file(path);
+            if (!root)
+            {
+                fprintf(stderr, "Failed to parse JSON: %s\n", path);
+                continue;
+            }
+
+            struct json_object *family_obj = NULL, *action_obj = NULL, *expected_obj = NULL;
+            if (!json_object_object_get_ex(root, "family", &family_obj) ||
+                !json_object_object_get_ex(root, "action", &action_obj) ||
+                !json_object_object_get_ex(root, "expected", &expected_obj))
+            {
+                fprintf(stderr, "Missing fields in JSON: %s\n", path);
+                json_object_put(root);
+                continue;
+            }
+
+            const char *family = json_object_get_string(family_obj);
+            const char *action = json_object_get_string(action_obj);
+            const char *expected_b64 = json_object_get_string(expected_obj);
+
+            const char *suffix = d == 0 ? "Client" : "Server";
+            char packet_name[256];
+            snprintf(packet_name, sizeof(packet_name), "%s%s%sPacket",
+                     family, action, suffix);
+
+            int has_storage = packet_storage_map_lookup(&map, packet_name);
+
+            uint8_t *expected_bytes = NULL;
+            int expected_len = base64_decode(expected_b64, &expected_bytes);
+
+            const char *basename = strrchr(path, '/');
+            basename = basename ? basename + 1 : path;
+            size_t stem_len = strlen(basename);
+            if (stem_len > 5 && strcmp(basename + stem_len - 5, ".json") == 0)
+                stem_len -= 5;
+            char *stem = (char *)malloc(stem_len + 1);
+            memcpy(stem, basename, stem_len);
+            stem[stem_len] = '\0';
+
+            char fn_name[512];
+            snprintf(fn_name, sizeof(fn_name), "test_packet_%s_%s", dirs[d], stem);
+
+            fprintf(f, "static void %s(void)\n{\n", fn_name);
+
+            if (expected_len > 0)
+            {
+                fprintf(f, "    static const uint8_t expected[] = ");
+                write_byte_array_literal(f, expected_bytes, (size_t)expected_len);
+                fprintf(f, ";\n");
+                fprintf(f, "    size_t expected_len = sizeof(expected);\n");
+            }
+            else
+            {
+                fprintf(f, "    size_t expected_len = 0;\n");
+            }
+
+            fprintf(f, "    EoReader reader;\n");
+            fprintf(f, "    memset(&reader, 0, sizeof(reader));\n");
+            if (expected_len > 0)
+            {
+                fprintf(f, "    reader.data = expected;\n");
+                fprintf(f, "    reader.length = expected_len;\n");
+            }
+            fprintf(f, "\n");
+
+            if (has_storage)
+            {
+                fprintf(f, "    %s packet;\n", packet_name);
+                fprintf(f,
+                        "    int deser_result = %s_deserialize(&packet, &reader);\n",
+                        packet_name);
+                fprintf(f,
+                        "    expect(\"%s_deserialize\", deser_result != -1);\n",
+                        packet_name);
+                fprintf(f, "    if (deser_result == -1) return;\n");
+                fprintf(f, "\n");
+                fprintf(f, "    EoWriter writer = eo_writer_init_with_capacity("
+                           "expected_len > 0 ? expected_len : 1);\n");
+                fprintf(f,
+                        "    expect(\"%s_serialize\","
+                        " %s_serialize(&packet, &writer) != -1);\n",
+                        packet_name, packet_name);
+                if (expected_len > 0)
+                {
+                    fprintf(f,
+                            "    expect_equal_bytes(\"%s roundtrip\","
+                            " writer.data, expected, expected_len);\n",
+                            packet_name);
+                }
+            }
+            else
+            {
+                fprintf(f,
+                        "    int deser_result = %s_deserialize(&reader);\n",
+                        packet_name);
+                fprintf(f,
+                        "    expect(\"%s_deserialize\", deser_result != -1);\n",
+                        packet_name);
+                fprintf(f, "    if (deser_result == -1) return;\n");
+                fprintf(f, "\n");
+                fprintf(f, "    EoWriter writer = eo_writer_init_with_capacity("
+                           "expected_len > 0 ? expected_len : 1);\n");
+                fprintf(f,
+                        "    expect(\"%s_serialize\","
+                        " %s_serialize(&writer) != -1);\n",
+                        packet_name, packet_name);
+            }
+
+            fprintf(f, "    free(writer.data);\n");
+            fprintf(f, "}\n\n");
+
+            string_list_push(&test_names, fn_name);
+
+            free(stem);
+            if (expected_bytes)
+                free(expected_bytes);
+            json_object_put(root);
+        }
+    }
+
+    fprintf(f, "int main(void)\n{\n");
+    for (size_t i = 0; i < test_names.count; ++i)
+        fprintf(f, "    %s();\n", test_names.items[i]);
+    fprintf(f, "\n    if (test_failures != 0)\n    {\n");
+    fprintf(f, "        fprintf(stderr, \"%%d test(s) failed\\n\", test_failures);\n");
+    fprintf(f, "        return 1;\n    }\n\n    return 0;\n}\n");
+
+    fclose(f);
+}
+
 int main(void)
 {
     StringList protocol_paths = {0};
@@ -2789,6 +3115,7 @@ int main(void)
     }
 
     write_protocol_files(protocols, protocol_count);
+    write_packet_tests(protocols, protocol_count);
 
     return 0;
 }

@@ -15,6 +15,7 @@ set(EOLIB_VERSION "0.1.0")
 find_package(PkgConfig)
 if(PkgConfig_FOUND)
 	pkg_check_modules(LIBXML2 QUIET libxml-2.0)
+	pkg_check_modules(JSONC QUIET IMPORTED_TARGET json-c)
 endif()
 
 if(NOT LIBXML2_FOUND)
@@ -23,15 +24,25 @@ if(NOT LIBXML2_FOUND)
 	set(LIBXML2_LIBRARIES ${LIBXML2_LIBRARIES})
 endif()
 
+if(NOT JSONC_FOUND)
+	find_package(json-c CONFIG REQUIRED)
+	set(JSONC_LIBRARIES json-c::json-c)
+endif()
+
 add_executable(code_gen tools/code_gen.c)
 target_include_directories(code_gen PRIVATE ${LIBXML2_INCLUDE_DIRS})
-target_link_libraries(code_gen PRIVATE ${LIBXML2_LIBRARIES})
+if(JSONC_FOUND)
+	target_link_libraries(code_gen PRIVATE ${LIBXML2_LIBRARIES} PkgConfig::JSONC)
+else()
+	target_link_libraries(code_gen PRIVATE ${LIBXML2_LIBRARIES} ${JSONC_LIBRARIES})
+endif()
 
 set(EOLIB_PROTOCOL_C ${CMAKE_CURRENT_SOURCE_DIR}/src/protocol.c)
 set(EOLIB_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/include/protocol.h)
+set(EOLIB_PACKET_TESTS_C ${CMAKE_CURRENT_SOURCE_DIR}/tests/packet_tests.c)
 
 add_custom_command(
-	OUTPUT ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H}
+	OUTPUT ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H} ${EOLIB_PACKET_TESTS_C}
 	COMMAND code_gen
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	DEPENDS code_gen
@@ -39,7 +50,7 @@ add_custom_command(
 )
 
 add_custom_target(generate_protocol ALL
-	DEPENDS ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H}
+	DEPENDS ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H} ${EOLIB_PACKET_TESTS_C}
 )
 
 add_library(eolib SHARED
@@ -130,6 +141,19 @@ target_include_directories(eolib_sequencer_tests PRIVATE
 )
 target_link_libraries(eolib_sequencer_tests PRIVATE eolib)
 add_test(NAME eolib_sequencer_tests COMMAND eolib_sequencer_tests)
+
+set_source_files_properties(${EOLIB_PACKET_TESTS_C} PROPERTIES GENERATED TRUE)
+add_executable(eolib_packet_tests
+	${EOLIB_PACKET_TESTS_C}
+	tests/test_utils.c
+)
+target_include_directories(eolib_packet_tests PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/tests
+)
+target_link_libraries(eolib_packet_tests PRIVATE eolib)
+add_dependencies(eolib_packet_tests generate_protocol)
+add_test(NAME eolib_packet_tests COMMAND eolib_packet_tests)
 
 set(CPACK_PACKAGE_NAME "eolib")
 set(CPACK_PACKAGE_VENDOR "sorokya")
