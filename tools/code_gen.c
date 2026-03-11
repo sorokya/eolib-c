@@ -806,7 +806,7 @@ static const char *map_primitive_type(const char *data_type)
     }
     if (strcmp(data_type, "blob") == 0)
     {
-        return "EoBlob";
+        return "uint8_t";
     }
     return data_type;
 }
@@ -1487,6 +1487,11 @@ static void write_struct_fields_with_indent(FILE *header, const char *struct_nam
             {
                 fprintf(header, "%s%s %s;\n", indent, type_name, field_name);
             }
+            else if (strcmp(type_name, "blob") == 0)
+            {
+                fprintf(header, "%ssize_t %s_length;\n", indent, field_name);
+                fprintf(header, "%suint8_t *%s;\n", indent, field_name);
+            }
             else
             {
                 fprintf(header, "%s%s %s;\n", indent, mapped_type, field_name);
@@ -1520,7 +1525,8 @@ static void write_struct_fields_with_indent(FILE *header, const char *struct_nam
             }
             else
             {
-                fprintf(header, "%sEoArray %s;\n", indent, field_name);
+                fprintf(header, "%ssize_t %s_length;\n", indent, field_name);
+                fprintf(header, "%s%s *%s;\n", indent, mapped_type, field_name);
             }
 
             free(type_name);
@@ -1813,7 +1819,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             else if (strcmp(type_name, "blob") == 0)
             {
                 fprintf(source,
-                        "    if ((result = eo_writer_add_bytes(writer, %s%s%s.data, %s%s%s.length)) != 0) return result;\n",
+                        "    if ((result = eo_writer_add_bytes(writer, %s%s%s, %s%s%s_length)) != 0) return result;\n",
                         value_expr, value_access, field_name, value_expr, value_access,
                         field_name);
             }
@@ -1869,7 +1875,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                     }
                     else
                     {
-                        snprintf(buffer, sizeof(buffer), "%s%s%s.length", value_expr,
+                        snprintf(buffer, sizeof(buffer), "%s%s%s_length", value_expr,
                                  value_access, field_name);
                         len_expr = buffer;
                     }
@@ -1884,7 +1890,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 }
                 else if (target.data_type && strcmp(target.data_type, "blob") == 0)
                 {
-                    snprintf(buffer, sizeof(buffer), "%s%s%s.length", value_expr,
+                    snprintf(buffer, sizeof(buffer), "%s%s%s_length", value_expr,
                              value_access, field_name);
                     len_expr = buffer;
                 }
@@ -1942,7 +1948,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             }
             else
             {
-                fprintf(source, "    for (size_t i = 0; i < %s%s%s.length; ++i) {\n",
+                fprintf(source, "    for (size_t i = 0; i < %s%s%s_length; ++i) {\n",
                         value_expr, value_access, field_name);
             }
 
@@ -1966,9 +1972,8 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 else
                 {
                     fprintf(source,
-                            "        if ((result = %s(writer, ((%s *)%s%s%s.items)[i])) != 0) return result;\n",
-                            map_writer_fn(enum_data_type), item_c_type,
-                            value_expr, value_access, field_name);
+                            "        if ((result = %s(writer, %s%s%s[i])) != 0) return result;\n",
+                            map_writer_fn(enum_data_type), value_expr, value_access, field_name);
                 }
             }
             else if (is_struct)
@@ -1993,8 +1998,8 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                     if (struct_has_storage(structs, structs_count, type_name))
                     {
                         fprintf(source,
-                                "        if ((result = %s_serialize(&((%s *)%s%s%s.items)[i], writer)) != 0) return result;\n",
-                                type_name, type_name, value_expr, value_access, field_name);
+                                "        if ((result = %s_serialize(&%s%s%s[i], writer)) != 0) return result;\n",
+                                type_name, value_expr, value_access, field_name);
                     }
                     else
                     {
@@ -2015,7 +2020,7 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 else
                 {
                     fprintf(source,
-                            "        if ((result = eo_writer_add_char(writer, ((bool *)%s%s%s.items)[i] ? 1 : 0)) != 0) return result;\n",
+                            "        if ((result = eo_writer_add_char(writer, %s%s%s[i] ? 1 : 0)) != 0) return result;\n",
                             value_expr, value_access, field_name);
                 }
             }
@@ -2031,8 +2036,9 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 else
                 {
                     fprintf(source,
-                            "        { EoBlob *blob = &((EoBlob *)%s%s%s.items)[i]; if ((result = eo_writer_add_bytes(writer, blob->data, blob->length)) != 0) return result; }\n",
-                            value_expr, value_access, field_name);
+                            "        if ((result = eo_writer_add_bytes(writer, %s%s%s[i].data, %s%s%s[i].length)) != 0) return result;\n",
+                            value_expr, value_access, field_name, value_expr, value_access,
+                            field_name);
                 }
             }
             else
@@ -2046,9 +2052,8 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
                 else
                 {
                     fprintf(source,
-                            "        if ((result = %s(writer, ((%s *)%s%s%s.items)[i])) != 0) return result;\n",
-                            map_writer_fn(type_name), map_primitive_type(type_name), value_expr,
-                            value_access, field_name);
+                            "        if ((result = %s(writer, %s%s%s[i])) != 0) return result;\n",
+                            map_writer_fn(type_name), value_expr, value_access, field_name);
                 }
             }
 
@@ -2306,7 +2311,7 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             else if (strcmp(type_name, "blob") == 0)
             {
                 fprintf(source,
-                        "    size_t remaining = eo_reader_remaining(reader); if ((result = eo_reader_get_bytes(reader, remaining, &%s%s%s.data)) != 0) return result; %s%s%s.length = remaining;\n",
+                        "    size_t remaining = eo_reader_remaining(reader); if ((result = eo_reader_get_bytes(reader, remaining, &%s%s%s)) != 0) return result; %s%s%s_length = remaining;\n",
                         out_expr, out_access, field_name, out_expr, out_access, field_name);
             }
             else if (field->length && (strcmp(type_name, "string") == 0 ||
@@ -2359,11 +2364,23 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             }
             else if (array->length)
             {
-                fprintf(source, "    for (size_t i = 0; i < (size_t)%s; ++i) {\n",
-                        array->length);
+                fprintf(source,
+                        "    %s%s%s_length = (size_t)%s;\n",
+                        out_expr, out_access, field_name, array->length);
+                fprintf(source,
+                        "    %s%s%s = %s%s%s_length > 0 ? (%s *)malloc(%s%s%s_length * sizeof(%s)) : NULL;\n",
+                        out_expr, out_access, field_name,
+                        out_expr, out_access, field_name, item_c_type,
+                        out_expr, out_access, field_name, item_c_type);
+                fprintf(source,
+                        "    if (!%s%s%s && %s%s%s_length > 0) return -1;\n",
+                        out_expr, out_access, field_name, out_expr, out_access, field_name);
+                fprintf(source, "    for (size_t i = 0; i < %s%s%s_length; ++i) {\n",
+                        out_expr, out_access, field_name);
             }
             else
             {
+                fprintf(source, "    size_t %s_capacity = 0;\n", field_name);
                 fprintf(source, "    while (eo_reader_remaining(reader) > 0) {\n");
             }
 
@@ -2411,28 +2428,72 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                             map_reader_fn(type_name), out_expr, out_access, field_name);
                 }
             }
+            else if (array->length)
+            {
+                if (is_enum)
+                {
+                    const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
+                    const char *enum_c_type = map_primitive_type(enum_data_type);
+                    fprintf(source,
+                            "        if ((result = %s(reader, (%s *)&%s%s%s[i])) != 0) return result;\n",
+                            map_reader_fn(enum_data_type), enum_c_type, out_expr, out_access, field_name);
+                }
+                else if (is_struct)
+                {
+                    if (struct_has_storage(structs, structs_count, type_name))
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_deserialize(&%s%s%s[i], reader)) != 0) return result;\n",
+                                type_name, out_expr, out_access, field_name);
+                    }
+                    else
+                    {
+                        fprintf(source,
+                                "        if ((result = %s_deserialize(reader)) != 0) return result;\n",
+                                type_name);
+                    }
+                }
+                else if (strcmp(type_name, "bool") == 0)
+                {
+                    fprintf(source,
+                            "        int32_t raw = 0; if ((result = eo_reader_get_char(reader, &raw)) != 0) return result; %s%s%s[i] = raw == 1;\n",
+                            out_expr, out_access, field_name);
+                }
+                else if (strcmp(type_name, "blob") == 0)
+                {
+                    fprintf(source,
+                            "        size_t remaining = eo_reader_remaining(reader); if ((result = eo_reader_get_bytes(reader, remaining, &%s%s%s[i].data)) != 0) return result; %s%s%s[i].length = remaining;\n",
+                            out_expr, out_access, field_name, out_expr, out_access, field_name);
+                }
+                else
+                {
+                    fprintf(source,
+                            "        if ((result = %s(reader, &%s%s%s[i])) != 0) return result;\n",
+                            map_reader_fn(type_name), out_expr, out_access, field_name);
+                }
+            }
             else
             {
                 fprintf(source,
-                        "        if (%s%s%s.length >= %s%s%s.capacity) {\n",
-                        out_expr, out_access, field_name, out_expr, out_access, field_name);
+                        "        if (%s%s%s_length >= %s_capacity) {\n",
+                        out_expr, out_access, field_name, field_name);
                 fprintf(source,
-                        "            size_t new_capacity = %s%s%s.capacity < 8 ? 8 : %s%s%s.capacity * 2;\n",
-                        out_expr, out_access, field_name, out_expr, out_access, field_name);
+                        "            size_t new_capacity = %s_capacity < 8 ? 8 : %s_capacity * 2;\n",
+                        field_name, field_name);
                 fprintf(source,
-                        "            void *new_items = realloc(%s%s%s.items, new_capacity * sizeof(%s));\n",
-                        out_expr, out_access, field_name, item_c_type);
+                        "            %s *new_items = realloc(%s%s%s, new_capacity * sizeof(%s));\n",
+                        item_c_type, out_expr, out_access, field_name, item_c_type);
                 fprintf(source,
-                        "            if (!new_items) return -1;\n            %s%s%s.items = new_items;\n            %s%s%s.capacity = new_capacity;\n",
-                        out_expr, out_access, field_name, out_expr, out_access, field_name);
+                        "            if (!new_items) return -1;\n            %s%s%s = new_items;\n            %s_capacity = new_capacity;\n",
+                        out_expr, out_access, field_name, field_name);
                 fprintf(source, "        }\n");
                 if (is_enum)
                 {
                     const char *enum_data_type = find_enum_data_type(enums, enums_count, type_name);
                     const char *enum_c_type = map_primitive_type(enum_data_type);
                     fprintf(source,
-                            "        if ((result = %s(reader, (%s *)&((%s *)%s%s%s.items)[%s%s%s.length++])) != 0) return result;\n",
-                            map_reader_fn(enum_data_type), enum_c_type, item_c_type,
+                            "        if ((result = %s(reader, (%s *)&%s%s%s[%s%s%s_length++])) != 0) return result;\n",
+                            map_reader_fn(enum_data_type), enum_c_type,
                             out_expr, out_access, field_name, out_expr, out_access, field_name);
                 }
                 else if (is_struct)
@@ -2440,8 +2501,8 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                     if (struct_has_storage(structs, structs_count, type_name))
                     {
                         fprintf(source,
-                                "        if ((result = %s_deserialize(&((%s *)%s%s%s.items)[%s%s%s.length++], reader)) != 0) return result;\n",
-                                type_name, type_name, out_expr, out_access, field_name, out_expr,
+                                "        if ((result = %s_deserialize(&%s%s%s[%s%s%s_length++], reader)) != 0) return result;\n",
+                                type_name, out_expr, out_access, field_name, out_expr,
                                 out_access, field_name);
                     }
                     else
@@ -2454,22 +2515,22 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 else if (strcmp(type_name, "bool") == 0)
                 {
                     fprintf(source,
-                            "        int32_t raw = 0; if ((result = eo_reader_get_char(reader, &raw)) != 0) return result; ((bool *)%s%s%s.items)[%s%s%s.length++] = raw == 1;\n",
+                            "        int32_t raw = 0; if ((result = eo_reader_get_char(reader, &raw)) != 0) return result; %s%s%s[%s%s%s_length++] = raw == 1;\n",
                             out_expr, out_access, field_name, out_expr, out_access, field_name);
                 }
                 else if (strcmp(type_name, "blob") == 0)
                 {
                     fprintf(source,
-                            "        size_t remaining = eo_reader_remaining(reader); if ((result = eo_reader_get_bytes(reader, remaining, &((EoBlob *)%s%s%s.items)[%s%s%s.length].data)) != 0) return result; ((EoBlob *)%s%s%s.items)[%s%s%s.length++].length = remaining;\n",
+                            "        size_t remaining = eo_reader_remaining(reader); if ((result = eo_reader_get_bytes(reader, remaining, &%s%s%s[%s%s%s_length].data)) != 0) return result; %s%s%s[%s%s%s_length++].length = remaining;\n",
                             out_expr, out_access, field_name, out_expr, out_access, field_name,
                             out_expr, out_access, field_name, out_expr, out_access, field_name);
                 }
                 else
                 {
                     fprintf(source,
-                            "        if ((result = %s(reader, &((%s *)%s%s%s.items)[%s%s%s.length++])) != 0) return result;\n",
-                            map_reader_fn(type_name), map_primitive_type(type_name), out_expr,
-                            out_access, field_name, out_expr, out_access, field_name);
+                            "        if ((result = %s(reader, &%s%s%s[%s%s%s_length++])) != 0) return result;\n",
+                            map_reader_fn(type_name), out_expr, out_access, field_name,
+                            out_expr, out_access, field_name);
                 }
             }
 
@@ -2714,10 +2775,6 @@ static void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
 
     fprintf(source, "#include \"protocol.h\"\n\n");
     fprintf(source, "#include <string.h>\n#include <stdlib.h>\n\n");
-
-    fprintf(header,
-            "typedef struct {\n    size_t length;\n    size_t capacity;\n    void *items;\n} EoArray;\n\n");
-    fprintf(header, "typedef struct {\n    size_t length;\n    uint8_t *data;\n} EoBlob;\n\n");
 
     EnumDef *all_enums = NULL;
     size_t all_enums_count = 0;
@@ -2979,7 +3036,7 @@ static void write_byte_array_literal(FILE *f, const uint8_t *data, size_t len)
 
 /*
  * Map from (struct_name, field_name) to static array size.
- * Used to distinguish fixed-size C arrays like SomeType name[N] from EoArray.
+ * Used to distinguish fixed-size C arrays like SomeType name[N] from dynamic typed arrays.
  */
 typedef struct
 {
@@ -3269,11 +3326,11 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
                     write_byte_array_literal(f, blob, (size_t)blob_len);
                     fprintf(f, ";\n");
                     fprintf(f,
-                            "        expect_equal_bytes(\"%s\", %s.data, expected_bytes, %d);\n",
+                            "        expect_equal_bytes(\"%s\", %s, expected_bytes, %d);\n",
                             label, c_expr, blob_len);
                     fprintf(f,
-                            "        expect_equal_size(\"%s length\", %s.length, %zu);\n",
-                            label, c_expr, (size_t)blob_len);
+                            "        expect_equal_size(\"%s length\", %s%s_length, %zu);\n",
+                            label, c_path, name, (size_t)blob_len);
                     fprintf(f, "    }\n");
                     free(blob);
                 }
@@ -3297,7 +3354,7 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
 
         if (strcmp(elem_type, "int") == 0)
         {
-            /* []int: fixed-size C array or dynamic EoArray */
+            /* []int: fixed-size C array or dynamic typed array */
             int fixed_size = fixed_array_lookup(fixed_arrays, current_struct, name);
             if (fixed_size > 0)
             {
@@ -3316,8 +3373,8 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
             }
             else
             {
-                fprintf(f, "    expect_equal_size(\"%s length\", %s.length, %d);\n",
-                        label, c_expr, child_count);
+                fprintf(f, "    expect_equal_size(\"%s length\", %s%s_length, %d);\n",
+                        label, c_path, name, child_count);
                 for (int j = 0; j < child_count; ++j)
                 {
                     struct json_object *child = json_object_array_get_idx(children_obj, j);
@@ -3326,7 +3383,7 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
                     if (child_val)
                     {
                         int64_t v = json_object_get_int64(child_val);
-                        fprintf(f, "    expect_equal_int(\"%s[%d]\", (int)((int32_t *)%s.items)[%d], %d);\n",
+                        fprintf(f, "    expect_equal_int(\"%s[%d]\", (int)%s[%d], %d);\n",
                                 label, j, c_expr, j, (int)v);
                     }
                 }
@@ -3334,7 +3391,7 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
         }
         else if (strcmp(elem_type, "string") == 0)
         {
-            /* []string: fixed-size C array or dynamic EoArray */
+            /* []string: fixed-size C array or dynamic typed array */
             int fixed_size = fixed_array_lookup(fixed_arrays, current_struct, name);
             if (fixed_size > 0)
             {
@@ -3355,8 +3412,8 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
             }
             else
             {
-                fprintf(f, "    expect_equal_size(\"%s length\", %s.length, %d);\n",
-                        label, c_expr, child_count);
+                fprintf(f, "    expect_equal_size(\"%s length\", %s%s_length, %d);\n",
+                        label, c_path, name, child_count);
                 for (int j = 0; j < child_count; ++j)
                 {
                     struct json_object *child = json_object_array_get_idx(children_obj, j);
@@ -3365,7 +3422,7 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
                     if (child_val)
                     {
                         const char *sv = json_object_get_string(child_val);
-                        fprintf(f, "    expect_equal_str(\"%s[%d]\", ((char **)%s.items)[%d], ",
+                        fprintf(f, "    expect_equal_str(\"%s[%d]\", %s[%d], ",
                                 label, j, c_expr, j);
                         write_escaped_c_string(f, sv ? sv : "");
                         fprintf(f, ");\n");
@@ -3375,7 +3432,7 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
         }
         else
         {
-            /* []SomeName: fixed-size C array or dynamic EoArray of structs */
+            /* []SomeName: fixed-size C array or dynamic typed array of structs */
             const char *local_elem = strip_type_namespace(elem_type);
             int fixed_size = fixed_array_lookup(fixed_arrays, current_struct, name);
 
@@ -3404,9 +3461,9 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
             }
             else
             {
-                /* Dynamic EoArray: always assert length, even when children absent */
-                fprintf(f, "    expect_equal_size(\"%s length\", %s.length, %d);\n",
-                        label, c_expr, child_count);
+                /* Dynamic typed array: always assert length, even when children absent */
+                fprintf(f, "    expect_equal_size(\"%s length\", %s%s_length, %d);\n",
+                        label, c_path, name, child_count);
                 for (int j = 0; j < child_count; ++j)
                 {
                     struct json_object *child = json_object_array_get_idx(children_obj, j);
@@ -3414,8 +3471,7 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
                     json_object_object_get_ex(child, "children", &child_children);
 
                     char elem_c_path[2048];
-                    snprintf(elem_c_path, sizeof(elem_c_path),
-                             "((%s *)%s.items)[%d].", local_elem, c_expr, j);
+                    snprintf(elem_c_path, sizeof(elem_c_path), "%s[%d].", c_expr, j);
 
                     char elem_label[1024];
                     snprintf(elem_label, sizeof(elem_label), "%s[%d]", label, j);
