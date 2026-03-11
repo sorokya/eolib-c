@@ -13,7 +13,7 @@
  *          hash = 110905 + ((c%9)+1) * ((11092004-c) % (((c%11)+1)*119)) * 119 + (c%2004)
  *          where c = challenge + 1. The constants are protocol-defined magic values.
  */
-int32_t server_verification_hash(int32_t challenge);
+int32_t eo_server_verification_hash(int32_t challenge);
 
 /**
  * Reverses contiguous sequences of bytes where each value is a multiple of `multiple`.
@@ -21,13 +21,13 @@ int32_t server_verification_hash(int32_t challenge);
  * @param length Number of bytes in `data`.
  * @param multiple The divisor used to determine which bytes are in a sequence.
  */
-void swap_multiples(uint8_t *data, size_t length, uint8_t multiple);
+void eo_swap_multiples(uint8_t *data, size_t length, uint8_t multiple);
 
 /**
  * Generates a cryptographically random swap multiple between 6 and 12 inclusive.
  * @return The generated swap multiple.
  */
-uint8_t generate_swap_multiple();
+uint8_t eo_generate_swap_multiple();
 
 /**
  * Encrypts a packet in place using the specified swap multiple.
@@ -35,7 +35,7 @@ uint8_t generate_swap_multiple();
  * @param length Number of bytes in `data`.
  * @param swap_multiple The swap multiple for the packet.
  */
-void encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
+void eo_encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
 
 /**
  * Decrypts a packet in place using the specified swap multiple.
@@ -43,6 +43,6 @@ void encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
  * @param length Number of bytes in `data`.
  * @param swap_multiple The swap multiple for the packet.
  */
-void decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
+void eo_decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple);
 
 #endif

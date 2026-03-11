@@ -346,6 +346,18 @@ static int string_list_contains(const StringList *list, const char *value)
     return 0;
 }
 
+static void string_list_free(StringList *list)
+{
+    if (!list)
+        return;
+    for (size_t i = 0; i < list->count; ++i)
+        free(list->items[i]);
+    free(list->items);
+    list->items = NULL;
+    list->count = 0;
+    list->capacity = 0;
+}
+
 static void enum_list_push(EnumDef **list, size_t *count, size_t *capacity, const EnumDef *def)
 {
     if (*count >= *capacity)
@@ -1324,6 +1336,11 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                                        size_t enums_count, StructDef *structs,
                                        size_t structs_count, const char *out_expr,
                                        const char *out_access);
+static void write_free_elements(FILE *source, const char *struct_name,
+                                ElementList *elements, EnumDef *enums,
+                                size_t enums_count, StructDef *structs,
+                                size_t structs_count, const char *value_expr,
+                                const char *value_access);
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
                              EnumDef *enums, size_t enums_count, StructDef *structs,
                              size_t structs_count);
@@ -1433,6 +1450,89 @@ static int element_list_has_storage(ElementList *elements)
             {
                 return 1;
             }
+        }
+    }
+    return 0;
+}
+
+/* Forward declaration for mutual recursion between element_list_has_heap and struct_has_heap */
+static int element_list_has_heap(ElementList *elements, EnumDef *enums, size_t enums_count,
+                                  StructDef *structs, size_t structs_count);
+
+static int struct_has_heap(StructDef *structs, size_t structs_count, const char *name,
+                            EnumDef *enums, size_t enums_count)
+{
+    for (size_t i = 0; i < structs_count; ++i)
+    {
+        if (strcmp(structs[i].name, name) == 0)
+        {
+            return element_list_has_heap(&structs[i].elements, enums, enums_count,
+                                         structs, structs_count);
+        }
+    }
+    return 0;
+}
+
+static int element_list_has_heap(ElementList *elements, EnumDef *enums, size_t enums_count,
+                                  StructDef *structs, size_t structs_count)
+{
+    for (size_t i = 0; i < elements->elements_count; ++i)
+    {
+        StructElement *element = &elements->elements[i];
+        if (element->kind == ELEMENT_FIELD)
+        {
+            FieldDef *field = &element->as.field;
+            if (!field->name)
+                continue;
+            char *type_name = normalize_type_name(field->data_type);
+            int heap = 0;
+            if (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0 ||
+                strcmp(type_name, "blob") == 0)
+            {
+                heap = 1;
+            }
+            else if (!is_primitive_type(type_name) && !enum_exists(enums, enums_count, type_name))
+            {
+                heap = struct_has_heap(structs, structs_count, type_name, enums, enums_count);
+            }
+            free(type_name);
+            if (heap)
+                return 1;
+        }
+        else if (element->kind == ELEMENT_ARRAY)
+        {
+            ArrayDef *array = &element->as.array;
+            if (!array->name)
+                continue;
+            char *type_name = normalize_type_name(array->data_type);
+            int heap = 0;
+            if (!is_static_length(array->length))
+            {
+                heap = 1; /* dynamic array pointer is always heap */
+            }
+            else if (strcmp(type_name, "string") == 0 ||
+                     strcmp(type_name, "encoded_string") == 0)
+            {
+                heap = 1; /* static array of char * elements */
+            }
+            else if (!is_primitive_type(type_name) && !enum_exists(enums, enums_count, type_name))
+            {
+                heap = struct_has_heap(structs, structs_count, type_name, enums, enums_count);
+            }
+            free(type_name);
+            if (heap)
+                return 1;
+        }
+        else if (element->kind == ELEMENT_SWITCH)
+        {
+            if (switch_has_storage(&element->as.sw))
+                return 1; /* union pointer is heap */
+        }
+        else if (element->kind == ELEMENT_CHUNKED)
+        {
+            if (element_list_has_heap(&element->as.chunked, enums, enums_count,
+                                       structs, structs_count))
+                return 1;
         }
     }
     return 0;
@@ -2683,11 +2783,213 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
     }
 }
 
+static void write_free_elements(FILE *source, const char *struct_name,
+                                ElementList *elements, EnumDef *enums,
+                                size_t enums_count, StructDef *structs,
+                                size_t structs_count, const char *value_expr,
+                                const char *value_access)
+{
+    (void)struct_name;
+    for (size_t i = 0; i < elements->elements_count; ++i)
+    {
+        StructElement *element = &elements->elements[i];
+        if (element->kind == ELEMENT_FIELD)
+        {
+            FieldDef *field = &element->as.field;
+            if (!field->name)
+                continue;
+            char *field_name = to_snake_case(field->name);
+            char *type_name = normalize_type_name(field->data_type);
+            if (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0 ||
+                strcmp(type_name, "blob") == 0)
+            {
+                fprintf(source, "    free(%s%s%s);\n", value_expr, value_access, field_name);
+            }
+            else if (!is_primitive_type(type_name) && !enum_exists(enums, enums_count, type_name) &&
+                     struct_has_heap(structs, structs_count, type_name, enums, enums_count))
+            {
+                fprintf(source, "    %s_free(&%s%s%s);\n", type_name, value_expr, value_access,
+                        field_name);
+            }
+            free(type_name);
+            free(field_name);
+        }
+        else if (element->kind == ELEMENT_ARRAY)
+        {
+            ArrayDef *array = &element->as.array;
+            if (!array->name)
+                continue;
+            char *field_name = to_snake_case(array->name);
+            char *type_name = normalize_type_name(array->data_type);
+            int is_static = is_static_length(array->length);
+            int is_str = strcmp(type_name, "string") == 0 ||
+                         strcmp(type_name, "encoded_string") == 0;
+            int elem_has_heap = !is_primitive_type(type_name) &&
+                                 !enum_exists(enums, enums_count, type_name) &&
+                                 struct_has_heap(structs, structs_count, type_name, enums, enums_count);
+
+            if (is_str)
+            {
+                const char *len_expr = is_static ? array->length : NULL;
+                if (is_static)
+                {
+                    fprintf(source,
+                            "    { size_t _fi; for (_fi = 0; _fi < %s; _fi++) free(%s%s%s[_fi]); }\n",
+                            array->length, value_expr, value_access, field_name);
+                }
+                else
+                {
+                    (void)len_expr;
+                    fprintf(source,
+                            "    { size_t _fi; for (_fi = 0; _fi < %s%s%s_length; _fi++) free(%s%s%s[_fi]); }\n",
+                            value_expr, value_access, field_name,
+                            value_expr, value_access, field_name);
+                    fprintf(source, "    free(%s%s%s);\n", value_expr, value_access, field_name);
+                }
+            }
+            else if (!is_static)
+            {
+                if (elem_has_heap)
+                {
+                    fprintf(source,
+                            "    { size_t _fi; for (_fi = 0; _fi < %s%s%s_length; _fi++) %s_free(&%s%s%s[_fi]); }\n",
+                            value_expr, value_access, field_name, type_name,
+                            value_expr, value_access, field_name);
+                }
+                fprintf(source, "    free(%s%s%s);\n", value_expr, value_access, field_name);
+            }
+            else if (is_static && elem_has_heap)
+            {
+                fprintf(source,
+                        "    { size_t _fi; for (_fi = 0; _fi < %s; _fi++) %s_free(&%s%s%s[_fi]); }\n",
+                        array->length, type_name, value_expr, value_access, field_name);
+            }
+
+            free(type_name);
+            free(field_name);
+        }
+        else if (element->kind == ELEMENT_SWITCH)
+        {
+            SwitchDef *sw = &element->as.sw;
+            char *field_name = to_snake_case(sw->field);
+            char *field_type = find_field_data_type(elements, sw->field);
+            int has_storage = switch_has_storage(sw);
+            int suppress_enum_switch_warning =
+                field_type && enum_exists(enums, enums_count, field_type) &&
+                switch_has_numeric_case(sw);
+
+            /* Check whether any case actually has heap-allocated fields. */
+            int any_case_has_heap = 0;
+            for (size_t c = 0; c < sw->cases_count; ++c)
+            {
+                CaseDef *case_def = &sw->cases[c];
+                if (case_def->has_elements &&
+                    element_list_has_heap(&case_def->elements, enums, enums_count,
+                                         structs, structs_count))
+                {
+                    any_case_has_heap = 1;
+                    break;
+                }
+            }
+
+            if (has_storage)
+            {
+                fprintf(source, "    if (%s%s%s_data) {\n", value_expr, value_access, field_name);
+                if (any_case_has_heap)
+                {
+                    int has_default = 0;
+                    if (suppress_enum_switch_warning)
+                    {
+                        fprintf(source,
+                                "#if defined(__clang__)\n"
+                                "    #pragma clang diagnostic push\n"
+                                "    #pragma clang diagnostic ignored \"-Wswitch\"\n"
+                                "#elif defined(__GNUC__)\n"
+                                "    #pragma GCC diagnostic push\n"
+                                "    #pragma GCC diagnostic ignored \"-Wswitch\"\n"
+                                "#endif\n");
+                    }
+                    fprintf(source, "        switch (%s%s%s) {\n", value_expr, value_access, field_name);
+                    for (size_t c = 0; c < sw->cases_count; ++c)
+                    {
+                        CaseDef *case_def = &sw->cases[c];
+                        if (!case_def->has_elements)
+                            continue;
+                        int case_has_storage = element_list_has_storage(&case_def->elements);
+                        int case_has_heap = element_list_has_heap(&case_def->elements, enums,
+                                                                   enums_count, structs, structs_count);
+                        if (!case_has_heap)
+                            continue;
+                        if (case_def->is_default)
+                            has_default = 1;
+                        const char *case_name = case_def->is_default ? "default" : case_def->value;
+                        char *case_const = to_upper_snake(case_name);
+                        char *case_field = to_snake_case(case_name);
+                        if (case_def->is_default)
+                        {
+                            fprintf(source, "        default: {\n");
+                        }
+                        else if (case_def->value && is_numeric_string(case_def->value))
+                        {
+                            fprintf(source, "        case %s: {\n", case_def->value);
+                        }
+                        else if (field_type && enum_exists(enums, enums_count, field_type))
+                        {
+                            char *enum_prefix = to_upper_snake(field_type);
+                            fprintf(source, "        case %s_%s: {\n", enum_prefix, case_const);
+                            free(enum_prefix);
+                        }
+                        else
+                        {
+                            fprintf(source, "        case %s: {\n",
+                                    case_def->value ? case_def->value : "0");
+                        }
+                        if (case_has_storage && case_has_heap)
+                        {
+                            char case_value[512];
+                            snprintf(case_value, sizeof(case_value), "%s%s%s_data->%s",
+                                     value_expr, value_access, field_name, case_field);
+                            write_free_elements(source, struct_name, &case_def->elements, enums,
+                                                enums_count, structs, structs_count, case_value, ".");
+                        }
+                        fprintf(source, "            break;\n        }\n");
+                        free(case_const);
+                        free(case_field);
+                    }
+                    if (!has_default)
+                        fprintf(source, "        default: break;\n");
+                    fprintf(source, "        }\n");
+                    if (suppress_enum_switch_warning)
+                    {
+                        fprintf(source,
+                                "#if defined(__clang__)\n"
+                                "    #pragma clang diagnostic pop\n"
+                                "#elif defined(__GNUC__)\n"
+                                "    #pragma GCC diagnostic pop\n"
+                                "#endif\n");
+                    }
+                }
+                fprintf(source, "        free(%s%s%s_data);\n", value_expr, value_access, field_name);
+                fprintf(source, "    }\n");
+            }
+            free(field_name);
+            free(field_type);
+        }
+        else if (element->kind == ELEMENT_CHUNKED)
+        {
+            write_free_elements(source, struct_name, &element->as.chunked, enums, enums_count,
+                                structs, structs_count, value_expr, value_access);
+        }
+    }
+}
+
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
                              EnumDef *enums, size_t enums_count, StructDef *structs,
                              size_t structs_count)
 {
     int has_storage = element_list_has_storage(elements);
+    int has_heap = has_storage && element_list_has_heap(elements, enums, enums_count,
+                                                        structs, structs_count);
 
     if (has_storage)
     {
@@ -2700,9 +3002,14 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
                 name,
                 name);
         fprintf(header,
-                "EoResult %s_deserialize(%s *out, EoReader *reader);\n\n",
+                "EoResult %s_deserialize(%s *out, EoReader *reader);\n",
                 name,
                 name);
+        if (has_heap)
+        {
+            fprintf(header, "void %s_free(%s *value);\n", name, name);
+        }
+        fprintf(header, "\n");
 
         fprintf(source, "EoResult %s_serialize(const %s *value, EoWriter *writer) {\n", name, name);
         fprintf(source, "    EoResult result = EO_SUCCESS;\n");
@@ -2727,6 +3034,15 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
 
         fprintf(source, "    eo_reader_set_chunked_reading_mode(reader, previous_chunked);\n");
         fprintf(source, "    return result;\n}\n\n");
+
+        if (has_heap)
+        {
+            fprintf(source, "void %s_free(%s *value) {\n", name, name);
+            fprintf(source, "    if (!value) return;\n");
+            write_free_elements(source, name, elements, enums, enums_count, structs, structs_count,
+                                "value", "->");
+            fprintf(source, "}\n\n");
+        }
         return;
     }
 
@@ -2944,18 +3260,20 @@ typedef struct
 {
     char **names;
     int *has_storage;
+    int *has_heap;
     size_t count;
     size_t capacity;
 } PacketStorageMap;
 
-static void packet_storage_map_push(PacketStorageMap *map, const char *name, int hs)
+static void packet_storage_map_push(PacketStorageMap *map, const char *name, int hs, int hh)
 {
     if (map->count >= map->capacity)
     {
         map->capacity = ARRAY_GROW_CAPACITY(map->capacity);
         map->names = realloc(map->names, map->capacity * sizeof(char *));
         map->has_storage = realloc(map->has_storage, map->capacity * sizeof(int));
-        if (!map->names || !map->has_storage)
+        map->has_heap = realloc(map->has_heap, map->capacity * sizeof(int));
+        if (!map->names || !map->has_storage || !map->has_heap)
         {
             fprintf(stderr, "Out of memory\n");
             exit(1);
@@ -2963,6 +3281,7 @@ static void packet_storage_map_push(PacketStorageMap *map, const char *name, int
     }
     map->names[map->count] = xstrdup(name);
     map->has_storage[map->count] = hs;
+    map->has_heap[map->count] = hh;
     map->count++;
 }
 
@@ -2976,8 +3295,47 @@ static int packet_storage_map_lookup(const PacketStorageMap *map, const char *na
     return 0;
 }
 
+static int packet_heap_map_lookup(const PacketStorageMap *map, const char *name)
+{
+    for (size_t i = 0; i < map->count; ++i)
+    {
+        if (strcmp(map->names[i], name) == 0)
+            return map->has_heap[i];
+    }
+    return 0;
+}
+
 static PacketStorageMap build_packet_storage_map(ProtocolDef *protocols, size_t protocol_count)
 {
+    EnumDef *all_enums = NULL;
+    size_t all_enums_count = 0, all_enums_capacity = 0;
+    StructDef *all_structs = NULL;
+    size_t all_structs_count = 0, all_structs_capacity = 0;
+    StringList enum_names = {0}, struct_names = {0};
+
+    for (size_t p = 0; p < protocol_count; ++p)
+    {
+        ProtocolDef *protocol = &protocols[p];
+        for (size_t i = 0; i < protocol->enums_count; ++i)
+        {
+            if (!string_list_contains(&enum_names, protocol->enums[i].name))
+            {
+                enum_list_push(&all_enums, &all_enums_count, &all_enums_capacity,
+                               &protocol->enums[i]);
+                string_list_push(&enum_names, protocol->enums[i].name);
+            }
+        }
+        for (size_t i = 0; i < protocol->structs_count; ++i)
+        {
+            if (!string_list_contains(&struct_names, protocol->structs[i].name))
+            {
+                struct_list_push(&all_structs, &all_structs_count, &all_structs_capacity,
+                                 &protocol->structs[i]);
+                string_list_push(&struct_names, protocol->structs[i].name);
+            }
+        }
+    }
+
     PacketStorageMap map = {0};
     for (size_t p = 0; p < protocol_count; ++p)
     {
@@ -2993,10 +3351,19 @@ static PacketStorageMap build_packet_storage_map(ProtocolDef *protocols, size_t 
             char name_buf[256];
             snprintf(name_buf, sizeof(name_buf), "%s%s%sPacket",
                      protocol->packets[i].family, protocol->packets[i].action, suffix);
-            packet_storage_map_push(&map, name_buf,
-                                    element_list_has_storage(&protocol->packets[i].elements));
+            int hs = element_list_has_storage(&protocol->packets[i].elements);
+            int hh = hs && element_list_has_heap(&protocol->packets[i].elements,
+                                                  all_enums, all_enums_count,
+                                                  all_structs, all_structs_count);
+            packet_storage_map_push(&map, name_buf, hs, hh);
         }
     }
+
+    free(all_enums);
+    free(all_structs);
+    string_list_free(&enum_names);
+    string_list_free(&struct_names);
+
     return map;
 }
 
@@ -3679,20 +4046,16 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
                 write_byte_array_literal(f, expected_bytes, (size_t)expected_len);
                 fprintf(f, ";\n");
                 fprintf(f, "    size_t expected_len = sizeof(expected);\n");
+                fprintf(f, "    EoReader reader = eo_reader_init(expected, expected_len);\n");
             }
             else
             {
                 fprintf(f, "    size_t expected_len = 0;\n");
-            }
-
-            fprintf(f, "    EoReader reader;\n");
-            fprintf(f, "    memset(&reader, 0, sizeof(reader));\n");
-            if (expected_len > 0)
-            {
-                fprintf(f, "    reader.data = expected;\n");
-                fprintf(f, "    reader.length = expected_len;\n");
+                fprintf(f, "    EoReader reader = eo_reader_init(NULL, 0);\n");
             }
             fprintf(f, "\n");
+
+            int has_heap = packet_heap_map_lookup(&map, packet_name);
 
             if (has_storage)
             {
@@ -3724,6 +4087,10 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
                             "    expect_equal_bytes(\"%s roundtrip\","
                             " writer.data, expected, expected_len);\n",
                             packet_name);
+                }
+                if (has_heap)
+                {
+                    fprintf(f, "    %s_free(&packet);\n", packet_name);
                 }
             }
             else

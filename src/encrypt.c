@@ -26,14 +26,14 @@ static uint32_t csprng_uniform(uint32_t upper_bound)
 }
 #endif
 
-int32_t server_verification_hash(int32_t challenge)
+int32_t eo_server_verification_hash(int32_t challenge)
 {
     // See encrypt.h for formula reference.
     challenge++;
     return 110905 + ((challenge % 9) + 1) * ((11092004 - challenge) % (((challenge % 11) + 1) * 119)) * 119 + (challenge % 2004);
 }
 
-void swap_multiples(uint8_t *data, size_t length, uint8_t multiple)
+void eo_swap_multiples(uint8_t *data, size_t length, uint8_t multiple)
 {
     size_t sequence_length = 0;
     for (size_t i = 0; i < length; i++)
@@ -74,19 +74,19 @@ void swap_multiples(uint8_t *data, size_t length, uint8_t multiple)
     }
 }
 
-uint8_t generate_swap_multiple()
+uint8_t eo_generate_swap_multiple()
 {
     return (uint8_t)(csprng_uniform(7) + 6);
 }
 
-void encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)
+void eo_encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)
 {
     if (length < 2 || (data[0] == EO_BREAK_BYTE && data[1] == EO_BREAK_BYTE))
     {
         return;
     }
 
-    swap_multiples(data, length, swap_multiple);
+    eo_swap_multiples(data, length, swap_multiple);
 
     // ceiling div
     size_t big_half = (length + 1) / 2;
@@ -135,7 +135,7 @@ void encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)
     }
 }
 
-void decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)
+void eo_decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)
 {
     if (length < 2 || (data[0] == EO_BREAK_BYTE && data[1] == EO_BREAK_BYTE))
     {
@@ -185,5 +185,5 @@ void decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)
         data[i] = temp;
     }
 
-    swap_multiples(data, length, swap_multiple);
+    eo_swap_multiples(data, length, swap_multiple);
 }

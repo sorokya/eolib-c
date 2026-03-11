@@ -26,15 +26,15 @@ static uint32_t csprng_uniform(uint32_t upper_bound)
 }
 #endif
 
-Sequencer sequencer_init(int32_t start)
+EoSequencer eo_sequencer_init(int32_t start)
 {
-    Sequencer seq;
+    EoSequencer seq;
     seq.start = start;
     seq.counter = 0;
     return seq;
 }
 
-EoResult sequencer_next(Sequencer *sequencer, int32_t *out_value)
+EoResult eo_sequencer_next(EoSequencer *sequencer, int32_t *out_value)
 {
     if (!sequencer)
     {
@@ -50,24 +50,24 @@ EoResult sequencer_next(Sequencer *sequencer, int32_t *out_value)
     return EO_SUCCESS;
 }
 
-int32_t generate_sequence_start()
+int32_t eo_generate_sequence_start()
 {
     return (int32_t)csprng_uniform((uint32_t)(EO_CHAR_MAX - 9));
 }
 
-int32_t sequence_start_from_init(int32_t s1, int32_t s2)
+int32_t eo_sequence_start_from_init(int32_t s1, int32_t s2)
 {
     // Protocol formula: start = s1 * 7 + s2 - 13
-    // Inverse of the sequence_init_bytes encoding (seq1*7 + seq2 == start + 13).
+    // Inverse of the eo_sequence_init_bytes encoding (seq1*7 + seq2 == start + 13).
     return s1 * 7 + s2 - 13;
 }
 
-int32_t sequence_start_from_ping(int32_t s1, int32_t s2)
+int32_t eo_sequence_start_from_ping(int32_t s1, int32_t s2)
 {
     return s1 - s2;
 }
 
-EoResult sequence_init_bytes(int32_t start, uint8_t *out_bytes)
+EoResult eo_sequence_init_bytes(int32_t start, uint8_t *out_bytes)
 {
     if (!out_bytes)
     {
@@ -108,7 +108,7 @@ EoResult sequence_init_bytes(int32_t start, uint8_t *out_bytes)
     return EO_SUCCESS;
 }
 
-EoResult sequence_ping_bytes(int32_t start, uint8_t *out_bytes)
+EoResult eo_sequence_ping_bytes(int32_t start, uint8_t *out_bytes)
 {
     if (!out_bytes)
     {

@@ -781,13 +781,18 @@ EoResult eo_writer_add_bytes(EoWriter *writer, const uint8_t *data, size_t lengt
 EoReader eo_reader_init(const uint8_t *data, size_t length)
 {
     EoReader reader;
-    reader.chunked_reading_mode = false;
     reader.data = data;
     reader.length = length;
     reader.offset = 0;
+    reader.chunked_reading_mode = false;
     reader.chunk_offset = 0;
-    reader.next_chunk_offset = length;
+    reader.next_chunk_offset = 0;
     return reader;
+}
+
+void eo_reader_free(EoReader *reader)
+{
+    (void)reader;
 }
 
 bool eo_reader_get_chunked_reading_mode(const EoReader *reader)

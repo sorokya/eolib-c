@@ -121,8 +121,8 @@ target_link_libraries(eolib_encrypt_tests PRIVATE eolib)
 set(EOLIB_ENCRYPT_TESTS
 	encrypt_packet_known_vector
 	decrypt_packet_known_vector
-	server_verification_hash
-	generate_swap_multiple
+	eo_server_verification_hash
+	eo_generate_swap_multiple
 )
 foreach(test_name IN LISTS EOLIB_ENCRYPT_TESTS)
 	add_test(NAME eolib_encrypt_tests.${test_name} COMMAND eolib_encrypt_tests ${test_name})

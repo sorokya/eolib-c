@@ -23,21 +23,21 @@
 /** Writer that accumulates EO-encoded bytes. */
 typedef struct EoWriter
 {
-    bool string_sanitization_mode; /**< Accessible: see eo_writer_get/set_string_sanitization_mode(). */
-    uint8_t *data;                 /**< Read-only: pointer to the accumulated bytes. Do not modify directly. */
-    size_t length;                 /**< Read-only: number of bytes written so far. Do not modify directly. */
-    size_t capacity;               /**< Private: current allocated capacity. Do not access or modify directly. */
+    uint8_t *data;    /**< Read-only: pointer to the accumulated bytes. Do not modify directly. */
+    size_t length;    /**< Read-only: number of bytes written so far. Do not modify directly. */
+    bool string_sanitization_mode; /**< Private: use eo_writer_get/set_string_sanitization_mode(). */
+    size_t capacity;               /**< Private: do not access or modify directly. */
 } EoWriter;
 
 /** Reader that parses EO-encoded bytes. */
 typedef struct EoReader
 {
-    bool chunked_reading_mode; /**< Accessible: see eo_reader_get/set_chunked_reading_mode(). */
-    const uint8_t *data;       /**< Read-only: pointer to the underlying data buffer. Do not modify directly. */
-    size_t length;             /**< Read-only: total length of the data buffer. Do not modify directly. */
-    size_t offset;             /**< Read-only: current read position. Do not modify directly. */
-    size_t chunk_offset;       /**< Private: start of the current chunk. Do not access or modify directly. */
-    size_t next_chunk_offset;  /**< Private: start of the next chunk. Do not access or modify directly. */
+    const uint8_t *data; /**< Read-only: pointer to the underlying data buffer. Do not modify directly. */
+    size_t length;       /**< Read-only: total length of the data buffer. Do not modify directly. */
+    size_t offset;       /**< Read-only: current read position. Do not modify directly. */
+    bool chunked_reading_mode;   /**< Private: use eo_reader_get/set_chunked_reading_mode(). */
+    size_t chunk_offset;         /**< Private: do not access or modify directly. */
+    size_t next_chunk_offset;    /**< Private: do not access or modify directly. */
 } EoReader;
 
 /**
@@ -75,14 +75,24 @@ EoWriter eo_writer_init_with_capacity(size_t capacity);
 void eo_writer_free(EoWriter *writer);
 
 /**
+ * No-op provided for API symmetry with eo_writer_free.
+ * @param reader Reader to "free". If NULL, this function does nothing.
+ * @remarks Readers do not own their data buffer — they borrow a pointer passed
+ *          to eo_reader_init. The caller is responsible for the lifetime of that
+ *          buffer. This function exists solely so binding authors can treat
+ *          EoWriter and EoReader uniformly.
+ */
+void eo_reader_free(EoReader *reader);
+
+/**
  * Ensures a writer has space for additional bytes, reallocating if necessary.
  * @param writer Writer to grow.
  * @param additional Additional bytes required.
  * @return EO_SUCCESS on success, EO_NULL_PTR if writer is NULL,
  *         EO_OVERFLOW if the required size would overflow, or
  *         EO_ALLOC_FAILED if memory reallocation fails.
- * @remarks This is an internal utility function exposed for advanced use cases.
- *          Prefer using the `eo_writer_add_*` functions which call this automatically.
+ * @remarks This is an advanced function. Prefer using the `eo_writer_add_*` functions
+ *          which call this automatically.
  */
 EoResult eo_writer_ensure_capacity(EoWriter *writer, size_t additional);
 
