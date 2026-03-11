@@ -113,6 +113,7 @@ jobs:
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
             mingw-w64-x86_64-libxml2
+            mingw-w64-x86_64-json-c
 
       - name: Setup Clang (Linux)
         if: matrix.compiler == 'clang' && startsWith(matrix.os, 'ubuntu')
@@ -121,6 +122,10 @@ jobs:
       - name: Setup Ninja (Linux)
         if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'ubuntu')
         run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Setup json-c (Linux)
+        if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get update && sudo apt-get install -y libjson-c-dev
 
       - name: Set Compiler Env (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
@@ -136,10 +141,10 @@ jobs:
           echo "CC=${gcc_path:-gcc}" >> "$GITHUB_ENV"
           echo "CXX=${gxx_path:-g++}" >> "$GITHUB_ENV"
 
-      - name: Setup libxml2 (macOS)
+      - name: Setup libxml2/json-c (macOS)
         if: startsWith(matrix.os, 'macos')
         run: |
-          brew install libxml2
+          brew install libxml2 json-c
           if [[ -d /opt/homebrew/opt/libxml2/lib/pkgconfig ]]; then
             echo "PKG_CONFIG_PATH=/opt/homebrew/opt/libxml2/lib/pkgconfig" >> "$GITHUB_ENV"
           elif [[ -d /usr/local/opt/libxml2/lib/pkgconfig ]]; then
