@@ -150,15 +150,10 @@ jobs:
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgGitCommitId: 62159a45e18f3a9ac0548628dcaf74fcb60c6ff9
-          runVcpkgInstall: false
-
-      - name: Install libxml2 (vcpkg)
-        if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
-        shell: pwsh
-        run: >-
-          & "$env:VCPKG_ROOT\vcpkg.exe" install libxml2
-          --triplet ${{ matrix.vcpkg_triplet }}
+          runVcpkgInstall: true
+          doNotCache: false
+          vcpkgJsonGlob: vcpkg.json
+          vcpkgConfigurationJsonGlob: vcpkg-configuration.json
 
       - name: Configure (MSVC/ClangCL)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
