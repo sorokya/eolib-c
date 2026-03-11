@@ -42,18 +42,14 @@ static void test_generate_swap_multiple()
     }
 }
 
-int main(void)
+static const TestCase encrypt_tests[] = {
+    {"encrypt_packet_known_vector", test_encrypt_packet_known_vector},
+    {"decrypt_packet_known_vector", test_decrypt_packet_known_vector},
+    {"server_verification_hash", test_server_verification_hash},
+    {"generate_swap_multiple", test_generate_swap_multiple},
+};
+
+int main(int argc, char **argv)
 {
-    test_encrypt_packet_known_vector();
-    test_decrypt_packet_known_vector();
-    test_server_verification_hash();
-    test_generate_swap_multiple();
-
-    if (test_failures != 0)
-    {
-        fprintf(stderr, "%d test(s) failed\n", test_failures);
-        return 1;
-    }
-
-    return 0;
+    return run_tests(encrypt_tests, sizeof(encrypt_tests) / sizeof(encrypt_tests[0]), argc, argv);
 }

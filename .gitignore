@@ -24,6 +24,7 @@ codegen.stamp
 include/protocol.h
 src/protocol.c
 tests/packet_tests.c
+tests/packet_tests.list
 
 *.a
 *.so

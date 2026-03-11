@@ -2815,11 +2815,16 @@ static void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
 
 static int base64_char_to_val(char c)
 {
-    if (c >= 'A' && c <= 'Z') return c - 'A';
-    if (c >= 'a' && c <= 'z') return c - 'a' + 26;
-    if (c >= '0' && c <= '9') return c - '0' + 52;
-    if (c == '+') return 62;
-    if (c == '/') return 63;
+    if (c >= 'A' && c <= 'Z')
+        return c - 'A';
+    if (c >= 'a' && c <= 'z')
+        return c - 'a' + 26;
+    if (c >= '0' && c <= '9')
+        return c - '0' + 52;
+    if (c == '+')
+        return 62;
+    if (c == '/')
+        return 63;
     return -1;
 }
 
@@ -2827,8 +2832,10 @@ static int base64_decode(const char *input, uint8_t **output)
 {
     size_t in_len = strlen(input);
     size_t out_len = (in_len / 4) * 3;
-    if (in_len >= 1 && input[in_len - 1] == '=') out_len--;
-    if (in_len >= 2 && input[in_len - 2] == '=') out_len--;
+    if (in_len >= 1 && input[in_len - 1] == '=')
+        out_len--;
+    if (in_len >= 2 && input[in_len - 2] == '=')
+        out_len--;
 
     *output = (uint8_t *)malloc(out_len + 1);
     if (!*output)
@@ -2983,6 +2990,14 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
         return;
     }
 
+    FILE *list_file = fopen("tests/packet_tests.list", "w");
+    if (!list_file)
+    {
+        fprintf(stderr, "Failed to open tests/packet_tests.list for writing\n");
+        fclose(f);
+        return;
+    }
+
     PacketStorageMap map = build_packet_storage_map(protocols, protocol_count);
 
     fprintf(f, "%s", CODEGEN_WARNING);
@@ -2993,7 +3008,8 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
     fprintf(f, "#include <stdlib.h>\n");
     fprintf(f, "#include <string.h>\n\n");
 
-    StringList test_names = {0};
+    StringList test_functions = {0};
+    StringList test_case_names = {0};
     const char *dirs[] = {"client", "server"};
     for (int d = 0; d < 2; ++d)
     {
@@ -3049,6 +3065,12 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
 
             char fn_name[512];
             snprintf(fn_name, sizeof(fn_name), "test_packet_%s_%s", dirs[d], stem);
+
+            const char *name_start = fn_name;
+            if (strncmp(name_start, "test_", 5) == 0)
+                name_start += 5;
+            string_list_push(&test_case_names, name_start);
+            fprintf(list_file, "%s\n", name_start);
 
             fprintf(f, "static void %s(void)\n{\n", fn_name);
 
@@ -3119,7 +3141,7 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
             fprintf(f, "    free(writer.data);\n");
             fprintf(f, "}\n\n");
 
-            string_list_push(&test_names, fn_name);
+            string_list_push(&test_functions, fn_name);
 
             free(stem);
             if (expected_bytes)
@@ -3128,14 +3150,19 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
         }
     }
 
-    fprintf(f, "int main(void)\n{\n");
-    for (size_t i = 0; i < test_names.count; ++i)
-        fprintf(f, "    %s();\n", test_names.items[i]);
-    fprintf(f, "\n    if (test_failures != 0)\n    {\n");
-    fprintf(f, "        fprintf(stderr, \"%%d test(s) failed\\n\", test_failures);\n");
-    fprintf(f, "        return 1;\n    }\n\n    return 0;\n}\n");
+    fprintf(f, "static const TestCase packet_tests[] = {\n");
+    for (size_t i = 0; i < test_functions.count; ++i)
+    {
+        fprintf(f, "    {\"%s\", %s},\n",
+                test_case_names.items[i], test_functions.items[i]);
+    }
+    fprintf(f, "};\n\n");
+    fprintf(f, "int main(int argc, char **argv)\n{\n");
+    fprintf(f, "    return run_tests(packet_tests, sizeof(packet_tests) / sizeof(packet_tests[0]), argc, argv);\n");
+    fprintf(f, "}\n");
 
     fclose(f);
+    fclose(list_file);
 }
 
 int main(void)

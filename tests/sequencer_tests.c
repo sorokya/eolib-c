@@ -78,12 +78,14 @@ static void test_sequence_ping_bytes_roundtrip()
                      -1);
 }
 
-int main(void)
-{
-    test_sequencer_next_wraps();
-    test_generate_sequence_start_range();
-    test_sequence_init_bytes_roundtrip();
-    test_sequence_ping_bytes_roundtrip();
+static const TestCase sequencer_tests[] = {
+    {"sequencer_next_wraps", test_sequencer_next_wraps},
+    {"generate_sequence_start_range", test_generate_sequence_start_range},
+    {"sequence_init_bytes_roundtrip", test_sequence_init_bytes_roundtrip},
+    {"sequence_ping_bytes_roundtrip", test_sequence_ping_bytes_roundtrip},
+};
 
-    return test_failures != 0 ? 1 : 0;
+int main(int argc, char **argv)
+{
+    return run_tests(sequencer_tests, sizeof(sequencer_tests) / sizeof(sequencer_tests[0]), argc, argv);
 }

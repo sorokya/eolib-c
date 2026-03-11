@@ -306,21 +306,23 @@ static void test_eo_reader_chunked_mode()
     expect_equal_int("eo_reader_get_byte final", value, 5);
 }
 
-int main(void)
-{
-    test_eo_writer_init_with_capacity();
-    test_eo_writer_ensure_capacity();
-    test_eo_encode_decode_number_roundtrip();
-    test_eo_encode_decode_string_roundtrip();
-    test_eo_encode_string_known_value();
-    test_eo_decode_string_known_value();
-    test_eo_writer_add_numbers();
-    test_eo_writer_add_strings_and_bytes();
-    test_eo_writer_string_sanitization_mode();
-    test_eo_reader_number_reads();
-    test_eo_reader_string_reads();
-    test_eo_reader_get_bytes();
-    test_eo_reader_chunked_mode();
+static const TestCase eo_data_tests[] = {
+    {"eo_writer_init_with_capacity", test_eo_writer_init_with_capacity},
+    {"eo_writer_ensure_capacity", test_eo_writer_ensure_capacity},
+    {"eo_encode_decode_number_roundtrip", test_eo_encode_decode_number_roundtrip},
+    {"eo_encode_decode_string_roundtrip", test_eo_encode_decode_string_roundtrip},
+    {"eo_encode_string_known_value", test_eo_encode_string_known_value},
+    {"eo_decode_string_known_value", test_eo_decode_string_known_value},
+    {"eo_writer_add_numbers", test_eo_writer_add_numbers},
+    {"eo_writer_add_strings_and_bytes", test_eo_writer_add_strings_and_bytes},
+    {"eo_writer_string_sanitization_mode", test_eo_writer_string_sanitization_mode},
+    {"eo_reader_number_reads", test_eo_reader_number_reads},
+    {"eo_reader_string_reads", test_eo_reader_string_reads},
+    {"eo_reader_get_bytes", test_eo_reader_get_bytes},
+    {"eo_reader_chunked_mode", test_eo_reader_chunked_mode},
+};
 
-    return test_failures != 0 ? 1 : 0;
+int main(int argc, char **argv)
+{
+    return run_tests(eo_data_tests, sizeof(eo_data_tests) / sizeof(eo_data_tests[0]), argc, argv);
 }

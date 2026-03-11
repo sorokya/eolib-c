@@ -118,7 +118,15 @@ target_include_directories(eolib_encrypt_tests PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 target_link_libraries(eolib_encrypt_tests PRIVATE eolib)
-add_test(NAME eolib_encrypt_tests COMMAND eolib_encrypt_tests)
+set(EOLIB_ENCRYPT_TESTS
+	encrypt_packet_known_vector
+	decrypt_packet_known_vector
+	server_verification_hash
+	generate_swap_multiple
+)
+foreach(test_name IN LISTS EOLIB_ENCRYPT_TESTS)
+	add_test(NAME eolib_encrypt_tests.${test_name} COMMAND eolib_encrypt_tests ${test_name})
+endforeach()
 
 add_executable(eolib_eo_data_tests
 	tests/eo_data_tests.c
@@ -129,7 +137,24 @@ target_include_directories(eolib_eo_data_tests PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 target_link_libraries(eolib_eo_data_tests PRIVATE eolib)
-add_test(NAME eolib_eo_data_tests COMMAND eolib_eo_data_tests)
+set(EOLIB_EO_DATA_TESTS
+	eo_writer_init_with_capacity
+	eo_writer_ensure_capacity
+	eo_encode_decode_number_roundtrip
+	eo_encode_decode_string_roundtrip
+	eo_encode_string_known_value
+	eo_decode_string_known_value
+	eo_writer_add_numbers
+	eo_writer_add_strings_and_bytes
+	eo_writer_string_sanitization_mode
+	eo_reader_number_reads
+	eo_reader_string_reads
+	eo_reader_get_bytes
+	eo_reader_chunked_mode
+)
+foreach(test_name IN LISTS EOLIB_EO_DATA_TESTS)
+	add_test(NAME eolib_eo_data_tests.${test_name} COMMAND eolib_eo_data_tests ${test_name})
+endforeach()
 
 add_executable(eolib_sequencer_tests
 	tests/sequencer_tests.c
@@ -140,7 +165,15 @@ target_include_directories(eolib_sequencer_tests PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 target_link_libraries(eolib_sequencer_tests PRIVATE eolib)
-add_test(NAME eolib_sequencer_tests COMMAND eolib_sequencer_tests)
+set(EOLIB_SEQUENCER_TESTS
+	sequencer_next_wraps
+	generate_sequence_start_range
+	sequence_init_bytes_roundtrip
+	sequence_ping_bytes_roundtrip
+)
+foreach(test_name IN LISTS EOLIB_SEQUENCER_TESTS)
+	add_test(NAME eolib_sequencer_tests.${test_name} COMMAND eolib_sequencer_tests ${test_name})
+endforeach()
 
 set_source_files_properties(${EOLIB_PACKET_TESTS_C} PROPERTIES GENERATED TRUE)
 add_executable(eolib_packet_tests
@@ -153,7 +186,19 @@ target_include_directories(eolib_packet_tests PRIVATE
 )
 target_link_libraries(eolib_packet_tests PRIVATE eolib)
 add_dependencies(eolib_packet_tests generate_protocol)
-add_test(NAME eolib_packet_tests COMMAND eolib_packet_tests)
+set(PACKET_TEST_LIST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/tests/packet_tests.list")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PACKET_TEST_LIST_FILE}")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tests/packet_tests.c")
+if(EXISTS "${PACKET_TEST_LIST_FILE}")
+	file(STRINGS "${PACKET_TEST_LIST_FILE}" EOLIB_PACKET_TESTS)
+	foreach(test_name IN LISTS EOLIB_PACKET_TESTS)
+		if(NOT test_name STREQUAL "")
+			add_test(NAME eolib_packet_tests.${test_name} COMMAND eolib_packet_tests ${test_name})
+		endif()
+	endforeach()
+else()
+	add_test(NAME eolib_packet_tests COMMAND eolib_packet_tests)
+endif()
 
 set(CPACK_PACKAGE_NAME "eolib")
 set(CPACK_PACKAGE_VENDOR "sorokya")
