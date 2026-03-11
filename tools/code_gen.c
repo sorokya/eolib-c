@@ -1,5 +1,10 @@
+#if defined(_WIN32)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <errno.h>
 #if defined(_WIN32)
+#include <direct.h>
 #include <windows.h>
 #else
 #include <dirent.h>
@@ -26,7 +31,7 @@
 static int eolib_mkdir(const char *path)
 {
 #if defined(_WIN32)
-    return mkdir(path);
+    return _mkdir(path);
 #else
     return mkdir(path, 0755);
 #endif
