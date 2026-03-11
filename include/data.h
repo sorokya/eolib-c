@@ -154,6 +154,30 @@ EoResult eo_writer_add_string(EoWriter *writer, const char *value);
 EoResult eo_writer_add_encoded_string(EoWriter *writer, const char *value);
 
 /**
+ * Appends a fixed-length string to the writer, with optional padding.
+ * @param writer Writer to append to.
+ * @param value String to append (without terminator).
+ * @param length Fixed length of the string in bytes.
+ * @param padded If true, shorter strings will be padded with 0xFF bytes.
+ * @return EO_SUCCESS on success, EO_STR_OUT_OF_RANGE if the string is too long,
+ *         EO_STR_TOO_SHORT if the string is too short and padding is disabled,
+ *         or a non-zero EoResult on other failures.
+ */
+EoResult eo_writer_add_fixed_string(EoWriter *writer, const char *value, size_t length, bool padded);
+
+/**
+ * Appends a fixed-length string encoded with the EO string transform, with optional padding.
+ * @param writer Writer to append to.
+ * @param value String to encode and append (without terminator).
+ * @param length Fixed length of the string in bytes.
+ * @param padded If true, shorter strings will be padded with 0xFF bytes.
+ * @return EO_SUCCESS on success, EO_STR_OUT_OF_RANGE if the string is too long,
+ *         EO_STR_TOO_SHORT if the string is too short and padding is disabled,
+ *         or a non-zero EoResult on other failures.
+ */
+EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value, size_t length, bool padded);
+
+/**
  * Appends raw bytes to the writer.
  * @param writer Writer to append to.
  * @param data Bytes to append.

@@ -420,6 +420,142 @@ EoResult eo_writer_add_encoded_string(EoWriter *writer, const char *value)
     return EO_SUCCESS;
 }
 
+EoResult eo_writer_add_fixed_string(EoWriter *writer, const char *value, size_t length, bool padded)
+{
+    if (!writer)
+    {
+        return EO_NULL_PTR;
+    }
+
+    // Ignore NULL strings, treat them as empty strings
+    if (!value)
+    {
+        return EO_SUCCESS;
+    }
+
+    if (padded && strlen(value) > length)
+    {
+        return EO_STR_OUT_OF_RANGE;
+    }
+
+    if (!padded && strlen(value) != length)
+    {
+        return EO_STR_TOO_SHORT;
+    }
+
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
+    {
+        return result;
+    }
+
+    if (writer->string_sanitization_mode)
+    {
+        for (const char *c = value; *c != '\0'; ++c)
+        {
+            if (*c == (char)0xff)
+            {
+                writer->data[writer->length++] = 0x79;
+            }
+            else
+            {
+                writer->data[writer->length++] = *c;
+            }
+        }
+    }
+    else
+    {
+        memcpy(writer->data + writer->length, value, length);
+        writer->length += length;
+    }
+
+    if (padded)
+    {
+        size_t remaining = length > strlen(value) ? length - strlen(value) : 0;
+        for (size_t i = 0; i < remaining; ++i)
+        {
+            writer->data[writer->length + i] = '\xff';
+        }
+    }
+
+    return EO_SUCCESS;
+}
+
+EoResult eo_writer_add_fixed_encoded_string(EoWriter *writer, const char *value, size_t length, bool padded)
+{
+    if (!writer)
+    {
+        return EO_NULL_PTR;
+    }
+
+    // Ignore NULL strings, treat them as empty strings
+    if (!value)
+    {
+        return EO_SUCCESS;
+    }
+
+    if (padded && strlen(value) > length)
+    {
+        return EO_STR_OUT_OF_RANGE;
+    }
+
+    if (!padded && strlen(value) != length)
+    {
+        return EO_STR_TOO_SHORT;
+    }
+
+    EoResult result;
+    if ((result = eo_writer_ensure_capacity(writer, length)) != EO_SUCCESS)
+    {
+        return result;
+    }
+
+    uint8_t *encoded = (uint8_t *)malloc(length);
+    if (!encoded)
+    {
+        return EO_ALLOC_FAILED;
+    }
+
+    if (writer->string_sanitization_mode)
+    {
+        size_t i = 0;
+        for (const char *c = value; *c != '\0'; ++c)
+        {
+            if (*c == (char)0xff)
+            {
+                encoded[i] = 0x79;
+            }
+            else
+            {
+                encoded[i] = *c;
+            }
+            i++;
+        }
+    }
+    else
+    {
+        memcpy(encoded, value, length);
+    }
+
+    if (padded)
+    {
+        size_t remaining = length > strlen(value) ? length - strlen(value) : 0;
+        for (size_t i = 0; i < remaining; ++i)
+        {
+            encoded[strlen(value) + i] = '\xff';
+        }
+    }
+
+    eo_encode_string(encoded, length);
+
+    memcpy(writer->data + writer->length, encoded, length);
+    writer->length += length;
+
+    free(encoded);
+
+    return EO_SUCCESS;
+}
+
 EoResult eo_writer_add_bytes(EoWriter *writer, const uint8_t *data, size_t length)
 {
     if (!writer || !data)
@@ -515,7 +651,7 @@ static size_t eo_reader_next_break_index(const EoReader *reader)
 
     for (size_t i = reader->chunk_offset; i < reader->length; ++i)
     {
-        if (reader->data[i] == 0xFF)
+        if (reader->data[i] == (uint8_t)0xFF)
         {
             return i;
         }

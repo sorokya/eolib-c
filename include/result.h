@@ -87,6 +87,22 @@ typedef enum EoResult
      * contains an unexpected value.
      */
     EO_INVALID_DATA = 9,
+
+    /**
+     * A string operation would exceed the allowed length.
+     *
+     * Returned when a string operation, such as adding a fixed-length string,
+     * would result in a string that is too long for the allocated buffer.
+     */
+    EO_STR_OUT_OF_RANGE = 10,
+
+    /**
+     * A string is shorter than the expected length.
+     *
+     * Returned when a fixed-length string added to a writer is shorter than the specified length,
+     * and padding is not enabled to fill the remaining space.
+     */
+    EO_STR_TOO_SHORT = 11,
 } EoResult;
 
 #endif

@@ -189,6 +189,31 @@ static void test_eo_writer_string_sanitization_mode()
     free(writer.data);
 }
 
+static void test_eo_writer_fixed_string()
+{
+    EoWriter writer = eo_writer_init_with_capacity(5);
+    expect_equal_int("eo_writer_add_fixed_string short string", eo_writer_add_fixed_string(&writer, "hi", 5, false), EO_STR_TOO_SHORT);
+    expect_equal_int("eo_writer_add_fixed_string long string", eo_writer_add_fixed_string(&writer, "hello world", 5, true), EO_STR_OUT_OF_RANGE);
+    expect_equal_int("eo_writer_add_fixed_string exact length", eo_writer_add_fixed_string(&writer, "hello", 5, false), EO_SUCCESS);
+    expect_equal_str("eo_writer_add_fixed_string exact length bytes", (const char *)writer.data, "hello");
+
+    free(writer.data);
+    writer = eo_writer_init_with_capacity(5);
+    expect_equal_int("eo_writer_add_fixed_string padded short string", eo_writer_add_fixed_string(&writer, "hi", 5, true), EO_SUCCESS);
+    expect_equal_str("eo_writer_add_fixed_string padded short string bytes", (const char *)writer.data, "hi\xFF\xFF\xFF");
+
+    free(writer.data);
+    writer = eo_writer_init_with_capacity(5);
+    expect_equal_int("eo_writer_add_fixed_string padded long string", eo_writer_add_fixed_string(&writer, "hello world", 5, true), EO_STR_OUT_OF_RANGE);
+    expect_equal_int("eo_writer_add_fixed_encoded_string padded short string", eo_writer_add_fixed_encoded_string(&writer, "hi", 5, true), EO_SUCCESS);
+    expect_equal_str("eo_writer_add_fixed_encoded_string padded short string bytes", (const char *)writer.data, "^:�6e");
+
+    eo_decode_string(writer.data, 5);
+    expect_equal_str("eo_writer_add_fixed_encoded_string padded short string bytes", (const char *)writer.data, "hi\xFF\xFF\xFF");
+
+    free(writer.data);
+}
+
 static void test_eo_reader_number_reads()
 {
     uint8_t char_bytes[4];
@@ -329,6 +354,7 @@ static const TestCase eo_data_tests[] = {
     {"eo_writer_add_numbers", test_eo_writer_add_numbers},
     {"eo_writer_add_strings_and_bytes", test_eo_writer_add_strings_and_bytes},
     {"eo_writer_string_sanitization_mode", test_eo_writer_string_sanitization_mode},
+    {"eo_writer_fixed_string", test_eo_writer_fixed_string},
     {"eo_reader_number_reads", test_eo_reader_number_reads},
     {"eo_reader_string_reads", test_eo_reader_string_reads},
     {"eo_reader_get_bytes", test_eo_reader_get_bytes},
