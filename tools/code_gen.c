@@ -2771,7 +2771,7 @@ static void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
 
     fprintf(header, "#ifndef EOLIB_PROTOCOL_H\n#define EOLIB_PROTOCOL_H\n\n");
     fprintf(header, "#include <stdbool.h>\n#include <stddef.h>\n#include <stdint.h>\n\n");
-    fprintf(header, "#include \"eo_data.h\"\n\n");
+    fprintf(header, "#include \"data.h\"\n\n");
 
     fprintf(source, "#include \"protocol.h\"\n\n");
     fprintf(source, "#include <string.h>\n#include <stdlib.h>\n\n");
@@ -3042,14 +3042,14 @@ typedef struct
 {
     char *struct_name;
     char *field_name;
-    int   size;
+    int size;
 } FixedArrayEntry;
 
 typedef struct
 {
     FixedArrayEntry *entries;
-    size_t           count;
-    size_t           capacity;
+    size_t count;
+    size_t capacity;
 } FixedArrayMap;
 
 static void fixed_array_map_push(FixedArrayMap *map, const char *struct_name,
@@ -3058,7 +3058,7 @@ static void fixed_array_map_push(FixedArrayMap *map, const char *struct_name,
     if (map->count >= map->capacity)
     {
         map->capacity = ARRAY_GROW_CAPACITY(map->capacity);
-        map->entries  = realloc(map->entries, map->capacity * sizeof(FixedArrayEntry));
+        map->entries = realloc(map->entries, map->capacity * sizeof(FixedArrayEntry));
         if (!map->entries)
         {
             fprintf(stderr, "Out of memory\n");
@@ -3066,21 +3066,21 @@ static void fixed_array_map_push(FixedArrayMap *map, const char *struct_name,
         }
     }
     map->entries[map->count].struct_name = xstrdup(struct_name ? struct_name : "");
-    map->entries[map->count].field_name  = xstrdup(field_name  ? field_name  : "");
-    map->entries[map->count].size        = size;
+    map->entries[map->count].field_name = xstrdup(field_name ? field_name : "");
+    map->entries[map->count].size = size;
     map->count++;
 }
 
 /* Returns the static array size if (struct_name, field_name) is a fixed-size C array, 0 otherwise. */
 static int fixed_array_lookup(const FixedArrayMap *map, const char *struct_name,
-                               const char *field_name)
+                              const char *field_name)
 {
     if (!struct_name || !field_name)
         return 0;
     for (size_t i = 0; i < map->count; ++i)
     {
         if (strcmp(map->entries[i].struct_name, struct_name) == 0 &&
-            strcmp(map->entries[i].field_name,  field_name)  == 0)
+            strcmp(map->entries[i].field_name, field_name) == 0)
         {
             return map->entries[i].size;
         }
@@ -3105,7 +3105,7 @@ static void collect_fixed_arrays_from_elements(const char *struct_name,
             if (arr->name && is_static_length(arr->length))
             {
                 char *field_name = to_snake_case(arr->name);
-                int   size       = atoi(arr->length);
+                int size = atoi(arr->length);
                 fixed_array_map_push(map, struct_name, field_name, size);
                 free(field_name);
             }
@@ -3250,12 +3250,24 @@ static void write_escaped_c_string(FILE *f, const char *s)
     {
         switch (*s)
         {
-        case '"':  fputs("\\\"", f); break;
-        case '\\': fputs("\\\\", f); break;
-        case '\n': fputs("\\n",  f); break;
-        case '\r': fputs("\\r",  f); break;
-        case '\t': fputs("\\t",  f); break;
-        default:   fputc(*s, f);     break;
+        case '"':
+            fputs("\\\"", f);
+            break;
+        case '\\':
+            fputs("\\\\", f);
+            break;
+        case '\n':
+            fputs("\\n", f);
+            break;
+        case '\r':
+            fputs("\\r", f);
+            break;
+        case '\t':
+            fputs("\\t", f);
+            break;
+        default:
+            fputc(*s, f);
+            break;
         }
     }
     fputc('"', f);
@@ -3277,13 +3289,13 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
 {
     struct json_object *name_obj = NULL, *type_obj = NULL;
     struct json_object *value_obj = NULL, *children_obj = NULL;
-    json_object_object_get_ex(prop, "name",     &name_obj);
-    json_object_object_get_ex(prop, "type",     &type_obj);
-    json_object_object_get_ex(prop, "value",    &value_obj);
+    json_object_object_get_ex(prop, "name", &name_obj);
+    json_object_object_get_ex(prop, "type", &type_obj);
+    json_object_object_get_ex(prop, "value", &value_obj);
     json_object_object_get_ex(prop, "children", &children_obj);
 
-    const char *name     = name_obj  ? json_object_get_string(name_obj)  : NULL;
-    const char *type_str = type_obj  ? json_object_get_string(type_obj)  : NULL;
+    const char *name = name_obj ? json_object_get_string(name_obj) : NULL;
+    const char *type_str = type_obj ? json_object_get_string(type_obj) : NULL;
 
     /* Skip unnamed entries (raw array elements handled by their parent) */
     if (!name)
@@ -3346,8 +3358,7 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
     }
 
     /* --- Emit children assertions --- */
-    if (type_str && type_str[0] == '[' && type_str[1] == ']'
-        && strcmp(type_str + 2, "byte") != 0)
+    if (type_str && type_str[0] == '[' && type_str[1] == ']' && strcmp(type_str + 2, "byte") != 0)
     {
         int child_count = children_obj ? json_object_array_length(children_obj) : 0;
         const char *elem_type = type_str + 2;
@@ -3569,7 +3580,7 @@ static void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
 
     fprintf(f, "%s", CODEGEN_WARNING);
     fprintf(f, "#include \"test_utils.h\"\n");
-    fprintf(f, "#include \"eo_data.h\"\n");
+    fprintf(f, "#include \"data.h\"\n");
     fprintf(f, "#include \"protocol.h\"\n");
     fprintf(f, "#include <stdio.h>\n");
     fprintf(f, "#include <stdlib.h>\n");

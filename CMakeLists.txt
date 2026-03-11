@@ -54,7 +54,7 @@ add_custom_target(generate_protocol ALL
 )
 
 add_library(eolib SHARED
-    src/eo_data.c
+    src/data.c
     src/encrypt.c
 	src/sequencer.c
 	${EOLIB_PROTOCOL_C}
@@ -128,16 +128,16 @@ foreach(test_name IN LISTS EOLIB_ENCRYPT_TESTS)
 	add_test(NAME eolib_encrypt_tests.${test_name} COMMAND eolib_encrypt_tests ${test_name})
 endforeach()
 
-add_executable(eolib_eo_data_tests
-	tests/eo_data_tests.c
+add_executable(eolib_data_tests
+	tests/data_tests.c
 	tests/test_utils.c
 )
-target_include_directories(eolib_eo_data_tests PRIVATE
+target_include_directories(eolib_data_tests PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
-target_link_libraries(eolib_eo_data_tests PRIVATE eolib)
-set(EOLIB_EO_DATA_TESTS
+target_link_libraries(eolib_data_tests PRIVATE eolib)
+set(EOLIB_data_TESTS
 	eo_writer_init_with_capacity
 	eo_writer_ensure_capacity
 	eo_encode_decode_number_roundtrip
@@ -152,8 +152,8 @@ set(EOLIB_EO_DATA_TESTS
 	eo_reader_get_bytes
 	eo_reader_chunked_mode
 )
-foreach(test_name IN LISTS EOLIB_EO_DATA_TESTS)
-	add_test(NAME eolib_eo_data_tests.${test_name} COMMAND eolib_eo_data_tests ${test_name})
+foreach(test_name IN LISTS EOLIB_data_TESTS)
+	add_test(NAME eolib_data_tests.${test_name} COMMAND eolib_data_tests ${test_name})
 endforeach()
 
 add_executable(eolib_sequencer_tests

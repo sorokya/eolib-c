@@ -1,5 +1,5 @@
 #include "sequencer.h"
-#include "eo_data.h"
+#include "data.h"
 
 #include <stdlib.h>
 
