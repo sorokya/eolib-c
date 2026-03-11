@@ -104,6 +104,8 @@ describes what went wrong.
 | `EO_INVALID_SEQUENCE_RANGE` | 7 | The derived `seq1` bounds produce an empty range; the start value is outside the representable sequence space. |
 | `EO_SEQUENCE_OUT_OF_RANGE` | 8 | A derived sequence byte value falls outside `[0, EO_CHAR_MAX - 1]` and cannot be encoded. |
 | `EO_INVALID_DATA` | 9 | Deserialization failed because a sentinel value, file magic string, or required constant field did not match the expected value. |
+| `EO_STR_OUT_OF_RANGE` | 10 | A string operation would exceed the allowed length, such as adding a fixed-length string that is too long. |
+| `EO_STR_TOO_SHORT` | 11 | A fixed-length string is shorter than expected and padding was not enabled. |
 
 ### Example
 
