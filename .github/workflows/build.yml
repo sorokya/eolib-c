@@ -171,6 +171,10 @@ jobs:
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         run: cmake --build build --config ${{ matrix.build_type }}
 
+      - name: Reconfigure (MSVC/ClangCL)
+        if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
+        run: cmake -S . -B build
+
       - name: Configure (MinGW)
         if: matrix.compiler == 'mingw'
         shell: msys2 {0}
@@ -184,6 +188,11 @@ jobs:
         shell: msys2 {0}
         run: cmake --build build
 
+      - name: Reconfigure (MinGW)
+        if: matrix.compiler == 'mingw'
+        shell: msys2 {0}
+        run: cmake -S . -B build
+
       - name: Configure (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
         run: >-
@@ -196,6 +205,10 @@ jobs:
       - name: Build (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
         run: cmake --build build
+
+      - name: Reconfigure (Unix)
+        if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
+        run: cmake -S . -B build
 
       - name: Cache vcpkg artifacts (Windows)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
