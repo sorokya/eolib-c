@@ -27,9 +27,6 @@ var searchData=
   ['marriagerequestclientpacket_24',['MarriageRequestClientPacket',['../protocol_8h.html#a4f35c841833f37a4b87590f23f6709c5',1,'protocol.h']]],
   ['marriagerequesttype_25',['MarriageRequestType',['../protocol_8h.html#a7fa198fe7b18ff3ee8cede70000c39a5',1,'protocol.h']]],
   ['messageacceptserverpacket_26',['MessageAcceptServerPacket',['../protocol_8h.html#a9f01ab0f5a9579b3462939b24342e5d4',1,'protocol.h']]],
-  ['messagecloseserverpacket_27',['MessageCloseServerPacket',['../protocol_8h.html#a4f49395f53c46121d23c3eb6fe4d59fe',1,'protocol.h']]],
-  ['messageopenserverpacket_28',['MessageOpenServerPacket',['../protocol_8h.html#a39034798495c316a007634ece66ec20d',1,'protocol.h']]],
-  ['messagepingclientpacket_29',['MessagePingClientPacket',['../protocol_8h.html#afdf1f34771ff8dc7cb51f3b31566fcd8',1,'protocol.h']]],
-  ['messagepongserverpacket_30',['MessagePongServerPacket',['../protocol_8h.html#a363ce39e8a1bad34c8cf7ef391fa3303',1,'protocol.h']]],
-  ['musicplayerserverpacket_31',['MusicPlayerServerPacket',['../protocol_8h.html#a32772db8146f1b83c08495e12f4a3f1c',1,'protocol.h']]]
+  ['messageopenserverpacket_27',['MessageOpenServerPacket',['../protocol_8h.html#a39034798495c316a007634ece66ec20d',1,'protocol.h']]],
+  ['musicplayerserverpacket_28',['MusicPlayerServerPacket',['../protocol_8h.html#a32772db8146f1b83c08495e12f4a3f1c',1,'protocol.h']]]
 ];

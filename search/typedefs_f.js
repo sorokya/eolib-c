@@ -7,6 +7,5 @@ var searchData=
   ['recoverplayerserverpacket_4',['RecoverPlayerServerPacket',['../protocol_8h.html#a7c34220fcaddd18a8df6a16b474f443e',1,'protocol.h']]],
   ['recoverreplyserverpacket_5',['RecoverReplyServerPacket',['../protocol_8h.html#a519cb8796158ad451ace00c1811b565f',1,'protocol.h']]],
   ['recovertargetgroupserverpacket_6',['RecoverTargetGroupServerPacket',['../protocol_8h.html#abd09aefa53b3b5c9cc2791720dcbac7a',1,'protocol.h']]],
-  ['refreshreplyserverpacket_7',['RefreshReplyServerPacket',['../protocol_8h.html#a56063ecfb1f746d74f82516300db0a1b',1,'protocol.h']]],
-  ['refreshrequestclientpacket_8',['RefreshRequestClientPacket',['../protocol_8h.html#a2a142512d69afd314d0845c380efafca',1,'protocol.h']]]
+  ['refreshreplyserverpacket_7',['RefreshReplyServerPacket',['../protocol_8h.html#a56063ecfb1f746d74f82516300db0a1b',1,'protocol.h']]]
 ];

@@ -20,6 +20,5 @@ var searchData=
   ['itemobtainserverpacket_17',['ItemObtainServerPacket',['../structItemObtainServerPacket.html',1,'']]],
   ['itemremoveserverpacket_18',['ItemRemoveServerPacket',['../structItemRemoveServerPacket.html',1,'']]],
   ['itemreplyserverpacket_19',['ItemReplyServerPacket',['../structItemReplyServerPacket.html',1,'']]],
-  ['itemspecserverpacket_20',['ItemSpecServerPacket',['../structItemSpecServerPacket.html',1,'']]],
-  ['itemuseclientpacket_21',['ItemUseClientPacket',['../structItemUseClientPacket.html',1,'']]]
+  ['itemuseclientpacket_20',['ItemUseClientPacket',['../structItemUseClientPacket.html',1,'']]]
 ];

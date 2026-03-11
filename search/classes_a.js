@@ -19,9 +19,6 @@ var searchData=
   ['marriagereplyserverpacket_16',['MarriageReplyServerPacket',['../structMarriageReplyServerPacket.html',1,'']]],
   ['marriagerequestclientpacket_17',['MarriageRequestClientPacket',['../structMarriageRequestClientPacket.html',1,'']]],
   ['messageacceptserverpacket_18',['MessageAcceptServerPacket',['../structMessageAcceptServerPacket.html',1,'']]],
-  ['messagecloseserverpacket_19',['MessageCloseServerPacket',['../structMessageCloseServerPacket.html',1,'']]],
-  ['messageopenserverpacket_20',['MessageOpenServerPacket',['../structMessageOpenServerPacket.html',1,'']]],
-  ['messagepingclientpacket_21',['MessagePingClientPacket',['../structMessagePingClientPacket.html',1,'']]],
-  ['messagepongserverpacket_22',['MessagePongServerPacket',['../structMessagePongServerPacket.html',1,'']]],
-  ['musicplayerserverpacket_23',['MusicPlayerServerPacket',['../structMusicPlayerServerPacket.html',1,'']]]
+  ['messageopenserverpacket_19',['MessageOpenServerPacket',['../structMessageOpenServerPacket.html',1,'']]],
+  ['musicplayerserverpacket_20',['MusicPlayerServerPacket',['../structMusicPlayerServerPacket.html',1,'']]]
 ];
