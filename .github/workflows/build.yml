@@ -130,7 +130,7 @@ jobs:
 
       - name: Setup Lua (Linux)
         if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'ubuntu')
-        run: sudo apt-get update && sudo apt-get install -y liblua5.4-dev
+        run: sudo apt-get update && sudo apt-get install -y liblua5.4-dev lua5.4
 
       - name: Set Compiler Env (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
@@ -230,12 +230,12 @@ jobs:
 
       - name: Run Lua Tests
         if: matrix.compiler != 'msvc' && matrix.compiler != 'clang-cl' && matrix.compiler != 'mingw'
-        run: cmake --build build --target lua/test
+        run: cmake --build build --target lua-test
 
       - name: Run Lua Tests (MinGW)
         if: matrix.compiler == 'mingw'
         shell: msys2 {0}
-        run: cmake --build build --target lua/test
+        run: cmake --build build --target lua-test
 
       - name: Upload Lua annotations
         if: matrix.os == 'ubuntu-24.04' && matrix.compiler == 'gcc'
