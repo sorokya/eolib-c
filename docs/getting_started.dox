@@ -1,0 +1,473 @@
+/**
+ * @page getting_started Getting Started
+ *
+ * This guide walks you through setting up a development environment,
+ * downloading a pre-built release of **eolib-c**, and building two practical
+ * example programs.
+ *
+ * @section gs_prereqs Prerequisites & Development Environment
+ *
+ * eolib-c requires a C11-capable compiler and **CMake 3.16 or newer**.
+ *
+ * @subsection gs_linux Linux (Ubuntu / Debian)
+ * @code{.sh}
+ * sudo apt-get update
+ * sudo apt-get install gcc cmake build-essential
+ * @endcode
+ *
+ * @subsection gs_macos macOS
+ * Install Xcode command line tools, then CMake via Homebrew:
+ * @code{.sh}
+ * xcode-select --install
+ * brew install cmake
+ * @endcode
+ *
+ * @subsection gs_windows Windows
+ * Choose one of the following toolchains:
+ *
+ * **MSVC (recommended):** Install [Visual Studio 2022 Community](https://visualstudio.microsoft.com/vs/community/)
+ * and select the **Desktop development with C++** workload. CMake is bundled
+ * with Visual Studio; alternatively install it from https://cmake.org/download/.
+ *
+ * **MinGW via MSYS2:** Install [MSYS2](https://www.msys2.org/), then in an
+ * MSYS2 MinGW terminal run:
+ * @code{.sh}
+ * pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake
+ * @endcode
+ *
+ * ---
+ *
+ * @section gs_download Downloading a Release
+ *
+ * Pre-built releases are available at:
+ * https://github.com/sorokya/eolib-c/releases
+ *
+ * Packages follow the naming convention `eolib-{version}-{platform}.zip`
+ * where `{platform}` is one of:
+ *
+ * | Platform | Filename suffix |
+ * |----------|----------------|
+ * | Linux 64-bit (x86_64) | `Linux.x64` |
+ * | Linux 64-bit (ARM) | `Linux.arm64` |
+ * | macOS Apple Silicon | `macOS.arm64` |
+ * | macOS Intel | `macOS.x64` |
+ * | Windows MSVC 64-bit | `Windows.VS2022.x64` |
+ * | Windows MSVC 32-bit | `Windows.VS2022.x86` |
+ * | Windows MinGW 64-bit | `Windows.MinGW.x64` |
+ * | Windows MinGW 32-bit | `Windows.MinGW.x86` |
+ *
+ * **Extracting the archive:**
+ * @code{.sh}
+ * # Linux / macOS
+ * unzip eolib-1.0.0-Linux.x64.zip -d eolib
+ *
+ * # Windows (PowerShell)
+ * Expand-Archive eolib-1.0.0-Windows.VS2022.x64.zip -DestinationPath eolib
+ * @endcode
+ *
+ * The archive unpacks to a layout compatible with CMake's `find_package`:
+ * @code
+ * eolib/
+ *   include/
+ *     eolib/
+ *       eolib.h
+ *       ...
+ *   lib/
+ *     eolib.lib          (Windows MSVC import library)
+ *     libeolib.dll.a     (Windows MinGW import library)
+ *     libeolib.so        (Linux shared library)
+ *     libeolib.dylib     (macOS shared library)
+ *   cmake/
+ *     eolibConfig.cmake
+ *     ...
+ * @endcode
+ *
+ * @subsection gs_cmake Using CMake (preferred)
+ *
+ * In your `CMakeLists.txt`:
+ * @code{.cmake}
+ * cmake_minimum_required(VERSION 3.16)
+ * project(myapp C)
+ *
+ * # Point CMake to the extracted package (or install it system-wide).
+ * list(APPEND CMAKE_PREFIX_PATH "/path/to/eolib")
+ *
+ * find_package(eolib REQUIRED)
+ *
+ * add_executable(myapp main.c)
+ * target_link_libraries(myapp PRIVATE eolib::eolib)
+ * @endcode
+ *
+ * Build:
+ * @code{.sh}
+ * cmake -B build -S .
+ * cmake --build build
+ * @endcode
+ *
+ * @subsection gs_manual Manual compilation
+ *
+ * If you prefer to compile without CMake, pass the include and library paths
+ * directly to the compiler.
+ *
+ * **Linux / macOS (GCC or Clang):**
+ * @code{.sh}
+ * gcc main.c -I/path/to/eolib/include \
+ *            -L/path/to/eolib/lib -leolib \
+ *            -Wl,-rpath,/path/to/eolib/lib \
+ *            -o myapp
+ * @endcode
+ *
+ * **Windows — MSVC (Developer Command Prompt):**
+ * @code{.bat}
+ * cl main.c /I C:\eolib\include ^
+ *           /link C:\eolib\lib\eolib.lib ^
+ *           /out:myapp.exe
+ * @endcode
+ *
+ * **Windows — MinGW:**
+ * @code{.sh}
+ * gcc main.c -I/c/eolib/include \
+ *            -L/c/eolib/lib -leolib \
+ *            -o myapp.exe
+ * @endcode
+ *
+ * @note On Linux, if the library is not installed in a standard system path,
+ * set `LD_LIBRARY_PATH` (or `DYLD_LIBRARY_PATH` on macOS) before running
+ * your application, or use a `-Wl,-rpath` flag as shown above.
+ *
+ * ---
+ *
+ * @section gs_example1 Example 1 — Packet Inspector
+ *
+ * This program reads raw packet bytes from stdin and decodes a
+ * `LoginRequestClientPacket` (family = `PACKET_FAMILY_LOGIN` = 4,
+ * action = `PACKET_ACTION_REQUEST` = 1). It then re-encodes the packet and
+ * prints the byte count.
+ *
+ * @note In the EO wire format the two-byte `family`/`action` header is
+ * stripped **before** the packet body is passed to `_deserialize`. Your
+ * network layer is responsible for stripping those two bytes first.
+ *
+ * **`packet_inspect.c`**
+ * @code{.c}
+ * #include <stdio.h>
+ * #include <stdlib.h>
+ * #include <stdint.h>
+ * #include <string.h>
+ *
+ * #include <eolib/eolib.h>
+ *
+ * #define MAX_PACKET 65535
+ *
+ * int main(int argc, char *argv[]) {
+ *     if (argc < 3) {
+ *         fprintf(stderr, "Usage: %s <family> <action>\n", argv[0]);
+ *         return 1;
+ *     }
+ *
+ *     int family = atoi(argv[1]);
+ *     int action = atoi(argv[2]);
+ *
+ *     // Read the packet body from stdin (family/action bytes already stripped).
+ *     uint8_t buf[MAX_PACKET];
+ *     size_t len = fread(buf, 1, sizeof(buf), stdin);
+ *     if (len == 0) {
+ *         fprintf(stderr, "No data on stdin.\n");
+ *         return 1;
+ *     }
+ *
+ *     printf("Received %zu byte(s), family=%d, action=%d\n",
+ *            len, family, action);
+ *
+ *     // Decode a Login_Request packet.
+ *     if (family == PACKET_FAMILY_LOGIN && action == PACKET_ACTION_REQUEST) {
+ *         EoReader reader = eo_reader_init(buf, len);
+ *
+ *         LoginRequestClientPacket pkt = {0};
+ *         EoResult result = LoginRequestClientPacket_deserialize(&pkt, &reader);
+ *         if (result != EO_SUCCESS) {
+ *             fprintf(stderr, "Deserialize failed: %s\n",
+ *                     eo_result_string(result));
+ *             return 1;
+ *         }
+ *
+ *         printf("  username: %s\n", pkt.username ? pkt.username : "(null)");
+ *         printf("  password: (hidden, %zu char(s))\n",
+ *                pkt.password ? strlen(pkt.password) : 0);
+ *
+ *         // Re-encode and report the output size.
+ *         EoWriter writer = eo_writer_init();
+ *         result = LoginRequestClientPacket_serialize(&pkt, &writer);
+ *         if (result != EO_SUCCESS) {
+ *             fprintf(stderr, "Serialize failed: %s\n",
+ *                     eo_result_string(result));
+ *             LoginRequestClientPacket_free(&pkt);
+ *             eo_writer_free(&writer);
+ *             return 1;
+ *         }
+ *
+ *         printf("  re-encoded: %zu byte(s)\n", writer.length);
+ *
+ *         eo_writer_free(&writer);
+ *         LoginRequestClientPacket_free(&pkt);
+ *     } else {
+ *         printf("  (no decoder for family=%d action=%d)\n", family, action);
+ *     }
+ *
+ *     return 0;
+ * }
+ * @endcode
+ *
+ * **Compiling:**
+ * @code{.sh}
+ * # Linux / macOS
+ * gcc packet_inspect.c -I/path/to/eolib/include \
+ *                      -L/path/to/eolib/lib -leolib \
+ *                      -Wl,-rpath,/path/to/eolib/lib \
+ *                      -o packet_inspect
+ *
+ * # Windows — MSVC
+ * cl packet_inspect.c /I C:\eolib\include ^
+ *                     /link C:\eolib\lib\eolib.lib /out:packet_inspect.exe
+ *
+ * # Windows — MinGW
+ * gcc packet_inspect.c -I/c/eolib/include \
+ *                      -L/c/eolib/lib -leolib \
+ *                      -o packet_inspect.exe
+ * @endcode
+ *
+ * **Running (Linux/macOS):**
+ * @code{.sh}
+ * # Pipe raw bytes for family=4 (Login), action=1 (Request)
+ * printf '\x06\x07admin\xFFsecret' | ./packet_inspect 4 1
+ * @endcode
+ *
+ * ---
+ *
+ * @section gs_example2 Example 2 — EIF Pub File Reader
+ *
+ * This program reads an EIF (Endless Item File) pub file, parses it, and
+ * prints items filtered by type.
+ *
+ * The `Eif` struct holds the file header and an array of `EifRecord` items.
+ * The `type` field of each `EifRecord` is an `ItemType` enum value.
+ *
+ * **`pub_reader.c`**
+ * @code{.c}
+ * #include <stdio.h>
+ * #include <stdlib.h>
+ * #include <stdint.h>
+ * #include <string.h>
+ *
+ * #include <eolib/eolib.h>
+ *
+ * static const char *item_type_name(ItemType t) {
+ *     switch (t) {
+ *         case ITEM_TYPE_GENERAL:       return "General";
+ *         case ITEM_TYPE_CURRENCY:      return "Currency";
+ *         case ITEM_TYPE_HEAL:          return "Heal";
+ *         case ITEM_TYPE_TELEPORT:      return "Teleport";
+ *         case ITEM_TYPE_EXP_REWARD:    return "ExpReward";
+ *         case ITEM_TYPE_KEY:           return "Key";
+ *         case ITEM_TYPE_WEAPON:        return "Weapon";
+ *         case ITEM_TYPE_SHIELD:        return "Shield";
+ *         case ITEM_TYPE_ARMOR:         return "Armor";
+ *         case ITEM_TYPE_HAT:           return "Hat";
+ *         case ITEM_TYPE_BOOTS:         return "Boots";
+ *         case ITEM_TYPE_GLOVES:        return "Gloves";
+ *         case ITEM_TYPE_ACCESSORY:     return "Accessory";
+ *         case ITEM_TYPE_BELT:          return "Belt";
+ *         case ITEM_TYPE_NECKLACE:      return "Necklace";
+ *         case ITEM_TYPE_RING:          return "Ring";
+ *         case ITEM_TYPE_ARMLET:        return "Armlet";
+ *         case ITEM_TYPE_BRACER:        return "Bracer";
+ *         case ITEM_TYPE_ALCOHOL:       return "Alcohol";
+ *         case ITEM_TYPE_EFFECT_POTION: return "EffectPotion";
+ *         case ITEM_TYPE_HAIR_DYE:      return "HairDye";
+ *         case ITEM_TYPE_CURE_CURSE:    return "CureCurse";
+ *         default:                      return "Unknown";
+ *     }
+ * }
+ *
+ * int main(int argc, char *argv[]) {
+ *     if (argc < 3) {
+ *         fprintf(stderr, "Usage: %s <file.eif> <item_type_int>\n", argv[0]);
+ *         fprintf(stderr, "  e.g.: %s dat001.eif 10   (10 = Weapon)\n", argv[0]);
+ *         return 1;
+ *     }
+ *
+ *     const char *path   = argv[1];
+ *     int         filter = atoi(argv[2]);
+ *
+ *     // Read the entire file into memory.
+ *     FILE *fp = fopen(path, "rb");
+ *     if (!fp) {
+ *         perror("fopen");
+ *         return 1;
+ *     }
+ *     fseek(fp, 0, SEEK_END);
+ *     long file_size = ftell(fp);
+ *     rewind(fp);
+ *
+ *     uint8_t *data = (uint8_t *)malloc((size_t)file_size);
+ *     if (!data) {
+ *         fprintf(stderr, "Out of memory.\n");
+ *         fclose(fp);
+ *         return 1;
+ *     }
+ *     fread(data, 1, (size_t)file_size, fp);
+ *     fclose(fp);
+ *
+ *     // Deserialize the EIF file.
+ *     EoReader reader = eo_reader_init(data, (size_t)file_size);
+ *
+ *     Eif eif = {0};
+ *     EoResult result = Eif_deserialize(&eif, &reader);
+ *     free(data);
+ *
+ *     if (result != EO_SUCCESS) {
+ *         fprintf(stderr, "Failed to parse EIF: %s\n",
+ *                 eo_result_string(result));
+ *         return 1;
+ *     }
+ *
+ *     printf("EIF loaded: %zu item(s) total\n", eif.items_length);
+ *     printf("Listing items of type %d (%s):\n",
+ *            filter, item_type_name((ItemType)filter));
+ *
+ *     for (size_t i = 0; i < eif.items_length; i++) {
+ *         const EifRecord *item = &eif.items[i];
+ *         if ((int)item->type != filter)
+ *             continue;
+ *         // Item IDs in EIF are 1-based (index 0 is the placeholder record).
+ *         printf("  id=%-5zu  type=%-12s  name=%s\n",
+ *                i, item_type_name(item->type),
+ *                item->name ? item->name : "(null)");
+ *     }
+ *
+ *     Eif_free(&eif);
+ *     return 0;
+ * }
+ * @endcode
+ *
+ * @note Item index `0` in the `items` array is a placeholder record and can
+ * safely be skipped. Real item IDs start at `1`.
+ *
+ * **Compiling:**
+ * @code{.sh}
+ * # Linux / macOS
+ * gcc pub_reader.c -I/path/to/eolib/include \
+ *                  -L/path/to/eolib/lib -leolib \
+ *                  -Wl,-rpath,/path/to/eolib/lib \
+ *                  -o pub_reader
+ *
+ * # Windows — MSVC
+ * cl pub_reader.c /I C:\eolib\include ^
+ *                 /link C:\eolib\lib\eolib.lib /out:pub_reader.exe
+ *
+ * # Windows — MinGW
+ * gcc pub_reader.c -I/c/eolib/include \
+ *                  -L/c/eolib/lib -leolib \
+ *                  -o pub_reader.exe
+ * @endcode
+ *
+ * **Running:**
+ * @code{.sh}
+ * ./pub_reader dat001.eif 10   # list all weapons
+ * ./pub_reader dat001.eif 12   # list all armor
+ * @endcode
+ *
+ * ---
+ *
+ * @section gs_memory Memory Safety
+ *
+ * eolib-c uses explicit ownership rules. Following them prevents leaks and
+ * use-after-free bugs.
+ *
+ * @subsection gs_memory_reader EoReader — borrows its buffer
+ *
+ * `EoReader` is a stack-allocated struct. It **does not own** the byte buffer
+ * you pass to `eo_reader_init()` — it merely borrows a pointer. You are
+ * responsible for keeping that buffer alive for as long as the reader exists,
+ * and for freeing it afterwards if necessary.
+ *
+ * @code{.c}
+ * uint8_t *buf = ...; // your data
+ * size_t   len = ...;
+ *
+ * EoReader reader = eo_reader_init(buf, len);
+ * // ... read from reader ...
+ * free(buf); // free *your* buffer when you're done; nothing else to do for the reader itself
+ * @endcode
+ *
+ * @subsection gs_memory_writer EoWriter — owns a heap buffer
+ *
+ * `EoWriter` allocates a growing heap buffer internally. Always call
+ * `eo_writer_free()` when you are done — **even on error paths**.
+ *
+ * @code{.c}
+ * EoWriter writer = eo_writer_init();
+ *
+ * EoResult result = eo_writer_add_short(&writer, 42);
+ * if (result != EO_SUCCESS) {
+ *     eo_writer_free(&writer); // still required before early return
+ *     return result;
+ * }
+ *
+ * // transfer ownership: copy writer.data before freeing
+ * uint8_t *out = malloc(writer.length);
+ * memcpy(out, writer.data, writer.length);
+ * eo_writer_free(&writer); // always free the writer itself
+ * @endcode
+ *
+ * @subsection gs_memory_structs Protocol structs — zero-init, then free
+ *
+ * Packet structs and pub/map file structs may contain heap-allocated strings
+ * or arrays. The rules are:
+ *
+ * 1. **Always zero-initialize** before deserializing: `SomeStruct s = {0};`
+ *    This ensures `_free()` is safe to call even if deserialization fails
+ *    partway through.
+ * 2. **Always call `_free()`** when you are done, including on error paths.
+ *    Calling `_free()` on a zeroed struct is safe and does nothing.
+ *
+ * @code{.c}
+ * LoginRequestClientPacket pkt = {0}; // zero-init first!
+ *
+ * EoResult result = LoginRequestClientPacket_deserialize(&pkt, &reader);
+ * if (result != EO_SUCCESS) {
+ *     LoginRequestClientPacket_free(&pkt); // safe even on partial init
+ *     return result;
+ * }
+ *
+ * printf("username: %s\n", pkt.username);
+ * LoginRequestClientPacket_free(&pkt); // free when done
+ * @endcode
+ *
+ * The same pattern applies to pub and map file structs:
+ *
+ * @code{.c}
+ * Eif eif = {0};
+ * EoResult result = Eif_deserialize(&eif, &reader);
+ * if (result != EO_SUCCESS) {
+ *     Eif_free(&eif);
+ *     return result;
+ * }
+ * // ... use eif.items[] ...
+ * Eif_free(&eif);
+ * @endcode
+ *
+ * @note If a struct contains only numeric fields (no strings or arrays), its
+ *       generated `_free()` function is still safe to call and does nothing —
+ *       so it's always correct to call `_free()` without checking first.
+ *
+ * ---
+ *
+ * @section gs_next Next Steps
+ *
+ * - @ref error_handling — understand every return code and how to handle them.
+ * - @ref reading_data — deep dive into `EoReader` and chunked reading.
+ * - @ref writing_data — deep dive into `EoWriter`.
+ * - @ref encryption — encrypt and decrypt EO network packets.
+ * - @ref sequencing — stamp outgoing packets with correct sequence numbers.
+ */

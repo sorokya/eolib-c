@@ -75,16 +75,6 @@ EoWriter eo_writer_init_with_capacity(size_t capacity);
 void eo_writer_free(EoWriter *writer);
 
 /**
- * No-op provided for API symmetry with eo_writer_free.
- * @param reader Reader to "free". If NULL, this function does nothing.
- * @remarks Readers do not own their data buffer — they borrow a pointer passed
- *          to eo_reader_init. The caller is responsible for the lifetime of that
- *          buffer. This function exists solely so binding authors can treat
- *          EoWriter and EoReader uniformly.
- */
-void eo_reader_free(EoReader *reader);
-
-/**
  * Ensures a writer has space for additional bytes, reallocating if necessary.
  * @param writer Writer to grow.
  * @param additional Additional bytes required.

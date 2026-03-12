@@ -8,6 +8,8 @@
  * data according to the EO network protocol.
  *
  * **Sections:**
+ * - @ref getting_started
+ * - @ref getting_started_lua
  * - @ref error_handling
  * - @ref reading_data
  * - @ref writing_data
@@ -83,8 +85,6 @@
  * eo_reader_get_string(&reader, &name);
  * // ... use name ...
  * free(name);
- *
- * eo_reader_free(&reader);  // No-op; kept for symmetry.
  * @endcode
  *
  * **Chunked reading mode:**

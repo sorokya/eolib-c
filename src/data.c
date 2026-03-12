@@ -820,10 +820,6 @@ EoReader eo_reader_init(const uint8_t *data, size_t length)
     return reader;
 }
 
-void eo_reader_free(EoReader *reader)
-{
-    (void)reader;
-}
 
 bool eo_reader_get_chunked_reading_mode(const EoReader *reader)
 {

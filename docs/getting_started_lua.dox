@@ -1,0 +1,305 @@
+/**
+ * @page getting_started_lua Getting Started (Lua)
+ *
+ * This guide walks you through setting up a Lua development environment,
+ * downloading the **eolib-c Lua bindings**, and writing two practical example
+ * scripts.
+ *
+ * The Lua bindings expose the same protocol types as the C library through a
+ * native C extension module (`eolib.so` / `eolib.dll`) that you `require` from
+ * Lua 5.4.
+ *
+ * @section gsl_prereqs Prerequisites & Development Environment
+ *
+ * You need **Lua 5.4** installed, plus a C toolchain in case you ever need to
+ * build from source. CMake 3.16+ is required for source builds.
+ *
+ * @subsection gsl_linux Linux (Ubuntu / Debian)
+ * @code{.sh}
+ * sudo apt-get update
+ * sudo apt-get install gcc cmake build-essential lua5.4
+ * @endcode
+ *
+ * @subsection gsl_macos macOS
+ * @code{.sh}
+ * xcode-select --install
+ * brew install cmake lua
+ * @endcode
+ *
+ * @subsection gsl_windows Windows
+ * **MSVC (recommended):** Install [Visual Studio 2022 Community](https://visualstudio.microsoft.com/vs/community/)
+ * with the **Desktop development with C++** workload.  Download and install a
+ * Lua 5.4 binary for Windows from https://luabinaries.sourceforge.net/ (or use
+ * [LuaRocks](https://luarocks.org/) which bundles Lua).
+ *
+ * **MinGW via MSYS2:**
+ * @code{.sh}
+ * pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-lua
+ * @endcode
+ *
+ * ---
+ *
+ * @section gsl_download Downloading a Release
+ *
+ * Pre-built Lua binding releases are available at:
+ * https://github.com/sorokya/eolib-c/releases
+ *
+ * Lua packages follow the naming convention
+ * `eolib-{version}-Lua-{platform}.zip` where `{platform}` is one of:
+ *
+ * | Platform | Filename suffix |
+ * |----------|----------------|
+ * | Linux 64-bit (x86_64) | `Linux.x64` |
+ * | Linux 64-bit (ARM) | `Linux.arm64` |
+ * | macOS Apple Silicon | `macOS.arm64` |
+ * | macOS Intel | `macOS.x64` |
+ * | Windows MSVC 64-bit | `Windows.VS2022.x64` |
+ * | Windows MSVC 32-bit | `Windows.VS2022.x86` |
+ * | Windows MinGW 64-bit | `Windows.MinGW.x64` |
+ * | Windows MinGW 32-bit | `Windows.MinGW.x86` |
+ *
+ * The archive contains:
+ * @code
+ * eolib.so         (Linux / macOS — the Lua C extension)
+ * eolib.dll        (Windows — the Lua C extension)
+ * libeolib.dll     (Windows only — the underlying C library; must be in PATH)
+ * eolib.d.lua      (type-annotation stub for IDE support, e.g. LuaLS / EmmyLua)
+ * @endcode
+ *
+ * @subsection gsl_install Installing the module
+ *
+ * The simplest approach is to place `eolib.so` (or `eolib.dll` + `libeolib.dll`
+ * on Windows) in the same directory as your script, then run:
+ * @code{.sh}
+ * lua5.4 my_script.lua
+ * @endcode
+ *
+ * Lua's default `package.cpath` includes `./?.so` on Linux/macOS and
+ * `.\?.dll` on Windows, so `require("eolib")` will find the module
+ * automatically.
+ *
+ * To install system-wide so any script can use it, copy the `.so`/`.dll` into
+ * one of the directories listed by:
+ * @code{.lua}
+ * print(package.cpath)
+ * @endcode
+ *
+ * Or set `LUA_CPATH` in your shell environment to include the directory
+ * containing the module:
+ * @code{.sh}
+ * # Linux / macOS
+ * export LUA_CPATH="/path/to/eolib/?.so;;"
+ *
+ * # Windows (PowerShell)
+ * $env:LUA_CPATH = "C:\eolib\?.dll;;"
+ * @endcode
+ *
+ * @note On Windows, `libeolib.dll` must also be reachable via the `PATH`
+ * environment variable, or placed alongside `eolib.dll` in the same directory.
+ *
+ * @subsection gsl_ide IDE support
+ *
+ * The included `eolib.d.lua` file provides type annotations understood by
+ * [lua-language-server](https://github.com/LuaLS/lua-language-server) and
+ * compatible IDEs (VS Code, Neovim, etc.). Place it anywhere your language
+ * server's `workspace.library` path covers, or add the directory to the
+ * server's `workspace.userThirdParty` setting.
+ *
+ * ---
+ *
+ * @section gsl_example1 Example 1 — Packet Inspector
+ *
+ * This script reads raw packet bytes from stdin and decodes a
+ * `LoginRequestClientPacket` (family = 4, action = 1). It then re-encodes
+ * the packet and prints the byte count.
+ *
+ * @note In the EO wire format the two-byte `family`/`action` header is
+ * stripped **before** the packet body is passed to `deserialize`. Your
+ * network layer is responsible for removing those two bytes first.
+ *
+ * **`packet_inspect.lua`**
+ * @code{.lua}
+ * local eolib = require("eolib")
+ *
+ * local PACKET_FAMILY_LOGIN   = 4
+ * local PACKET_ACTION_REQUEST = 1
+ *
+ * -- Parse command-line arguments.
+ * local family = tonumber(arg[1])
+ * local action = tonumber(arg[2])
+ * if not family or not action then
+ *     io.stderr:write("Usage: lua packet_inspect.lua <family> <action>\n")
+ *     os.exit(1)
+ * end
+ *
+ * -- Read the packet body from stdin (family/action bytes already stripped).
+ * local raw = io.read("*a")
+ * if #raw == 0 then
+ *     io.stderr:write("No data on stdin.\n")
+ *     os.exit(1)
+ * end
+ *
+ * print(string.format("Received %d byte(s), family=%d, action=%d",
+ *                     #raw, family, action))
+ *
+ * if family == PACKET_FAMILY_LOGIN and action == PACKET_ACTION_REQUEST then
+ *     -- Deserialize the packet body.
+ *     local pkt, err = eolib.LoginRequestClientPacket.deserialize(raw)
+ *     if not pkt then
+ *         io.stderr:write("Deserialize failed: " .. tostring(err) .. "\n")
+ *         os.exit(1)
+ *     end
+ *
+ *     print("  username: " .. (pkt.username or "(nil)"))
+ *     print(string.format("  password: (hidden, %d char(s))",
+ *                         pkt.password and #pkt.password or 0))
+ *
+ *     -- Re-encode and report the output size.
+ *     local bytes, err2 = pkt:serialize()
+ *     if not bytes then
+ *         io.stderr:write("Serialize failed: " .. tostring(err2) .. "\n")
+ *         os.exit(1)
+ *     end
+ *     print("  re-encoded: " .. #bytes .. " byte(s)")
+ * else
+ *     print(string.format("  (no decoder for family=%d action=%d)",
+ *                         family, action))
+ * end
+ * @endcode
+ *
+ * **Running:**
+ * @code{.sh}
+ * # Linux / macOS  (pipe raw bytes for Login_Request)
+ * printf '\x06\x07admin\xFFsecret' | lua5.4 packet_inspect.lua 4 1
+ *
+ * # Windows (PowerShell)
+ * [System.Text.Encoding]::Latin1.GetBytes("`x06`x07admin`xFFsecret") |
+ *     lua packet_inspect.lua 4 1
+ * @endcode
+ *
+ * ---
+ *
+ * @section gsl_example2 Example 2 — EIF Pub File Reader
+ *
+ * This script reads an EIF (Endless Item File) pub file, parses it, and
+ * prints all items whose type matches the given integer argument.
+ *
+ * The `eolib.ItemType` table exposes every `ITEM_TYPE_*` constant from the C
+ * API (e.g. `eolib.ItemType.WEAPON == 10`).
+ *
+ * **`pub_reader.lua`**
+ * @code{.lua}
+ * local eolib = require("eolib")
+ *
+ * -- Print usage if arguments are missing.
+ * local path   = arg[1]
+ * local filter = tonumber(arg[2])
+ * if not path or not filter then
+ *     io.stderr:write("Usage: lua pub_reader.lua <file.eif> <item_type_int>\n")
+ *     io.stderr:write("  e.g.: lua pub_reader.lua dat001.eif " ..
+ *                     eolib.ItemType.WEAPON .. "   -- list weapons\n")
+ *     os.exit(1)
+ * end
+ *
+ * -- Read the file into a string.
+ * local f, err = io.open(path, "rb")
+ * if not f then
+ *     io.stderr:write("Cannot open file: " .. tostring(err) .. "\n")
+ *     os.exit(1)
+ * end
+ * local data = f:read("*a")
+ * f:close()
+ *
+ * -- Deserialize the EIF file.
+ * local eif, deser_err = eolib.Eif.deserialize(data)
+ * if not eif then
+ *     io.stderr:write("Failed to parse EIF: " .. tostring(deser_err) .. "\n")
+ *     os.exit(1)
+ * end
+ *
+ * print(string.format("EIF loaded: %d item(s) total", #eif.items))
+ * print(string.format("Listing items of type %d:", filter))
+ *
+ * -- Item index 1 is the placeholder record; real items start at index 2.
+ * for i, item in ipairs(eif.items) do
+ *     if item.type == filter then
+ *         print(string.format("  id=%-5d  type=%-4d  name=%s",
+ *                             i - 1, item.type, item.name or "(nil)"))
+ *     end
+ * end
+ * @endcode
+ *
+ * @note Lua arrays are 1-based.  `eif.items[1]` corresponds to EIF item ID 0
+ * (the placeholder).  To get the in-game item ID subtract 1 from the Lua index,
+ * as shown in the example above.
+ *
+ * **Running:**
+ * @code{.sh}
+ * # Linux / macOS
+ * lua5.4 pub_reader.lua dat001.eif 10   # list all weapons
+ * lua5.4 pub_reader.lua dat001.eif 12   # list all armor
+ *
+ * # Windows
+ * lua pub_reader.lua dat001.eif 10
+ * @endcode
+ *
+ * **Common `ItemType` values:**
+ * | Constant | Value | Meaning |
+ * |----------|-------|---------|
+ * | `eolib.ItemType.GENERAL` | 0 | Miscellaneous item |
+ * | `eolib.ItemType.CURRENCY` | 2 | In-game currency |
+ * | `eolib.ItemType.HEAL` | 3 | Healing potion |
+ * | `eolib.ItemType.WEAPON` | 10 | Weapon |
+ * | `eolib.ItemType.SHIELD` | 11 | Shield |
+ * | `eolib.ItemType.ARMOR` | 12 | Armor |
+ * | `eolib.ItemType.HAT` | 13 | Hat |
+ * | `eolib.ItemType.BOOTS` | 14 | Boots |
+ *
+ * ---
+ *
+ * @section gsl_memory Memory Safety
+ *
+ * Lua's garbage collector manages memory automatically, so you generally do
+ * not need to free eolib objects explicitly. A few rules still apply:
+ *
+ * **`EoWriter` and `EoReader`** are full Lua userdata objects. They are
+ * collected when no more Lua references point to them. Hold a local variable
+ * to keep them alive; let the variable go out of scope (or set it to `nil`)
+ * when you are done.
+ *
+ * @code{.lua}
+ * local writer = eolib.EoWriter.new()
+ * writer:add_short(42)
+ * local bytes = writer:to_byte_array()
+ * writer = nil -- allow collection; or just let it fall out of scope
+ * @endcode
+ *
+ * **Deserialized protocol structs** are plain Lua tables returned by
+ * `deserialize()`. They are collected like any other table once there are no
+ * more references to them.
+ *
+ * **String fields** (e.g. `pkt.username`, `record.name`) are regular Lua
+ * strings interned by the VM — no special handling required.
+ *
+ * **Buffer lifetime for `EoReader`:** When you create a reader from a Lua
+ * string the binding keeps an internal reference to that string, so the
+ * underlying bytes remain valid for the reader's lifetime. You do not need
+ * to hold onto the original string variable.
+ *
+ * @code{.lua}
+ * local reader = eolib.EoReader.new(io.read("*a"))
+ * -- safe: binding holds the string reference internally
+ * local action = reader:get_byte()
+ * @endcode
+ *
+ * ---
+ *
+ * @section gsl_next Next Steps
+ *
+ * - @ref getting_started — the equivalent guide for the C API.
+ * - @ref error_handling — understand every return code and how errors surface in Lua.
+ * - @ref reading_data — details of `EoReader` and chunked reading.
+ * - @ref writing_data — details of `EoWriter`.
+ * - @ref encryption — encrypt and decrypt EO network packets.
+ * - @ref sequencing — stamp outgoing packets with correct sequence numbers.
+ */

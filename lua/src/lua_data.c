@@ -215,7 +215,6 @@ static int reader_gc(lua_State *L)
 {
     LuaEoReader *ud = (LuaEoReader *)luaL_checkudata(L, 1, EOLIB_READER_MT);
     luaL_unref(L, LUA_REGISTRYINDEX, ud->string_ref);
-    eo_reader_free(&ud->reader);
     return 0;
 }
 
