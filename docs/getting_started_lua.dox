@@ -155,6 +155,8 @@
  *                         pkt.password and #pkt.password or 0))
  *
  *     -- Re-encode and report the output size.
+ *     -- The binding pre-allocates the exact buffer size internally, so no
+ *     -- manual sizing is needed from Lua.
  *     local bytes, err2 = pkt:serialize()
  *     if not bytes then
  *         io.stderr:write("Serialize failed: " .. tostring(err2) .. "\n")

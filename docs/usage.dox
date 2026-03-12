@@ -169,6 +169,49 @@
  * | eo_writer_add_short() | 2 | ::EO_SHORT_MAX |
  * | eo_writer_add_three() | 3 | ::EO_THREE_MAX |
  * | eo_writer_add_int() | 4 | ::EO_INT_MAX |
+ *
+ * **Pre-allocating with `_size()` functions:**
+ *
+ * Every generated protocol struct has a corresponding `StructName_size()`
+ * function that returns the exact number of bytes `StructName_serialize()`
+ * will write. Pass that value to eo_writer_init_with_capacity() to allocate
+ * the full buffer upfront and avoid repeated reallocations during serialization.
+ *
+ * This is especially valuable when serializing large structures such as pub
+ * files or packets with long string arrays.
+ *
+ * @code{.c}
+ * LoginRequestClientPacket pkt = {0};
+ * pkt.username = "Admin";
+ * pkt.password = "hunter2";
+ *
+ * // Calculate exact serialized size before writing.
+ * EoWriter writer = eo_writer_init_with_capacity(LoginRequestClientPacket_size(&pkt));
+ *
+ * EoResult result = LoginRequestClientPacket_serialize(&pkt, &writer);
+ * if (result != EO_SUCCESS) {
+ *     eo_writer_free(&writer);
+ *     return result;
+ * }
+ *
+ * send(socket, writer.data, writer.length);
+ * eo_writer_free(&writer);
+ * @endcode
+ *
+ * When serializing a collection of structs (e.g. building a pub file), sum
+ * the sizes first:
+ *
+ * @code{.c}
+ * size_t total = Eif_size(&eif);
+ * EoWriter writer = eo_writer_init_with_capacity(total);
+ * Eif_serialize(&eif, &writer);
+ * // write writer.data to disk...
+ * eo_writer_free(&writer);
+ * @endcode
+ *
+ * @note `eo_writer_init_with_capacity()` pre-allocates the requested bytes
+ *       but does not limit the writer — it will still grow if you write more.
+ *       If `capacity` is 0 it behaves identically to `eo_writer_init()`.
  */
 
 /**

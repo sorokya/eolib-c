@@ -196,7 +196,8 @@
  *                pkt.password ? strlen(pkt.password) : 0);
  *
  *         // Re-encode and report the output size.
- *         EoWriter writer = eo_writer_init();
+ *         // Use _size() to pre-allocate the exact capacity needed.
+ *         EoWriter writer = eo_writer_init_with_capacity(LoginRequestClientPacket_size(&pkt));
  *         result = LoginRequestClientPacket_serialize(&pkt, &writer);
  *         if (result != EO_SUCCESS) {
  *             fprintf(stderr, "Serialize failed: %s\n",
