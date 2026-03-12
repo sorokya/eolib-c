@@ -195,6 +195,13 @@ jobs:
           vcpkgJsonGlob: vcpkg.json
           vcpkgConfigurationJsonGlob: vcpkg-configuration.json
 
+      - name: Cache vcpkg artifacts (Windows)
+        if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.workspace }}\vcpkg_installed
+          key: vcpkg-${{ matrix.os }}-${{ matrix.vcpkg_triplet }}-62159a45e18f3a9ac0548628dcaf74fcb60c6ff9
+
       - name: Configure (MSVC/ClangCL)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         run: >-
@@ -250,13 +257,6 @@ jobs:
       - name: Reconfigure (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
         run: cmake -S . -B build
-
-      - name: Cache vcpkg artifacts (Windows)
-        if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
-        uses: actions/cache@v4
-        with:
-          path: ${{ runner.workspace }}\vcpkg_installed
-          key: vcpkg-${{ matrix.os }}-${{ matrix.vcpkg_triplet }}-62159a45e18f3a9ac0548628dcaf74fcb60c6ff9
 
       - name: Run Tests
         if: matrix.compiler != 'mingw'
