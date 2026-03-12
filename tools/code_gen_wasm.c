@@ -73,8 +73,8 @@ static PacketStorageMap build_psm(ProtocolDef *protocols, size_t protocol_count)
                      proto->packets[i].family, proto->packets[i].action, suffix);
             int hs = element_list_has_storage(&proto->packets[i].elements);
             int hh = hs && element_list_has_heap(&proto->packets[i].elements,
-                                                  all_enums, all_enums_count,
-                                                  all_structs, all_structs_count);
+                                                 all_enums, all_enums_count,
+                                                 all_structs, all_structs_count);
             psm_push(&map, buf, hs, hh);
         }
     }
@@ -216,8 +216,8 @@ static void write_wasm_dispatch(ProtocolDef *protocols, size_t protocol_count,
     }
 
     fprintf(f, "%s", CODEGEN_WARNING);
-    fprintf(f, "#include \"../include/protocol.h\"\n");
-    fprintf(f, "#include \"../include/data.h\"\n");
+    fprintf(f, "#include \"../include/eolib/protocol.h\"\n");
+    fprintf(f, "#include \"../include/eolib/data.h\"\n");
     fprintf(f, "#include <stdint.h>\n");
     fprintf(f, "#include <stdlib.h>\n");
     fprintf(f, "#include <string.h>\n\n");
@@ -375,7 +375,7 @@ static void write_wasm_packets_js(ProtocolDef *protocols, size_t protocol_count)
             int family_id = find_enum_value(protocols, protocol_count, "PacketFamily", family);
             int action_id = find_enum_value(protocols, protocol_count, "PacketAction", action);
             const char *comment = find_packet_comment(protocols, protocol_count,
-                                                       family, action, d);
+                                                      family, action, d);
 
             /* Derive stem from filename */
             const char *basename = strrchr(paths.items[i], '/');
