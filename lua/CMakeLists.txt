@@ -34,6 +34,17 @@ target_link_libraries(lua_eolib PRIVATE eolib ${LUA_LIBRARIES})
 
 add_dependencies(lua_eolib generate_protocol)
 
+# On Windows, copy libeolib.dll next to eolib.dll so the loader can find it
+# without any PATH manipulation.
+if(WIN32)
+	add_custom_command(TARGET lua_eolib POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:eolib>
+			$<TARGET_FILE_DIR:lua_eolib>
+		COMMENT "Copying eolib DLL for Lua tests"
+	)
+endif()
+
 install(TARGETS lua_eolib
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -59,7 +70,7 @@ if(LUA_INTERPRETER)
 	add_custom_target(lua-test
 		${lua_test_commands}
 		DEPENDS lua_eolib
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		COMMENT "Running Lua tests"
 	)
 endif()
