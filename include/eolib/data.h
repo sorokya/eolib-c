@@ -23,8 +23,8 @@
 /** Writer that accumulates EO-encoded bytes. */
 typedef struct EoWriter
 {
-    uint8_t *data;    /**< Read-only: pointer to the accumulated bytes. Do not modify directly. */
-    size_t length;    /**< Read-only: number of bytes written so far. Do not modify directly. */
+    uint8_t *data;                 /**< Read-only: pointer to the accumulated bytes. Do not modify directly. */
+    size_t length;                 /**< Read-only: number of bytes written so far. Do not modify directly. */
     bool string_sanitization_mode; /**< Private: use eo_writer_get/set_string_sanitization_mode(). */
     size_t capacity;               /**< Private: do not access or modify directly. */
 } EoWriter;
@@ -32,12 +32,12 @@ typedef struct EoWriter
 /** Reader that parses EO-encoded bytes. */
 typedef struct EoReader
 {
-    const uint8_t *data; /**< Read-only: pointer to the underlying data buffer. Do not modify directly. */
-    size_t length;       /**< Read-only: total length of the data buffer. Do not modify directly. */
-    size_t offset;       /**< Read-only: current read position. Do not modify directly. */
-    bool chunked_reading_mode;   /**< Private: use eo_reader_get/set_chunked_reading_mode(). */
-    size_t chunk_offset;         /**< Private: do not access or modify directly. */
-    size_t next_chunk_offset;    /**< Private: do not access or modify directly. */
+    const uint8_t *data;       /**< Read-only: pointer to the underlying data buffer. Do not modify directly. */
+    size_t length;             /**< Read-only: total length of the data buffer. Do not modify directly. */
+    size_t offset;             /**< Read-only: current read position. Do not modify directly. */
+    bool chunked_reading_mode; /**< Private: use eo_reader_get/set_chunked_reading_mode(). */
+    size_t chunk_offset;       /**< Private: do not access or modify directly. */
+    size_t next_chunk_offset;  /**< Private: do not access or modify directly. */
 } EoReader;
 
 /**
@@ -378,5 +378,85 @@ EoResult eo_reader_get_fixed_encoded_string(EoReader *reader, size_t length, cha
  *         EO_ALLOC_FAILED if memory allocation fails.
  */
 EoResult eo_reader_get_bytes(EoReader *reader, size_t length, uint8_t **out_value);
+
+/**
+ * @brief Interface for serializable objects.
+ */
+typedef struct EoSerialize EoSerialize;
+
+typedef struct
+{
+    EoResult (*deserialize)(EoSerialize *self, EoReader *reader);
+    EoResult (*serialize)(EoSerialize *self, EoWriter *writer);
+    size_t (*get_size)(EoSerialize *self);
+    void (*free)(EoSerialize *self);
+} EoSerializeVTable;
+
+struct EoSerialize
+{
+    const EoSerializeVTable *vtable;
+};
+
+/**
+ * Deserializes data from a reader into a struct implementing EoSerialize.
+ * @param serialize Struct to populate.
+ * @param reader Reader to consume from.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if serialize or reader is NULL,
+ *        or a non-zero EoResult if deserialization fails.
+ */
+static inline EoResult eo_deserialize(EoSerialize *serialize, EoReader *reader);
+
+/**
+ * Serializes a struct implementing EoSerialize into a writer.
+ * @param serialize Struct to serialize.
+ * @param writer Writer to append to.
+ * @return EO_SUCCESS on success, EO_NULL_PTR if serialize or writer is NULL,
+ *       or a non-zero EoResult if serialization fails.
+ */
+static inline EoResult eo_serialize(const EoSerialize *serialize, EoWriter *writer);
+
+/**
+ * Returns the size in bytes of the serialized form of a struct implementing EoSerialize.
+ * @param serialize Struct to query.
+ * @return Size in bytes of the serialized form, or 0 if serialize is NULL.
+ */
+static inline size_t eo_get_size(const EoSerialize *serialize);
+
+/**
+ * Frees any heap-allocated memory owned by a struct implementing EoSerialize.
+ * @param serialize Struct to free.
+ * @remarks This function does not free the struct itself, only any internal memory it owns.
+ */
+static inline void eo_free(EoSerialize *serialize);
+
+/**
+ * @brief Interface for EO packets, which are serializable objects with a family and action.
+ */
+typedef struct EoPacket EoPacket;
+typedef struct
+{
+    uint8_t (*get_family)(const EoPacket *self);
+    uint8_t (*get_action)(const EoPacket *self);
+} EoPacketVTable;
+
+struct EoPacket
+{
+    EoSerialize base;
+    const EoPacketVTable *vtable;
+};
+
+/**
+ * @brief Gets the family of an EO packet.
+ * @param packet EO packet to query.
+ * @return Family of the EO packet.
+ */
+static inline uint8_t eo_packet_get_family(const EoPacket *packet);
+
+/**
+ * @brief Gets the action of an EO packet.
+ * @param packet EO packet to query.
+ * @return Action of the EO packet.
+ */
+static inline uint8_t eo_packet_get_action(const EoPacket *packet);
 
 #endif
