@@ -161,10 +161,17 @@
       word-break: break-all;
     }
 
-    .roundtrip-ok  { color: green; font-weight: bold; }
-    .roundtrip-err { color: red;   font-weight: bold; }
+    .roundtrip-ok {
+      color: green;
+      font-weight: bold;
+    }
 
-  
+    .roundtrip-err {
+      color: red;
+      font-weight: bold;
+    }
+
+
     #loadingOverlay {
       position: fixed;
       inset: 0;
@@ -232,10 +239,10 @@
                 <input id="enc-value" type="number" value="12345" min="0" style="width:110px" />
                 <label for="enc-size" style="margin-left:8px">Size</label>
                 <select id="enc-size">
-                  <option value="1">Char (1 byte, max 252)</option>
-                  <option value="2">Short (2 bytes, max 64008)</option>
-                  <option value="3">Three (3 bytes, max 16194276)</option>
-                  <option value="4" selected>Int (4 bytes, max 4097152080)</option>
+                  <option value="1">Char</option>
+                  <option value="2">Short</option>
+                  <option value="3">Three</option>
+                  <option value="4" selected>Int</option>
                 </select>
                 <button onclick="doEncodeNumber()" style="margin-left:8px">Encode</button>
               </div>
@@ -545,7 +552,7 @@
       api.decode_string = M.cwrap('wasm_decode_string', null, ['number', 'number']);
       api.str_to_cp1252 = M.cwrap('wasm_string_to_windows_1252', 'number', ['number']);
       api.packet_roundtrip = M.cwrap('wasm_packet_roundtrip', 'number',
-                                     ['number', 'number', 'number', 'number', 'number']);
+        ['number', 'number', 'number', 'number', 'number']);
       api.get_roundtrip_len = M.cwrap('wasm_get_roundtrip_len', 'number', []);
 
       document.getElementById('loadingOverlay').classList.add('hidden');
