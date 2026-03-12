@@ -10,6 +10,12 @@ static uint32_t csprng_uniform(uint32_t upper_bound)
     BCryptGenRandom(NULL, (PUCHAR)&val, sizeof(val), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
     return val % upper_bound;
 }
+#elif defined(__EMSCRIPTEN__)
+#include <stdlib.h>
+static uint32_t csprng_uniform(uint32_t upper_bound)
+{
+    return (uint32_t)rand() % upper_bound;
+}
 #elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 #include <stdlib.h>
 static uint32_t csprng_uniform(uint32_t upper_bound)
