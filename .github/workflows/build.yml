@@ -224,7 +224,7 @@ jobs:
           -A ${{ matrix.msvc_arch }}
           -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\\scripts\\buildsystems\\vcpkg.cmake
           -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
-          -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}
+          "-DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}"
           -DEOLIB_BUILD_LUA_BINDINGS=ON
           ${{ matrix.toolset && format('-T {0}', matrix.toolset) || '' }}
 
@@ -234,7 +234,7 @@ jobs:
 
       - name: Reconfigure (MSVC/ClangCL)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
-        run: cmake -S . -B build -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }} -D CMAKE_SUPPRESS_REGENERATION=ON
+        run: cmake -S . -B build "-DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}" -DCMAKE_SUPPRESS_REGENERATION=ON
 
       - name: Configure (MinGW)
         if: matrix.compiler == 'mingw'
