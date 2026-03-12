@@ -41,5 +41,7 @@ lua/src/lua_protocol.h
 lua/eolib.d.lua
 
 wasm/eolib.wasm
+wasm/eolib.wasm.map
+wasm/eolib.js
 wasm/packets.js
 wasm/wasm_protocol_dispatch.c

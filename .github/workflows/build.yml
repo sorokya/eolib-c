@@ -295,9 +295,38 @@ jobs:
             ./build/package/*.zip
             ./build/package/*.tar.xz
 
+  build-wasm:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: "recursive"
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libxml2-dev libjson-c-dev emscripten
+
+      - name: Generate protocol sources
+        run: |
+          cmake -S . -B build -G Ninja
+          cmake --build build --target generate_protocol
+
+      - name: Build WASM
+        run: cd wasm && ./build.sh
+
+      - name: Package WASM
+        run: |
+          VERSION=$(grep -oP 'set\(EOLIB_VERSION "\K[^"]+' CMakeLists.txt)
+          cd wasm && zip "eolib-${VERSION}-WASM.zip" eolib.js eolib.wasm eolib.wasm.map
+
+      - name: Upload WASM artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: package-WASM
+          path: wasm/eolib-*.zip
+
   release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+    needs: [build, build-wasm]
     runs-on: ubuntu-24.04
     steps:
       - name: Download Packages

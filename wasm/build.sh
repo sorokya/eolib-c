@@ -70,12 +70,14 @@ emcc \
     -s EXPORTED_FUNCTIONS="$(echo "$EXPORTED_FUNCTIONS" | tr -d '\n ')" \
     -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","getValue","setValue","HEAPU8","stringToNewUTF8","UTF8ToString"]' \
     -s ALLOW_MEMORY_GROWTH=1 \
+    -gsource-map=inline \
     -o "$OUT_DIR/eolib.js"
 
 echo ""
 echo "Build successful!"
 echo "  $OUT_DIR/eolib.js"
 echo "  $OUT_DIR/eolib.wasm"
+echo "  $OUT_DIR/eolib.wasm.map"
 echo ""
 echo "Serve the wasm/ directory with any static file server, e.g.:"
 echo "  cd wasm && python3 -m http.server 8080"
