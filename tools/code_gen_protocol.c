@@ -7,29 +7,29 @@
 #include <stdio.h>
 
 static void write_serialize_elements(FILE *source, const char *struct_name,
-    ElementList *elements, EnumDef *enums,
-    size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *value_expr,
-    const char *value_access);
+                                     ElementList *elements, EnumDef *enums,
+                                     size_t enums_count, StructDef *structs,
+                                     size_t structs_count, const char *value_expr,
+                                     const char *value_access);
 static void write_deserialize_elements(FILE *source, const char *struct_name,
-    ElementList *elements, EnumDef *enums,
-    size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *out_expr,
-    const char *out_access);
+                                       ElementList *elements, EnumDef *enums,
+                                       size_t enums_count, StructDef *structs,
+                                       size_t structs_count, const char *out_expr,
+                                       const char *out_access);
 static void write_free_elements(FILE *source, const char *struct_name,
-    ElementList *elements, EnumDef *enums,
-    size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *value_expr,
-    const char *value_access);
+                                ElementList *elements, EnumDef *enums,
+                                size_t enums_count, StructDef *structs,
+                                size_t structs_count, const char *value_expr,
+                                const char *value_access);
 static void write_size_elements(FILE *source, const char *struct_name,
-    ElementList *elements, EnumDef *enums,
-    size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *value_expr,
-    const char *value_access);
+                                ElementList *elements, EnumDef *enums,
+                                size_t enums_count, StructDef *structs,
+                                size_t structs_count, const char *value_expr,
+                                const char *value_access);
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
-    EnumDef *enums, size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *comment,
-    const char *packet_family, const char *packet_action);
+                             EnumDef *enums, size_t enums_count, StructDef *structs,
+                             size_t structs_count, const char *comment,
+                             const char *packet_family, const char *packet_action);
 
 static void write_enum_def(FILE *header, FILE *source, EnumDef *def)
 {
@@ -1775,9 +1775,9 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
         write_doc_comment(header, comment, "");
     fprintf(header, "typedef struct %s {\n", name);
     if (is_packet)
-        fprintf(header, "    EoPacket _eo;\n");
+        fprintf(header, "    EoPacket _packet;\n");
     else
-        fprintf(header, "    EoSerialize _eo;\n");
+        fprintf(header, "    EoSerialize _serialize;\n");
     if (has_storage)
         write_struct_fields(header, name, elements, enums, enums_count, structs, structs_count);
     fprintf(header, "} %s;\n\n", name);
@@ -1786,7 +1786,23 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
             " * @return A zero-initialized ::%s with its vtable pointer set.\n"
             " */\n",
             name, name);
-    fprintf(header, "%s %s_init(void);\n\n", name, name);
+    /* Declare vtables as extern so the static inline init can reference them */
+    fprintf(header, "extern const EoSerializeVTable %s_vtable;\n", name);
+    if (is_packet)
+        fprintf(header, "extern const EoPacketVTable %s_packet_vtable;\n", name);
+    /* static inline _init avoids 400 exported symbols while keeping zero overhead */
+    fprintf(header, "static inline %s %s_init(void) {\n", name, name);
+    fprintf(header, "    %s result = {0};\n", name);
+    if (is_packet)
+    {
+        fprintf(header, "    result._packet.base.vtable = &%s_vtable;\n", name);
+        fprintf(header, "    result._packet.vtable = &%s_packet_vtable;\n", name);
+    }
+    else
+    {
+        fprintf(header, "    result._serialize.vtable = &%s_vtable;\n", name);
+    }
+    fprintf(header, "    return result;\n}\n\n");
 
     /* ---- Source: forward declarations ---- */
     fprintf(source,
@@ -1806,7 +1822,7 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
     fprintf(source, "\n");
 
     /* ---- Source: vtable definitions ---- */
-    fprintf(source, "static const EoSerializeVTable %s_vtable = {\n", name);
+    fprintf(source, "const EoSerializeVTable %s_vtable = {\n", name);
     fprintf(source, "    %s_deserialize_fn,\n", name);
     fprintf(source, "    %s_serialize_fn,\n", name);
     fprintf(source, "    %s_get_size_fn,\n", name);
@@ -1818,26 +1834,12 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
 
     if (is_packet)
     {
-        fprintf(source, "static const EoPacketVTable %s_packet_vtable = {\n", name);
+        fprintf(source, "const EoPacketVTable %s_packet_vtable = {\n", name);
         fprintf(source, "    %s_get_family_fn,\n", name);
         fprintf(source, "    %s_get_action_fn,\n", name);
         fprintf(source, "};\n");
     }
     fprintf(source, "\n");
-
-    /* ---- Source: init ---- */
-    fprintf(source, "%s %s_init(void) {\n", name, name);
-    fprintf(source, "    %s result = {0};\n", name);
-    if (is_packet)
-    {
-        fprintf(source, "    result._eo.base.vtable = &%s_vtable;\n", name);
-        fprintf(source, "    result._eo.vtable = &%s_packet_vtable;\n", name);
-    }
-    else
-    {
-        fprintf(source, "    result._eo.vtable = &%s_vtable;\n", name);
-    }
-    fprintf(source, "    return result;\n}\n\n");
 
     /* ---- Source: serialize ---- */
     fprintf(source,
@@ -1867,12 +1869,12 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
     fprintf(source, "    memset(out, 0, sizeof(*out));\n");
     if (is_packet)
     {
-        fprintf(source, "    out->_eo.base.vtable = &%s_vtable;\n", name);
-        fprintf(source, "    out->_eo.vtable = &%s_packet_vtable;\n", name);
+        fprintf(source, "    out->_packet.base.vtable = &%s_vtable;\n", name);
+        fprintf(source, "    out->_packet.vtable = &%s_packet_vtable;\n", name);
     }
     else
     {
-        fprintf(source, "    out->_eo.vtable = &%s_vtable;\n", name);
+        fprintf(source, "    out->_serialize.vtable = &%s_vtable;\n", name);
     }
     write_deserialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
                                has_storage ? "out" : "", has_storage ? "->" : "");
