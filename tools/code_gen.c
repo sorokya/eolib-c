@@ -4991,6 +4991,14 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
                 out_expr, out_access, field_name,
                 out_expr, out_access, field_name,
                 out_expr, out_access, field_name);
+            fprintf(f,
+                "#if defined(__clang__)\n"
+                "    #pragma clang diagnostic push\n"
+                "    #pragma clang diagnostic ignored \"-Wswitch\"\n"
+                "#elif defined(__GNUC__)\n"
+                "    #pragma GCC diagnostic push\n"
+                "    #pragma GCC diagnostic ignored \"-Wswitch\"\n"
+                "#endif\n");
             fprintf(f, "    switch (%s%s%s) {\n", out_expr, out_access, field_name);
 
             int has_default = 0;
@@ -5040,6 +5048,12 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
             if (!has_default)
                 fprintf(f, "    default: break;\n");
             fprintf(f, "    }\n");       /* close switch */
+            fprintf(f,
+                "#if defined(__clang__)\n"
+                "    #pragma clang diagnostic pop\n"
+                "#elif defined(__GNUC__)\n"
+                "    #pragma GCC diagnostic pop\n"
+                "#endif\n");
             fprintf(f, "    } }\n");     /* close if (_data) and if (lua_istable) */
             fprintf(f, "    lua_pop(L, 1);\n");
 
@@ -5263,6 +5277,14 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
             fprintf(f,
                 "    if (%s%s%s_data) { lua_newtable(L); int %s = lua_gettop(L);\n",
                 val_expr, val_access, field_name, dt_var);
+            fprintf(f,
+                "#if defined(__clang__)\n"
+                "    #pragma clang diagnostic push\n"
+                "    #pragma clang diagnostic ignored \"-Wswitch\"\n"
+                "#elif defined(__GNUC__)\n"
+                "    #pragma GCC diagnostic push\n"
+                "    #pragma GCC diagnostic ignored \"-Wswitch\"\n"
+                "#endif\n");
             fprintf(f, "    switch (%s%s%s) {\n", val_expr, val_access, field_name);
 
             int has_default = 0;
@@ -5312,6 +5334,12 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
             if (!has_default)
                 fprintf(f, "    default: break;\n");
             fprintf(f, "    }\n"); /* close switch */
+            fprintf(f,
+                "#if defined(__clang__)\n"
+                "    #pragma clang diagnostic pop\n"
+                "#elif defined(__GNUC__)\n"
+                "    #pragma GCC diagnostic pop\n"
+                "#endif\n");
             fprintf(f,
                 "    lua_setfield(L, %s, \"%s_data\"); }"
                 " else { lua_pushnil(L); lua_setfield(L, %s, \"%s_data\"); }\n",
@@ -5379,7 +5407,7 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         fprintf(f, "    %s __val;\n", name);
         fprintf(f, "    memset(&__val, 0, sizeof(__val));\n");
         fprintf(f, "    lua_table_to_%s(L, 1, &__val);\n", name);
-        fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(64);\n");
+        fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(%s_size(&__val));\n", name);
         fprintf(f, "    EoResult __r = %s_serialize(&__val, &__writer);\n", name);
         if (has_heap)
             fprintf(f, "    %s_free(&__val);\n", name);
@@ -5450,7 +5478,7 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         /* lua_Name_serialize */
         fprintf(f, "static int lua_%s_serialize(lua_State *L)\n{\n", name);
         fprintf(f, "    (void)L;\n");
-        fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(16);\n");
+        fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(%s_size());\n", name);
         fprintf(f, "    EoResult __r = %s_serialize(&__writer);\n", name);
         fprintf(f,
             "    if (__r != EO_SUCCESS) { eo_writer_free(&__writer);"

@@ -71,7 +71,7 @@ target_include_directories(eolib PUBLIC
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 add_dependencies(eolib generate_protocol)
-set_target_properties(eolib PROPERTIES OUTPUT_NAME "eo")
+set_target_properties(eolib PROPERTIES OUTPUT_NAME "eolib")
 if(WIN32)
 	set_target_properties(eolib PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON PREFIX "lib")
 	target_link_libraries(eolib PRIVATE bcrypt)
