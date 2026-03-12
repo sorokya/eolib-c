@@ -43,7 +43,12 @@ find_program(LUA_INTERPRETER NAMES lua lua5.4 lua5.3 lua5.2 lua5.1 luajit)
 
 if(LUA_INTERPRETER)
 	file(GLOB LUA_TEST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_*.lua")
-	set(LUA_ENV "LUA_CPATH=${CMAKE_CURRENT_BINARY_DIR}/?.so")
+	if(WIN32)
+		set(LUA_MODULE_EXT "dll")
+	else()
+		set(LUA_MODULE_EXT "so")
+	endif()
+	set(LUA_ENV "LUA_CPATH=${CMAKE_CURRENT_BINARY_DIR}/?.${LUA_MODULE_EXT}")
 	set(lua_test_commands "")
 	foreach(test_file ${LUA_TEST_FILES})
 		list(APPEND lua_test_commands
