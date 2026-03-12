@@ -82,6 +82,15 @@ jobs:
             upload: true
 
           - os: windows-2025
+            compiler: msvc
+            generator: Visual Studio 17 2022
+            msvc_arch: Win32
+            vcpkg_triplet: x86-windows
+            package_platform: Windows.VS2022.x86
+            build_type: Release
+            upload: true
+
+          - os: windows-2025
             compiler: clang-cl
             generator: Visual Studio 17 2022
             msvc_arch: x64
@@ -94,10 +103,22 @@ jobs:
           - os: windows-2025
             compiler: mingw
             msys_system: mingw64
+            msys_pkg_prefix: mingw-w64-x86_64
             cc: gcc
             cxx: g++
             generator: Ninja
             package_platform: Windows.MinGW.x64
+            build_type: Release
+            upload: true
+
+          - os: windows-2025
+            compiler: mingw
+            msys_system: mingw32
+            msys_pkg_prefix: mingw-w64-i686
+            cc: gcc
+            cxx: g++
+            generator: Ninja
+            package_platform: Windows.MinGW.x86
             build_type: Release
             upload: true
 
@@ -120,12 +141,12 @@ jobs:
           msystem: ${{ matrix.msys_system }}
           update: true
           install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-libxml2
-            mingw-w64-x86_64-json-c
-            mingw-w64-x86_64-lua
+            ${{ matrix.msys_pkg_prefix }}-gcc
+            ${{ matrix.msys_pkg_prefix }}-cmake
+            ${{ matrix.msys_pkg_prefix }}-ninja
+            ${{ matrix.msys_pkg_prefix }}-libxml2
+            ${{ matrix.msys_pkg_prefix }}-json-c
+            ${{ matrix.msys_pkg_prefix }}-lua
 
       - name: Setup Clang (Linux)
         if: matrix.compiler == 'clang' && startsWith(matrix.os, 'ubuntu')
