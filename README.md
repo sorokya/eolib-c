@@ -86,6 +86,33 @@ make test
 make install
 ```
 
+## Lua bindings
+
+Native Lua 5.1+/LuaJIT bindings are available as an optional build target. See
+[lua/README.md](lua/README.md) for the full API reference.
+
+### Requirements
+
+Lua development headers (pick one):
+
+- macOS: `brew install lua`
+- Debian/Ubuntu: `sudo apt-get install -y liblua5.4-dev`
+
+### Build
+
+```bash
+cmake . -DEOLIB_BUILD_LUA_BINDINGS=ON
+make lua_eolib
+```
+
+This produces `lua/eolib.so` (or `.dll` on Windows).
+
+### Run Lua tests
+
+```bash
+make lua-test
+```
+
 ## Error Handling
 
 All fallible functions return an `EoResult` value. A return value of `EO_SUCCESS` (0)

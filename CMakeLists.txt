@@ -40,9 +40,12 @@ endif()
 set(EOLIB_PROTOCOL_C ${CMAKE_CURRENT_SOURCE_DIR}/src/protocol.c)
 set(EOLIB_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/include/protocol.h)
 set(EOLIB_PACKET_TESTS_C ${CMAKE_CURRENT_SOURCE_DIR}/tests/packet_tests.c)
+set(EOLIB_LUA_PROTOCOL_C ${CMAKE_CURRENT_SOURCE_DIR}/lua/src/lua_protocol.c)
+set(EOLIB_LUA_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/lua/src/lua_protocol.h)
 
 add_custom_command(
 	OUTPUT ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H} ${EOLIB_PACKET_TESTS_C}
+		${EOLIB_LUA_PROTOCOL_C} ${EOLIB_LUA_PROTOCOL_H}
 	COMMAND code_gen
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	DEPENDS code_gen
@@ -51,6 +54,7 @@ add_custom_command(
 
 add_custom_target(generate_protocol ALL
 	DEPENDS ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H} ${EOLIB_PACKET_TESTS_C}
+		${EOLIB_LUA_PROTOCOL_C} ${EOLIB_LUA_PROTOCOL_H}
 )
 
 add_library(eolib SHARED
@@ -214,5 +218,10 @@ else()
 	set(CPACK_PACKAGE_FILE_NAME "eolib-${EOLIB_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 set(CPACK_GENERATOR "ZIP")
+
+option(EOLIB_BUILD_LUA_BINDINGS "Build Lua bindings for eolib" OFF)
+if(EOLIB_BUILD_LUA_BINDINGS)
+	add_subdirectory(lua)
+endif()
 
 include(CPack)
