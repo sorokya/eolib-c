@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['levelupstats_5finit_0',['LevelUpStats_init',['../protocol_8c.html#adb0dd172d5e1ca1b90f5c1ec1cf85003',1,'LevelUpStats_init(void):&#160;protocol.c'],['../protocol_8h.html#adb0dd172d5e1ca1b90f5c1ec1cf85003',1,'LevelUpStats_init(void):&#160;protocol.c']]],
+  ['levelupstats_5finit_0',['LevelUpStats_init',['../protocol_8h.html#adb0dd172d5e1ca1b90f5c1ec1cf85003',1,'LevelUpStats_init(void):&#160;protocol.c'],['../protocol_8c.html#adb0dd172d5e1ca1b90f5c1ec1cf85003',1,'LevelUpStats_init(void):&#160;protocol.c']]],
   ['lockeraddclientpacket_5finit_1',['LockerAddClientPacket_init',['../protocol_8h.html#a0f302012d731b3c10e3153ec1c6d71e2',1,'LockerAddClientPacket_init(void):&#160;protocol.c'],['../protocol_8c.html#a0f302012d731b3c10e3153ec1c6d71e2',1,'LockerAddClientPacket_init(void):&#160;protocol.c']]],
   ['lockerbuyclientpacket_5finit_2',['LockerBuyClientPacket_init',['../protocol_8h.html#aa18a47a35ecc77c46d195d46ad57a875',1,'LockerBuyClientPacket_init(void):&#160;protocol.c'],['../protocol_8c.html#aa18a47a35ecc77c46d195d46ad57a875',1,'LockerBuyClientPacket_init(void):&#160;protocol.c']]],
   ['lockerbuyserverpacket_5finit_3',['LockerBuyServerPacket_init',['../protocol_8h.html#ad5cf8d3bc4239d2339553ddd4e96385c',1,'LockerBuyServerPacket_init(void):&#160;protocol.c'],['../protocol_8c.html#ad5cf8d3bc4239d2339553ddd4e96385c',1,'LockerBuyServerPacket_init(void):&#160;protocol.c']]],

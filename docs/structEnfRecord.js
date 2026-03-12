@@ -1,0 +1,25 @@
+var structEnfRecord =
+[
+    [ "_eo", "structEnfRecord.html#a0994bf47961f5fef5137eb2cde6d6511", null ],
+    [ "accuracy", "structEnfRecord.html#a59c16ef7fd79a4bf090e55f352e92d37", null ],
+    [ "armor", "structEnfRecord.html#a0d0350b578847db4040a558c39315dff", null ],
+    [ "behavior_id", "structEnfRecord.html#ab49415d8145432d8b05e14028f125f4d", null ],
+    [ "boss", "structEnfRecord.html#a5e9f0a110927bfd501dc8ccdc9cde8f2", null ],
+    [ "child", "structEnfRecord.html#a60ca48e2264e794321426863a5eeacaa", null ],
+    [ "element", "structEnfRecord.html#a7ea701756345c1e054ca93e6da95c02e", null ],
+    [ "element_damage", "structEnfRecord.html#a980e81d6b5a38a326a480987dffeec27", null ],
+    [ "element_weakness", "structEnfRecord.html#a986e37f9aae45402868ec3d4e57b05b3", null ],
+    [ "element_weakness_damage", "structEnfRecord.html#a8b8b6a9db70fcfd488b2df11415c58d6", null ],
+    [ "evade", "structEnfRecord.html#ae91299237e0e84db0f0745ba409142e9", null ],
+    [ "experience", "structEnfRecord.html#ae8653d0710575924f35f1f66aa23c9df", null ],
+    [ "graphic_id", "structEnfRecord.html#a5c0782c1dfa563da9a31e3137286d2d6", null ],
+    [ "hp", "structEnfRecord.html#aa0159b2d107aefb5537c28d59f2fa0f9", null ],
+    [ "level", "structEnfRecord.html#ad688a76084d3926ee19610664b209801", null ],
+    [ "max_damage", "structEnfRecord.html#ababf05a02b7cd3020dab361985fee6e2", null ],
+    [ "min_damage", "structEnfRecord.html#a59096007ff9394de44bb6333669d7bd7", null ],
+    [ "name", "structEnfRecord.html#aaaae0ccb0c64749d6bd515e107a5465a", null ],
+    [ "race", "structEnfRecord.html#aad6339649625f0b3977b3e3c0c96cf56", null ],
+    [ "return_damage", "structEnfRecord.html#a21526a994390c42ec5231b70682e1bc3", null ],
+    [ "tp", "structEnfRecord.html#a9487086605c067e93e113399759b8e0b", null ],
+    [ "type", "structEnfRecord.html#a42b1498384a0567259e242ae898d9539", null ]
+];

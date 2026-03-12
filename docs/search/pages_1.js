@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['getting_20started_0',['Getting Started',['../getting_started.html',1,'']]],
-  ['getting_20started_20_28lua_29_1',['Getting Started (Lua)',['../getting_started_lua.html',1,'']]]
+  ['2_20—_20eif_20pub_20file_20reader_0',['2 — EIF Pub File Reader',['../getting_started.html#gs_example2',1,'Example 2 — EIF Pub File Reader'],['../getting_started_lua.html#gsl_example2',1,'Example 2 — EIF Pub File Reader']]]
 ];

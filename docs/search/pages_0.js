@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['encryption_0',['Encryption',['../encryption.html',1,'']]],
-  ['eolib_2dc_1',['eolib-c',['../index.html',1,'']]],
-  ['error_20handling_2',['Error Handling',['../error_handling.html',1,'']]]
+  ['1_20—_20packet_20inspector_0',['1 — Packet Inspector',['../getting_started.html#gs_example1',1,'Example 1 — Packet Inspector'],['../getting_started_lua.html#gsl_example1',1,'Example 1 — Packet Inspector']]]
 ];

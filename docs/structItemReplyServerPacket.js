@@ -1,0 +1,26 @@
+var structItemReplyServerPacket =
+[
+    [ "_eo", "structItemReplyServerPacket.html#a10b7cb2947060ecd8ed2dfc99e04f89e", null ],
+    [ "cure_curse", "structItemReplyServerPacket.html#a414f41b9c9b1f26f8fee0c72c1acdeec", null ],
+    [ "effect_id", "structItemReplyServerPacket.html#ae76a3858ef37687d009e2eaa7a1e9f3f", null ],
+    [ "effect_potion", "structItemReplyServerPacket.html#a64e721f35c241d2614e3ba1dfb9574f8", null ],
+    [ "exp_reward", "structItemReplyServerPacket.html#aeb4de10aecf14642c14a39bd10a8c6a5", null ],
+    [ "experience", "structItemReplyServerPacket.html#aa1895f569e550f5a63f1dc2001172a78", null ],
+    [ "hair_color", "structItemReplyServerPacket.html#a8b922d09026678f01d45c4cbc3c79a95", null ],
+    [ "hair_dye", "structItemReplyServerPacket.html#a6a92b9b101496568692be1787bcfd849", null ],
+    [ "heal", "structItemReplyServerPacket.html#a9c7a38b463db69f0b1a8be7e00a86594", null ],
+    [ "hp", "structItemReplyServerPacket.html#a010d73c14d031c621eac9352a8adb0ca", null ],
+    [ "hp_gain", "structItemReplyServerPacket.html#a9cf9f9bafb33c245962fd570c1627fa4", null ],
+    [ "item_type", "structItemReplyServerPacket.html#aa6ce384cc44947bc77a3e8b6851d2db4", null ],
+    [ "item_type_data", "structItemReplyServerPacket.html#acb6c15f5d2cc1a67de9ac94b1286af9e", null ],
+    [ "level_up", "structItemReplyServerPacket.html#ac2876790cb20624745b6acf6883f63fc", null ],
+    [ "max_hp", "structItemReplyServerPacket.html#a570d819cd2f33e7a475d08ea586eddf1", null ],
+    [ "max_sp", "structItemReplyServerPacket.html#a8c5c6fd6b5f25030ca818b1810ada5e0", null ],
+    [ "max_tp", "structItemReplyServerPacket.html#adb12618cc04c5979363ccda51778bda5", null ],
+    [ "skill_points", "structItemReplyServerPacket.html#a760e329fc6e9df1b793637c65f5df550", null ],
+    [ "stat_points", "structItemReplyServerPacket.html#a1b0ce6a67877330f0de2dc7b5d46682b", null ],
+    [ "stats", "structItemReplyServerPacket.html#ae3c54c88d705d69664cc55a1c2030b13", null ],
+    [ "tp", "structItemReplyServerPacket.html#abcc941cb567be96569a8558984e3829e", null ],
+    [ "used_item", "structItemReplyServerPacket.html#a87d6d2a659ed702f5d692e5189f27cf0", null ],
+    [ "weight", "structItemReplyServerPacket.html#af46cecfd21c01442e7e9bf07bf4e732b", null ]
+];

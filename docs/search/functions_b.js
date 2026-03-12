@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['nearbyinfo_5finit_0',['NearbyInfo_init',['../protocol_8c.html#a0be8b340e8f0b8c1c9bbdb4ea319a4b0',1,'NearbyInfo_init(void):&#160;protocol.c'],['../protocol_8h.html#a0be8b340e8f0b8c1c9bbdb4ea319a4b0',1,'NearbyInfo_init(void):&#160;protocol.c']]],
+  ['nearbyinfo_5finit_0',['NearbyInfo_init',['../protocol_8h.html#a0be8b340e8f0b8c1c9bbdb4ea319a4b0',1,'NearbyInfo_init(void):&#160;protocol.c'],['../protocol_8c.html#a0be8b340e8f0b8c1c9bbdb4ea319a4b0',1,'NearbyInfo_init(void):&#160;protocol.c']]],
   ['npcacceptserverpacket_5finit_1',['NpcAcceptServerPacket_init',['../protocol_8h.html#ab3591ad1b1de5eb70d76222fd3bbcce9',1,'NpcAcceptServerPacket_init(void):&#160;protocol.c'],['../protocol_8c.html#ab3591ad1b1de5eb70d76222fd3bbcce9',1,'NpcAcceptServerPacket_init(void):&#160;protocol.c']]],
   ['npcagreeserverpacket_5finit_2',['NpcAgreeServerPacket_init',['../protocol_8h.html#a2efca66329069c366511935092e0bef2',1,'NpcAgreeServerPacket_init(void):&#160;protocol.c'],['../protocol_8c.html#a2efca66329069c366511935092e0bef2',1,'NpcAgreeServerPacket_init(void):&#160;protocol.c']]],
   ['npcdialogserverpacket_5finit_3',['NpcDialogServerPacket_init',['../protocol_8h.html#af1c15fa8eb4cd7300bb981ba68c6d753',1,'NpcDialogServerPacket_init(void):&#160;protocol.c'],['../protocol_8c.html#af1c15fa8eb4cd7300bb981ba68c6d753',1,'NpcDialogServerPacket_init(void):&#160;protocol.c']]],
