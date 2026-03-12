@@ -10,9 +10,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../include/data.h"
-#include "../include/encrypt.h"
-#include "../include/sequencer.h"
+#include "../include/eolib/data.h"
+#include "../include/eolib/encrypt.h"
+#include "../include/eolib/sequencer.h"
 
 /* Static 4-byte output buffer for eo_encode_number. */
 static uint8_t g_encode_number_buf[4];
@@ -42,8 +42,10 @@ uint8_t *wasm_encode_number_buf(int32_t number)
 int32_t wasm_decode_number_bytes(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3, int size)
 {
     uint8_t buf[4] = {b0, b1, b2, b3};
-    if (size < 1) size = 1;
-    if (size > 4) size = 4;
+    if (size < 1)
+        size = 1;
+    if (size > 4)
+        size = 4;
     return eo_decode_number(buf, (size_t)size);
 }
 
