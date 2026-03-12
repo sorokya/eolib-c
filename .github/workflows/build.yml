@@ -230,12 +230,12 @@ jobs:
 
       - name: Run Lua Tests
         if: matrix.compiler != 'msvc' && matrix.compiler != 'clang-cl' && matrix.compiler != 'mingw'
-        run: cmake --build build --target lua-test
+        run: cmake --build build --target lua/test
 
       - name: Run Lua Tests (MinGW)
         if: matrix.compiler == 'mingw'
         shell: msys2 {0}
-        run: cmake --build build --target lua-test
+        run: cmake --build build --target lua/test
 
       - name: Upload Lua annotations
         if: matrix.os == 'ubuntu-24.04' && matrix.compiler == 'gcc'
