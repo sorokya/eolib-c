@@ -283,7 +283,7 @@ jobs:
         if: matrix.upload == true
         shell: bash
         run: |
-          VERSION=$(grep -oP 'set\(EOLIB_VERSION "\K[^"]+' CMakeLists.txt)
+          VERSION=$(sed -n 's/.*set(EOLIB_VERSION "\([^"]*\)").*/\1/p' CMakeLists.txt)
           cmake --install build --config ${{ matrix.build_type }} --component lua_bindings --prefix lua-stage
           cd lua-stage && cmake -E tar cf "../build/package/eolib-${VERSION}-Lua-${{ matrix.package_platform }}.zip" --format=zip -- .
 
@@ -304,7 +304,13 @@ jobs:
           submodules: "recursive"
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y ninja-build libxml2-dev libjson-c-dev emscripten
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libxml2-dev libjson-c-dev
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 5.0.2
+          actions-cache-folder: "emsdk-cache"
 
       - name: Generate protocol sources
         run: |
@@ -316,7 +322,7 @@ jobs:
 
       - name: Package WASM
         run: |
-          VERSION=$(grep -oP 'set\(EOLIB_VERSION "\K[^"]+' CMakeLists.txt)
+          VERSION=$(sed -n 's/.*set(EOLIB_VERSION "\([^"]*\)").*/\1/p' CMakeLists.txt)
           cd wasm && zip "eolib-${VERSION}-WASM.zip" eolib.js eolib.wasm eolib.wasm.map
 
       - name: Upload WASM artifact
