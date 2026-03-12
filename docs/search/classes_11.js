@@ -30,13 +30,14 @@ var searchData=
   ['tradeadminserverpacket_27',['TradeAdminServerPacket',['../structTradeAdminServerPacket.html',1,'']]],
   ['tradeagreeclientpacket_28',['TradeAgreeClientPacket',['../structTradeAgreeClientPacket.html',1,'']]],
   ['tradeagreeserverpacket_29',['TradeAgreeServerPacket',['../structTradeAgreeServerPacket.html',1,'']]],
-  ['tradecloseserverpacket_30',['TradeCloseServerPacket',['../structTradeCloseServerPacket.html',1,'']]],
-  ['tradeitemdata_31',['TradeItemData',['../structTradeItemData.html',1,'']]],
-  ['tradeopenserverpacket_32',['TradeOpenServerPacket',['../structTradeOpenServerPacket.html',1,'']]],
-  ['traderemoveclientpacket_33',['TradeRemoveClientPacket',['../structTradeRemoveClientPacket.html',1,'']]],
-  ['tradereplyserverpacket_34',['TradeReplyServerPacket',['../structTradeReplyServerPacket.html',1,'']]],
-  ['traderequestclientpacket_35',['TradeRequestClientPacket',['../structTradeRequestClientPacket.html',1,'']]],
-  ['traderequestserverpacket_36',['TradeRequestServerPacket',['../structTradeRequestServerPacket.html',1,'']]],
-  ['tradespecserverpacket_37',['TradeSpecServerPacket',['../structTradeSpecServerPacket.html',1,'']]],
-  ['tradeuseserverpacket_38',['TradeUseServerPacket',['../structTradeUseServerPacket.html',1,'']]]
+  ['tradecloseclientpacket_30',['TradeCloseClientPacket',['../structTradeCloseClientPacket.html',1,'']]],
+  ['tradecloseserverpacket_31',['TradeCloseServerPacket',['../structTradeCloseServerPacket.html',1,'']]],
+  ['tradeitemdata_32',['TradeItemData',['../structTradeItemData.html',1,'']]],
+  ['tradeopenserverpacket_33',['TradeOpenServerPacket',['../structTradeOpenServerPacket.html',1,'']]],
+  ['traderemoveclientpacket_34',['TradeRemoveClientPacket',['../structTradeRemoveClientPacket.html',1,'']]],
+  ['tradereplyserverpacket_35',['TradeReplyServerPacket',['../structTradeReplyServerPacket.html',1,'']]],
+  ['traderequestclientpacket_36',['TradeRequestClientPacket',['../structTradeRequestClientPacket.html',1,'']]],
+  ['traderequestserverpacket_37',['TradeRequestServerPacket',['../structTradeRequestServerPacket.html',1,'']]],
+  ['tradespecserverpacket_38',['TradeSpecServerPacket',['../structTradeSpecServerPacket.html',1,'']]],
+  ['tradeuseserverpacket_39',['TradeUseServerPacket',['../structTradeUseServerPacket.html',1,'']]]
 ];

@@ -199,11 +199,13 @@ Example 1 — Packet Inspector</h1>
 <div class="line">    <span class="keywordflow">if</span> (family == <a class="code hl_enumvalue" href="protocol_8h.html#a0a2d92efffa24dd7d761d024d5f74cc4a11112719bdcb520831d8178cf7226c33">PACKET_FAMILY_LOGIN</a> &amp;&amp; action == <a class="code hl_enumvalue" href="protocol_8h.html#a05bb5e533d1a93c1b8c55c7e3e2db1ddac744298fe23898378e39058bbd2841ad">PACKET_ACTION_REQUEST</a>) {</div>
 <div class="line">        <a class="code hl_struct" href="structEoReader.html">EoReader</a> reader = <a class="code hl_function" href="data_8h.html#abd8a5d1506e8f972cc1f422ee4a14c0b">eo_reader_init</a>(buf, len);</div>
 <div class="line"> </div>
-<div class="line">        <a class="code hl_struct" href="structLoginRequestClientPacket.html">LoginRequestClientPacket</a> pkt = {0};</div>
-<div class="line">        <a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result = <a class="code hl_function" href="protocol_8h.html#ab7f53a92818bdac417a7832246f5bf2a">LoginRequestClientPacket_deserialize</a>(&amp;pkt, &amp;reader);</div>
+<div class="line">        <span class="comment">// _init() sets up the vtable so eo_* dispatch functions work.</span></div>
+<div class="line">        <a class="code hl_struct" href="structLoginRequestClientPacket.html">LoginRequestClientPacket</a> pkt = <a class="code hl_function" href="protocol_8h.html#a7858e2c3c1c41053a01bc0aef9722176">LoginRequestClientPacket_init</a>();</div>
+<div class="line">        <a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result = eo_deserialize((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt, &amp;reader);</div>
 <div class="line">        <span class="keywordflow">if</span> (result != <a class="code hl_enumvalue" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a>) {</div>
 <div class="line">            fprintf(stderr, <span class="stringliteral">&quot;Deserialize failed: %s\n&quot;</span>,</div>
 <div class="line">                    <a class="code hl_function" href="result_8h.html#a4c905a2a32256dcd09294b8f8586dd62">eo_result_string</a>(result));</div>
+<div class="line">            eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
 <div class="line">            <span class="keywordflow">return</span> 1;</div>
 <div class="line">        }</div>
 <div class="line"> </div>
@@ -212,12 +214,14 @@ Example 1 — Packet Inspector</h1>
 <div class="line">               pkt.<a class="code hl_variable" href="structLoginRequestClientPacket.html#ac7d2ecc109884b37045580d2b6861a27">password</a> ? strlen(pkt.<a class="code hl_variable" href="structLoginRequestClientPacket.html#ac7d2ecc109884b37045580d2b6861a27">password</a>) : 0);</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Re-encode and report the output size.</span></div>
-<div class="line">        <a class="code hl_struct" href="structEoWriter.html">EoWriter</a> writer = <a class="code hl_function" href="data_8h.html#a99589ab52690d949323821b92e0c0c95">eo_writer_init</a>();</div>
-<div class="line">        result = <a class="code hl_function" href="protocol_8h.html#a2905ebf775d9edf6ff4b07f66e14f001">LoginRequestClientPacket_serialize</a>(&amp;pkt, &amp;writer);</div>
+<div class="line">        <span class="comment">// eo_get_size() queries the vtable for the exact serialized size.</span></div>
+<div class="line">        <a class="code hl_struct" href="structEoWriter.html">EoWriter</a> writer = <a class="code hl_function" href="data_8h.html#a4166672651d154329ed8daa5383f4680">eo_writer_init_with_capacity</a>(</div>
+<div class="line">            eo_get_size((<span class="keyword">const</span> <a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt));</div>
+<div class="line">        result = eo_serialize((<span class="keyword">const</span> <a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt, &amp;writer);</div>
 <div class="line">        <span class="keywordflow">if</span> (result != <a class="code hl_enumvalue" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a>) {</div>
 <div class="line">            fprintf(stderr, <span class="stringliteral">&quot;Serialize failed: %s\n&quot;</span>,</div>
 <div class="line">                    <a class="code hl_function" href="result_8h.html#a4c905a2a32256dcd09294b8f8586dd62">eo_result_string</a>(result));</div>
-<div class="line">            <a class="code hl_function" href="protocol_8h.html#a82485f76e7668d7d3127327bc03306b9">LoginRequestClientPacket_free</a>(&amp;pkt);</div>
+<div class="line">            eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
 <div class="line">            <a class="code hl_function" href="data_8h.html#ab673f3a197602d8c81f06db856cde1c0">eo_writer_free</a>(&amp;writer);</div>
 <div class="line">            <span class="keywordflow">return</span> 1;</div>
 <div class="line">        }</div>
@@ -225,31 +229,30 @@ Example 1 — Packet Inspector</h1>
 <div class="line">        printf(<span class="stringliteral">&quot;  re-encoded: %zu byte(s)\n&quot;</span>, writer.<a class="code hl_variable" href="structEoWriter.html#aecff46a5b8d0e3ca60c0f5388eb2d146">length</a>);</div>
 <div class="line"> </div>
 <div class="line">        <a class="code hl_function" href="data_8h.html#ab673f3a197602d8c81f06db856cde1c0">eo_writer_free</a>(&amp;writer);</div>
-<div class="line">        <a class="code hl_function" href="protocol_8h.html#a82485f76e7668d7d3127327bc03306b9">LoginRequestClientPacket_free</a>(&amp;pkt);</div>
+<div class="line">        eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
 <div class="line">    } <span class="keywordflow">else</span> {</div>
 <div class="line">        printf(<span class="stringliteral">&quot;  (no decoder for family=%d action=%d)\n&quot;</span>, family, action);</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
-<div class="ttc" id="adata_8h_html_a99589ab52690d949323821b92e0c0c95"><div class="ttname"><a href="data_8h.html#a99589ab52690d949323821b92e0c0c95">eo_writer_init</a></div><div class="ttdeci">EoWriter eo_writer_init(void)</div><div class="ttdef"><b>Definition:</b> <a href="data_8c_source.html#l00208">data.c:208</a></div></div>
+<div class="ttc" id="adata_8h_html_a4166672651d154329ed8daa5383f4680"><div class="ttname"><a href="data_8h.html#a4166672651d154329ed8daa5383f4680">eo_writer_init_with_capacity</a></div><div class="ttdeci">EoWriter eo_writer_init_with_capacity(size_t capacity)</div><div class="ttdef"><b>Definition:</b> <a href="data_8c_source.html#l00213">data.c:213</a></div></div>
 <div class="ttc" id="adata_8h_html_ab673f3a197602d8c81f06db856cde1c0"><div class="ttname"><a href="data_8h.html#ab673f3a197602d8c81f06db856cde1c0">eo_writer_free</a></div><div class="ttdeci">void eo_writer_free(EoWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="data_8c_source.html#l00223">data.c:223</a></div></div>
 <div class="ttc" id="adata_8h_html_abd8a5d1506e8f972cc1f422ee4a14c0b"><div class="ttname"><a href="data_8h.html#abd8a5d1506e8f972cc1f422ee4a14c0b">eo_reader_init</a></div><div class="ttdeci">EoReader eo_reader_init(const uint8_t *data, size_t length)</div><div class="ttdef"><b>Definition:</b> <a href="data_8c_source.html#l00811">data.c:811</a></div></div>
 <div class="ttc" id="aeolib_8h_html"><div class="ttname"><a href="eolib_8h.html">eolib.h</a></div></div>
 <div class="ttc" id="aprotocol_8h_html_a05bb5e533d1a93c1b8c55c7e3e2db1ddac744298fe23898378e39058bbd2841ad"><div class="ttname"><a href="protocol_8h.html#a05bb5e533d1a93c1b8c55c7e3e2db1ddac744298fe23898378e39058bbd2841ad">PACKET_ACTION_REQUEST</a></div><div class="ttdeci">@ PACKET_ACTION_REQUEST</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00200">protocol.h:200</a></div></div>
 <div class="ttc" id="aprotocol_8h_html_a0a2d92efffa24dd7d761d024d5f74cc4a11112719bdcb520831d8178cf7226c33"><div class="ttname"><a href="protocol_8h.html#a0a2d92efffa24dd7d761d024d5f74cc4a11112719bdcb520831d8178cf7226c33">PACKET_FAMILY_LOGIN</a></div><div class="ttdeci">@ PACKET_FAMILY_LOGIN</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00146">protocol.h:146</a></div></div>
-<div class="ttc" id="aprotocol_8h_html_a2905ebf775d9edf6ff4b07f66e14f001"><div class="ttname"><a href="protocol_8h.html#a2905ebf775d9edf6ff4b07f66e14f001">LoginRequestClientPacket_serialize</a></div><div class="ttdeci">EoResult LoginRequestClientPacket_serialize(const LoginRequestClientPacket *value, EoWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8c_source.html#l04551">protocol.c:4551</a></div></div>
-<div class="ttc" id="aprotocol_8h_html_a82485f76e7668d7d3127327bc03306b9"><div class="ttname"><a href="protocol_8h.html#a82485f76e7668d7d3127327bc03306b9">LoginRequestClientPacket_free</a></div><div class="ttdeci">void LoginRequestClientPacket_free(LoginRequestClientPacket *value)</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8c_source.html#l04584">protocol.c:4584</a></div></div>
-<div class="ttc" id="aprotocol_8h_html_ab7f53a92818bdac417a7832246f5bf2a"><div class="ttname"><a href="protocol_8h.html#ab7f53a92818bdac417a7832246f5bf2a">LoginRequestClientPacket_deserialize</a></div><div class="ttdeci">EoResult LoginRequestClientPacket_deserialize(LoginRequestClientPacket *out, EoReader *reader)</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8c_source.html#l04563">protocol.c:4563</a></div></div>
+<div class="ttc" id="aprotocol_8h_html_a7858e2c3c1c41053a01bc0aef9722176"><div class="ttname"><a href="protocol_8h.html#a7858e2c3c1c41053a01bc0aef9722176">LoginRequestClientPacket_init</a></div><div class="ttdeci">LoginRequestClientPacket LoginRequestClientPacket_init(void)</div><div class="ttdoc">Creates a new LoginRequestClientPacket with the serialization vtable initialized.</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8c_source.html#l07164">protocol.c:7164</a></div></div>
 <div class="ttc" id="aresult_8h_html_a4c905a2a32256dcd09294b8f8586dd62"><div class="ttname"><a href="result_8h.html#a4c905a2a32256dcd09294b8f8586dd62">eo_result_string</a></div><div class="ttdeci">const char * eo_result_string(EoResult result)</div><div class="ttdef"><b>Definition:</b> <a href="data_8c_source.html#l00175">data.c:175</a></div></div>
 <div class="ttc" id="aresult_8h_html_a80b9d1a97427ad2c8d1f68935e33c52b"><div class="ttname"><a href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a></div><div class="ttdeci">EoResult</div><div class="ttdef"><b>Definition:</b> <a href="result_8h_source.html#l00011">result.h:12</a></div></div>
 <div class="ttc" id="aresult_8h_html_a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367"><div class="ttname"><a href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a></div><div class="ttdeci">@ EO_SUCCESS</div><div class="ttdef"><b>Definition:</b> <a href="result_8h_source.html#l00014">result.h:14</a></div></div>
 <div class="ttc" id="astructEoReader_html"><div class="ttname"><a href="structEoReader.html">EoReader</a></div><div class="ttdef"><b>Definition:</b> <a href="data_8h_source.html#l00033">data.h:34</a></div></div>
+<div class="ttc" id="astructEoSerialize_html"><div class="ttname"><a href="structEoSerialize.html">EoSerialize</a></div><div class="ttdef"><b>Definition:</b> <a href="data_8h_source.html#l00395">data.h:396</a></div></div>
 <div class="ttc" id="astructEoWriter_html"><div class="ttname"><a href="structEoWriter.html">EoWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="data_8h_source.html#l00024">data.h:25</a></div></div>
 <div class="ttc" id="astructEoWriter_html_aecff46a5b8d0e3ca60c0f5388eb2d146"><div class="ttname"><a href="structEoWriter.html#aecff46a5b8d0e3ca60c0f5388eb2d146">EoWriter::length</a></div><div class="ttdeci">size_t length</div><div class="ttdef"><b>Definition:</b> <a href="data_8h_source.html#l00027">data.h:27</a></div></div>
-<div class="ttc" id="astructLoginRequestClientPacket_html"><div class="ttname"><a href="structLoginRequestClientPacket.html">LoginRequestClientPacket</a></div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l02278">protocol.h:2278</a></div></div>
-<div class="ttc" id="astructLoginRequestClientPacket_html_a495e6e7914554aac826c95e98018d38f"><div class="ttname"><a href="structLoginRequestClientPacket.html#a495e6e7914554aac826c95e98018d38f">LoginRequestClientPacket::username</a></div><div class="ttdeci">char * username</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l02279">protocol.h:2279</a></div></div>
-<div class="ttc" id="astructLoginRequestClientPacket_html_ac7d2ecc109884b37045580d2b6861a27"><div class="ttname"><a href="structLoginRequestClientPacket.html#ac7d2ecc109884b37045580d2b6861a27">LoginRequestClientPacket::password</a></div><div class="ttdeci">char * password</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l02280">protocol.h:2280</a></div></div>
+<div class="ttc" id="astructLoginRequestClientPacket_html"><div class="ttname"><a href="structLoginRequestClientPacket.html">LoginRequestClientPacket</a></div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l02804">protocol.h:2804</a></div></div>
+<div class="ttc" id="astructLoginRequestClientPacket_html_a495e6e7914554aac826c95e98018d38f"><div class="ttname"><a href="structLoginRequestClientPacket.html#a495e6e7914554aac826c95e98018d38f">LoginRequestClientPacket::username</a></div><div class="ttdeci">char * username</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l02806">protocol.h:2806</a></div></div>
+<div class="ttc" id="astructLoginRequestClientPacket_html_ac7d2ecc109884b37045580d2b6861a27"><div class="ttname"><a href="structLoginRequestClientPacket.html#ac7d2ecc109884b37045580d2b6861a27">LoginRequestClientPacket::password</a></div><div class="ttdeci">char * password</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l02807">protocol.h:2807</a></div></div>
 </div><!-- fragment --><p ><b>Compiling:</b> </p><div class="fragment"><div class="line"># Linux / macOS</div>
 <div class="line">gcc packet_inspect.c -I/path/to/eolib/include \</div>
 <div class="line">                     -L/path/to/eolib/lib -leolib \</div>
@@ -338,13 +341,15 @@ Example 2 — EIF Pub File Reader</h1>
 <div class="line">    <span class="comment">// Deserialize the EIF file.</span></div>
 <div class="line">    <a class="code hl_struct" href="structEoReader.html">EoReader</a> reader = <a class="code hl_function" href="data_8h.html#abd8a5d1506e8f972cc1f422ee4a14c0b">eo_reader_init</a>(data, (<span class="keywordtype">size_t</span>)file_size);</div>
 <div class="line"> </div>
-<div class="line">    <a class="code hl_struct" href="structEif.html">Eif</a> eif = {0};</div>
-<div class="line">    <a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result = <a class="code hl_function" href="protocol_8h.html#a4f7cf1fedde02627979853b64d3b0837">Eif_deserialize</a>(&amp;eif, &amp;reader);</div>
+<div class="line">    <span class="comment">// _init() sets up the vtable; eo_deserialize/eo_free work on any struct.</span></div>
+<div class="line">    <a class="code hl_struct" href="structEif.html">Eif</a> eif = <a class="code hl_function" href="protocol_8h.html#a373d32406e1038c21e1bfceb2493668a">Eif_init</a>();</div>
+<div class="line">    <a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result = eo_deserialize((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;eif, &amp;reader);</div>
 <div class="line">    free(data);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (result != <a class="code hl_enumvalue" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a>) {</div>
 <div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Failed to parse EIF: %s\n&quot;</span>,</div>
 <div class="line">                <a class="code hl_function" href="result_8h.html#a4c905a2a32256dcd09294b8f8586dd62">eo_result_string</a>(result));</div>
+<div class="line">        eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;eif);</div>
 <div class="line">        <span class="keywordflow">return</span> 1;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
@@ -362,9 +367,10 @@ Example 2 — EIF Pub File Reader</h1>
 <div class="line">               item-&gt;<a class="code hl_variable" href="structEifRecord.html#a0df48c8acbbfcf4ccc62c3f4e0e022b7">name</a> ? item-&gt;<a class="code hl_variable" href="structEifRecord.html#a0df48c8acbbfcf4ccc62c3f4e0e022b7">name</a> : <span class="stringliteral">&quot;(null)&quot;</span>);</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <a class="code hl_function" href="protocol_8h.html#a70cc0a00dcc63574d135be737dc6a9cb">Eif_free</a>(&amp;eif);</div>
+<div class="line">    eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;eif);</div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
+<div class="ttc" id="aprotocol_8h_html_a373d32406e1038c21e1bfceb2493668a"><div class="ttname"><a href="protocol_8h.html#a373d32406e1038c21e1bfceb2493668a">Eif_init</a></div><div class="ttdeci">Eif Eif_init(void)</div><div class="ttdoc">Creates a new Eif with the serialization vtable initialized.</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8c_source.html#l01330">protocol.c:1330</a></div></div>
 <div class="ttc" id="aprotocol_8h_html_a443f647757dde85043b49343f5cbe66b"><div class="ttname"><a href="protocol_8h.html#a443f647757dde85043b49343f5cbe66b">ItemType</a></div><div class="ttdeci">ItemType</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00267">protocol.h:267</a></div></div>
 <div class="ttc" id="aprotocol_8h_html_a443f647757dde85043b49343f5cbe66ba247c31e628a1979678fdbfa36638d1b3"><div class="ttname"><a href="protocol_8h.html#a443f647757dde85043b49343f5cbe66ba247c31e628a1979678fdbfa36638d1b3">ITEM_TYPE_ALCOHOL</a></div><div class="ttdeci">@ ITEM_TYPE_ALCOHOL</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00290">protocol.h:290</a></div></div>
 <div class="ttc" id="aprotocol_8h_html_a443f647757dde85043b49343f5cbe66ba2adaa43fb5f06bdb8a5659f25fab2b38"><div class="ttname"><a href="protocol_8h.html#a443f647757dde85043b49343f5cbe66ba2adaa43fb5f06bdb8a5659f25fab2b38">ITEM_TYPE_EFFECT_POTION</a></div><div class="ttdeci">@ ITEM_TYPE_EFFECT_POTION</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00291">protocol.h:291</a></div></div>
@@ -388,14 +394,12 @@ Example 2 — EIF Pub File Reader</h1>
 <div class="ttc" id="aprotocol_8h_html_a443f647757dde85043b49343f5cbe66bade001dc0a4c535756806f6ed4da23845"><div class="ttname"><a href="protocol_8h.html#a443f647757dde85043b49343f5cbe66bade001dc0a4c535756806f6ed4da23845">ITEM_TYPE_BOOTS</a></div><div class="ttdeci">@ ITEM_TYPE_BOOTS</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00282">protocol.h:282</a></div></div>
 <div class="ttc" id="aprotocol_8h_html_a443f647757dde85043b49343f5cbe66baeebdf3932f4cea77d646e45df7e36abf"><div class="ttname"><a href="protocol_8h.html#a443f647757dde85043b49343f5cbe66baeebdf3932f4cea77d646e45df7e36abf">ITEM_TYPE_TELEPORT</a></div><div class="ttdeci">@ ITEM_TYPE_TELEPORT</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00272">protocol.h:272</a></div></div>
 <div class="ttc" id="aprotocol_8h_html_a443f647757dde85043b49343f5cbe66baf14f90ff106deca2d84db28f87ef01b4"><div class="ttname"><a href="protocol_8h.html#a443f647757dde85043b49343f5cbe66baf14f90ff106deca2d84db28f87ef01b4">ITEM_TYPE_HAIR_DYE</a></div><div class="ttdeci">@ ITEM_TYPE_HAIR_DYE</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00292">protocol.h:292</a></div></div>
-<div class="ttc" id="aprotocol_8h_html_a4f7cf1fedde02627979853b64d3b0837"><div class="ttname"><a href="protocol_8h.html#a4f7cf1fedde02627979853b64d3b0837">Eif_deserialize</a></div><div class="ttdeci">EoResult Eif_deserialize(Eif *out, EoReader *reader)</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8c_source.html#l00879">protocol.c:879</a></div></div>
-<div class="ttc" id="aprotocol_8h_html_a70cc0a00dcc63574d135be737dc6a9cb"><div class="ttname"><a href="protocol_8h.html#a70cc0a00dcc63574d135be737dc6a9cb">Eif_free</a></div><div class="ttdeci">void Eif_free(Eif *value)</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8c_source.html#l00913">protocol.c:913</a></div></div>
-<div class="ttc" id="astructEifRecord_html"><div class="ttname"><a href="structEifRecord.html">EifRecord</a></div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00979">protocol.h:979</a></div></div>
-<div class="ttc" id="astructEifRecord_html_a0df48c8acbbfcf4ccc62c3f4e0e022b7"><div class="ttname"><a href="structEifRecord.html#a0df48c8acbbfcf4ccc62c3f4e0e022b7">EifRecord::name</a></div><div class="ttdeci">char * name</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00980">protocol.h:980</a></div></div>
-<div class="ttc" id="astructEifRecord_html_a8bf056257ca12a6672fe2a3a6d2cb747"><div class="ttname"><a href="structEifRecord.html#a8bf056257ca12a6672fe2a3a6d2cb747">EifRecord::type</a></div><div class="ttdeci">ItemType type</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l00982">protocol.h:982</a></div></div>
-<div class="ttc" id="astructEif_html"><div class="ttname"><a href="structEif.html">Eif</a></div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01039">protocol.h:1039</a></div></div>
-<div class="ttc" id="astructEif_html_a86ba866d20caef0f3f83dc55c9a4640a"><div class="ttname"><a href="structEif.html#a86ba866d20caef0f3f83dc55c9a4640a">Eif::items_length</a></div><div class="ttdeci">size_t items_length</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01043">protocol.h:1043</a></div></div>
-<div class="ttc" id="astructEif_html_afa8c09a2495eabca34aaf1ee0349e821"><div class="ttname"><a href="structEif.html#afa8c09a2495eabca34aaf1ee0349e821">Eif::items</a></div><div class="ttdeci">EifRecord * items</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01044">protocol.h:1044</a></div></div>
+<div class="ttc" id="astructEifRecord_html"><div class="ttname"><a href="structEifRecord.html">EifRecord</a></div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01078">protocol.h:1078</a></div></div>
+<div class="ttc" id="astructEifRecord_html_a0df48c8acbbfcf4ccc62c3f4e0e022b7"><div class="ttname"><a href="structEifRecord.html#a0df48c8acbbfcf4ccc62c3f4e0e022b7">EifRecord::name</a></div><div class="ttdeci">char * name</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01080">protocol.h:1080</a></div></div>
+<div class="ttc" id="astructEifRecord_html_a8bf056257ca12a6672fe2a3a6d2cb747"><div class="ttname"><a href="structEifRecord.html#a8bf056257ca12a6672fe2a3a6d2cb747">EifRecord::type</a></div><div class="ttdeci">ItemType type</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01082">protocol.h:1082</a></div></div>
+<div class="ttc" id="astructEif_html"><div class="ttname"><a href="structEif.html">Eif</a></div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01142">protocol.h:1142</a></div></div>
+<div class="ttc" id="astructEif_html_a86ba866d20caef0f3f83dc55c9a4640a"><div class="ttname"><a href="structEif.html#a86ba866d20caef0f3f83dc55c9a4640a">Eif::items_length</a></div><div class="ttdeci">size_t items_length</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01147">protocol.h:1147</a></div></div>
+<div class="ttc" id="astructEif_html_afa8c09a2495eabca34aaf1ee0349e821"><div class="ttname"><a href="structEif.html#afa8c09a2495eabca34aaf1ee0349e821">Eif::items</a></div><div class="ttdeci">EifRecord * items</div><div class="ttdef"><b>Definition:</b> <a href="protocol_8h_source.html#l01148">protocol.h:1148</a></div></div>
 </div><!-- fragment --><dl class="section note"><dt>Note</dt><dd><a class="el" href="structItem.html">Item</a> index <code>0</code> in the <code>items</code> array is a placeholder record and can safely be skipped. Real item IDs start at <code>1</code>.</dd></dl>
 <p><b>Compiling:</b> </p><div class="fragment"><div class="line"># Linux / macOS</div>
 <div class="line">gcc pub_reader.c -I/path/to/eolib/include \</div>
@@ -442,38 +446,49 @@ EoWriter — owns a heap buffer</h2>
 <div class="line">memcpy(out, writer.<a class="code hl_variable" href="structEoWriter.html#af6ff365ad20774b13b037065f4068325">data</a>, writer.<a class="code hl_variable" href="structEoWriter.html#aecff46a5b8d0e3ca60c0f5388eb2d146">length</a>);</div>
 <div class="line"><a class="code hl_function" href="data_8h.html#ab673f3a197602d8c81f06db856cde1c0">eo_writer_free</a>(&amp;writer); <span class="comment">// always free the writer itself</span></div>
 <div class="ttc" id="adata_8h_html_a6dab1e29215563a104766becabd44a2b"><div class="ttname"><a href="data_8h.html#a6dab1e29215563a104766becabd44a2b">eo_writer_add_short</a></div><div class="ttdeci">EoResult eo_writer_add_short(EoWriter *writer, int32_t value)</div><div class="ttdef"><b>Definition:</b> <a href="data_8c_source.html#l00461">data.c:461</a></div></div>
+<div class="ttc" id="adata_8h_html_a99589ab52690d949323821b92e0c0c95"><div class="ttname"><a href="data_8h.html#a99589ab52690d949323821b92e0c0c95">eo_writer_init</a></div><div class="ttdeci">EoWriter eo_writer_init(void)</div><div class="ttdef"><b>Definition:</b> <a href="data_8c_source.html#l00208">data.c:208</a></div></div>
 <div class="ttc" id="astructEoWriter_html_af6ff365ad20774b13b037065f4068325"><div class="ttname"><a href="structEoWriter.html#af6ff365ad20774b13b037065f4068325">EoWriter::data</a></div><div class="ttdeci">uint8_t * data</div><div class="ttdef"><b>Definition:</b> <a href="data_8h_source.html#l00026">data.h:26</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="gs_memory_structs"></a>
-Protocol structs — zero-init, then free</h2>
-<p >Packet structs and pub/map file structs may contain heap-allocated strings or arrays. The rules are:</p>
-<ol type="1">
-<li><b>Always zero-initialize</b> before deserializing: <code>SomeStruct s = {0};</code> This ensures <code>_free()</code> is safe to call even if deserialization fails partway through.</li>
-<li><b>Always call <code>_free()</code></b> when you are done, including on error paths. Calling <code>_free()</code> on a zeroed struct is safe and does nothing.</li>
-</ol>
-<div class="fragment"><div class="line"><a class="code hl_struct" href="structLoginRequestClientPacket.html">LoginRequestClientPacket</a> pkt = {0}; <span class="comment">// zero-init first!</span></div>
+Protocol structs — init, then free</h2>
+<p >Every generated packet and data struct has an <code>_init()</code> function (a zero-cost <code>static inline</code>) that returns a properly initialized struct with its internal vtable pointer set. You <b>must</b> call <code>_init()</code> before passing a struct to any <code>eo_*</code> dispatch function.</p>
+<p >After initialization, use the <code>eo_*</code> dispatch functions for all operations: </p><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Operation   </th><th class="markdownTableHeadNone">Function    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Deserialize   </td><td class="markdownTableBodyNone"><code>eo_deserialize((<a class="el" href="structEoSerialize.html">EoSerialize</a> *)&amp;s, &amp;reader)</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Serialize   </td><td class="markdownTableBodyNone"><code>eo_serialize((const <a class="el" href="structEoSerialize.html">EoSerialize</a> *)&amp;s, &amp;writer)</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Get serialized size   </td><td class="markdownTableBodyNone"><code>eo_get_size((const <a class="el" href="structEoSerialize.html">EoSerialize</a> *)&amp;s)</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Free heap fields   </td><td class="markdownTableBodyNone"><code>eo_free((<a class="el" href="structEoSerialize.html">EoSerialize</a> *)&amp;s)</code>   </td></tr>
+</table>
+<p >Always call <code>eo_free()</code> when you are done, including on error paths. Calling it before any heap fields are set is safe — it only frees what was actually allocated.</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structLoginRequestClientPacket.html">LoginRequestClientPacket</a> pkt = <a class="code hl_function" href="protocol_8h.html#a7858e2c3c1c41053a01bc0aef9722176">LoginRequestClientPacket_init</a>();</div>
 <div class="line"> </div>
-<div class="line"><a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result = <a class="code hl_function" href="protocol_8h.html#ab7f53a92818bdac417a7832246f5bf2a">LoginRequestClientPacket_deserialize</a>(&amp;pkt, &amp;reader);</div>
+<div class="line"><a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result = eo_deserialize((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt, &amp;reader);</div>
 <div class="line"><span class="keywordflow">if</span> (result != <a class="code hl_enumvalue" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a>) {</div>
-<div class="line">    <a class="code hl_function" href="protocol_8h.html#a82485f76e7668d7d3127327bc03306b9">LoginRequestClientPacket_free</a>(&amp;pkt); <span class="comment">// safe even on partial init</span></div>
+<div class="line">    eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt); <span class="comment">// safe even on partial deserialization</span></div>
 <div class="line">    <span class="keywordflow">return</span> result;</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line">printf(<span class="stringliteral">&quot;username: %s\n&quot;</span>, pkt.<a class="code hl_variable" href="structLoginRequestClientPacket.html#a495e6e7914554aac826c95e98018d38f">username</a>);</div>
-<div class="line"><a class="code hl_function" href="protocol_8h.html#a82485f76e7668d7d3127327bc03306b9">LoginRequestClientPacket_free</a>(&amp;pkt); <span class="comment">// free when done</span></div>
+<div class="line">eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt); <span class="comment">// free when done</span></div>
 </div><!-- fragment --><p >The same pattern applies to pub and map file structs:</p>
-<div class="fragment"><div class="line"><a class="code hl_struct" href="structEif.html">Eif</a> eif = {0};</div>
-<div class="line"><a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result = <a class="code hl_function" href="protocol_8h.html#a4f7cf1fedde02627979853b64d3b0837">Eif_deserialize</a>(&amp;eif, &amp;reader);</div>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structEif.html">Eif</a> eif = <a class="code hl_function" href="protocol_8h.html#a373d32406e1038c21e1bfceb2493668a">Eif_init</a>();</div>
+<div class="line"><a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result = eo_deserialize((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;eif, &amp;reader);</div>
 <div class="line"><span class="keywordflow">if</span> (result != <a class="code hl_enumvalue" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a>) {</div>
-<div class="line">    <a class="code hl_function" href="protocol_8h.html#a70cc0a00dcc63574d135be737dc6a9cb">Eif_free</a>(&amp;eif);</div>
+<div class="line">    eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;eif);</div>
 <div class="line">    <span class="keywordflow">return</span> result;</div>
 <div class="line">}</div>
 <div class="line"><span class="comment">// ... use eif.items[] ...</span></div>
-<div class="line"><a class="code hl_function" href="protocol_8h.html#a70cc0a00dcc63574d135be737dc6a9cb">Eif_free</a>(&amp;eif);</div>
-</div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>If a struct contains only numeric fields (no strings or arrays), its generated <code>_free()</code> function is still safe to call and does nothing — so it's always correct to call <code>_free()</code> without checking first.</dd></dl>
+<div class="line">eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;eif);</div>
+</div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>If a struct contains only numeric fields (no strings or arrays), its <code>free</code> vtable slot is <code>NULL</code> and <code>eo_free()</code> is a safe no-op. It is always correct to call <code>eo_free()</code> unconditionally.</dd></dl>
 <hr  />
 <h1><a class="anchor" id="gs_next"></a>
 Next Steps</h1>
 <ul>
+<li><a class="el" href="protocol_interface.html">Protocol Struct Interface</a> — deep dive into the vtable-based struct/packet API.</li>
 <li><a class="el" href="error_handling.html">Error Handling</a> — understand every return code and how to handle them.</li>
 <li><a class="el" href="reading_data.html">Reading Data</a> — deep dive into <code><a class="el" href="structEoReader.html">EoReader</a></code> and chunked reading.</li>
 <li><a class="el" href="writing_data.html">Writing Data</a> — deep dive into <code><a class="el" href="structEoWriter.html">EoWriter</a></code>.</li>

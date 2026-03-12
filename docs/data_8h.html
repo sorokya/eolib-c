@@ -95,6 +95,14 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoReader.html">EoReader</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoSerializeVTable.html">EoSerializeVTable</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoSerialize.html">EoSerialize</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoPacketVTable.html">EoPacketVTable</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEoPacket.html">EoPacket</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
@@ -117,6 +125,12 @@ Typedefs</h2></td></tr>
 <tr class="separator:a220b9577f76dad45966319812ce7ded1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65459f6d2e413ead340052d70be16108"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structEoReader.html">EoReader</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#a65459f6d2e413ead340052d70be16108">EoReader</a></td></tr>
 <tr class="separator:a65459f6d2e413ead340052d70be16108"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae59f3e26fcc6a66c52618ce98a116685"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structEoSerialize.html">EoSerialize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#ae59f3e26fcc6a66c52618ce98a116685">EoSerialize</a></td></tr>
+<tr class="memdesc:ae59f3e26fcc6a66c52618ce98a116685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for serializable objects.  <a href="data_8h.html#ae59f3e26fcc6a66c52618ce98a116685">More...</a><br /></td></tr>
+<tr class="separator:ae59f3e26fcc6a66c52618ce98a116685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b191c0e8616381446731dae83f2a1cb"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structEoPacket.html">EoPacket</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#a3b191c0e8616381446731dae83f2a1cb">EoPacket</a></td></tr>
+<tr class="memdesc:a3b191c0e8616381446731dae83f2a1cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for EO packets, which are serializable objects with a family and action.  <a href="data_8h.html#a3b191c0e8616381446731dae83f2a1cb">More...</a><br /></td></tr>
+<tr class="separator:a3b191c0e8616381446731dae83f2a1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -297,6 +311,24 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Typedef Documentation</h2>
+<a id="a3b191c0e8616381446731dae83f2a1cb" name="a3b191c0e8616381446731dae83f2a1cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b191c0e8616381446731dae83f2a1cb">&#9670;&#160;</a></span>EoPacket</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="structEoPacket.html">EoPacket</a> <a class="el" href="structEoPacket.html">EoPacket</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interface for EO packets, which are serializable objects with a family and action. </p>
+
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00451">451</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+
+</div>
+</div>
 <a id="a65459f6d2e413ead340052d70be16108" name="a65459f6d2e413ead340052d70be16108"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a65459f6d2e413ead340052d70be16108">&#9670;&#160;</a></span>EoReader</h2>
 
@@ -309,6 +341,24 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p >Reader that parses EO-encoded bytes. </p>
+
+</div>
+</div>
+<a id="ae59f3e26fcc6a66c52618ce98a116685" name="ae59f3e26fcc6a66c52618ce98a116685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae59f3e26fcc6a66c52618ce98a116685">&#9670;&#160;</a></span>EoSerialize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="structEoSerialize.html">EoSerialize</a> <a class="el" href="structEoSerialize.html">EoSerialize</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interface for serializable objects. </p>
+
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00385">385</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
 </div>
 </div>
@@ -516,7 +566,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only). </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>In chunked reading mode, reading past the end of a chunk returns EO_SUCCESS with <code>out_value</code> set to 0 rather than EO_BUFFER_UNDERRUN. Use <code><a class="el" href="data_8h.html#ad23c880c0461f7677243a8b6cbce3b31">eo_reader_remaining()</a></code> to check available bytes before reading. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00909">909</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00908">908</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -561,7 +611,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, EO_BUFFER_UNDERRUN if not enough bytes remain, or EO_ALLOC_FAILED if memory allocation fails. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01147">1147</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01146">1146</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -600,7 +650,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only). </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>In chunked reading mode, reading past the end of a chunk returns EO_SUCCESS with <code>out_value</code> set to 0 rather than EO_BUFFER_UNDERRUN. Use <code><a class="el" href="data_8h.html#ad23c880c0461f7677243a8b6cbce3b31">eo_reader_remaining()</a></code> to check available bytes before reading. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00936">936</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00935">935</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -627,7 +677,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if chunked reading is enabled. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00824">824</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00823">823</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -665,7 +715,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or EO_ALLOC_FAILED if memory allocation fails. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01068">1068</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01067">1067</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -710,7 +760,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, EO_BUFFER_UNDERRUN if not enough bytes remain, or EO_ALLOC_FAILED if memory allocation fails. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01116">1116</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01115">1115</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -755,7 +805,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, EO_BUFFER_UNDERRUN if not enough bytes remain, or EO_ALLOC_FAILED if memory allocation fails. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01085">1085</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01084">1084</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -794,7 +844,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only). </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>In chunked reading mode, reading past the end of a chunk returns EO_SUCCESS with <code>out_value</code> set to 0 rather than EO_BUFFER_UNDERRUN. Use <code><a class="el" href="data_8h.html#ad23c880c0461f7677243a8b6cbce3b31">eo_reader_remaining()</a></code> to check available bytes before reading. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01020">1020</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01019">1019</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -833,7 +883,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only). </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>In chunked reading mode, reading past the end of a chunk returns EO_SUCCESS with <code>out_value</code> set to 0 rather than EO_BUFFER_UNDERRUN. Use <code><a class="el" href="data_8h.html#ad23c880c0461f7677243a8b6cbce3b31">eo_reader_remaining()</a></code> to check available bytes before reading. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00963">963</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00962">962</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -871,7 +921,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or EO_ALLOC_FAILED if memory allocation fails. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01051">1051</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l01050">1050</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -910,7 +960,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader or out_value is NULL, or EO_BUFFER_UNDERRUN if not enough bytes remain (non-chunked mode only). </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>In chunked reading mode, reading past the end of a chunk returns EO_SUCCESS with <code>out_value</code> set to 0 rather than EO_BUFFER_UNDERRUN. Use <code><a class="el" href="data_8h.html#ad23c880c0461f7677243a8b6cbce3b31">eo_reader_remaining()</a></code> to check available bytes before reading. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00990">990</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00989">989</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -975,7 +1025,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if reader is NULL, or EO_CHUNKED_MODE_DISABLED if chunked reading mode is not active. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00867">867</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00866">866</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -1002,7 +1052,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Remaining bytes. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00841">841</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00840">840</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -1039,7 +1089,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00829">829</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00828">828</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>

@@ -25,7 +25,8 @@ var searchData=
   ['itemreplyserverpacket_22',['ItemReplyServerPacket',['../protocol_8h.html#a49bc1eb5a968f7bb857aec20312597d8',1,'protocol.h']]],
   ['itemsize_23',['ItemSize',['../protocol_8h.html#a76137b2b7f648614830e4cc60730a546',1,'protocol.h']]],
   ['itemspecial_24',['ItemSpecial',['../protocol_8h.html#af8e6f965c48f8eea34eaf90d0c58bd50',1,'protocol.h']]],
-  ['itemsubtype_25',['ItemSubtype',['../protocol_8h.html#ad4328f422f457d0f95ca3a9779d72fea',1,'protocol.h']]],
-  ['itemtype_26',['ItemType',['../protocol_8h.html#af14edea3d95f1c392aa7ad660c666070',1,'protocol.h']]],
-  ['itemuseclientpacket_27',['ItemUseClientPacket',['../protocol_8h.html#a8561ecfc6f7fa73acbac0b100bbb3de4',1,'protocol.h']]]
+  ['itemspecserverpacket_25',['ItemSpecServerPacket',['../protocol_8h.html#ad08019a3388c02f4b08b7843f755541b',1,'protocol.h']]],
+  ['itemsubtype_26',['ItemSubtype',['../protocol_8h.html#ad4328f422f457d0f95ca3a9779d72fea',1,'protocol.h']]],
+  ['itemtype_27',['ItemType',['../protocol_8h.html#af14edea3d95f1c392aa7ad660c666070',1,'protocol.h']]],
+  ['itemuseclientpacket_28',['ItemUseClientPacket',['../protocol_8h.html#a8561ecfc6f7fa73acbac0b100bbb3de4',1,'protocol.h']]]
 ];

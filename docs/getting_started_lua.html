@@ -174,6 +174,8 @@ Example 1 — Packet Inspector</h1>
 <div class="line">                        pkt.password and #pkt.password or 0))</div>
 <div class="line"> </div>
 <div class="line">    -- Re-encode and report the output size.</div>
+<div class="line">    -- The binding pre-allocates the exact buffer size internally, so no</div>
+<div class="line">    -- manual sizing is needed from Lua.</div>
 <div class="line">    local bytes, err2 = pkt:serialize()</div>
 <div class="line">    if not bytes then</div>
 <div class="line">        io.stderr:write(&quot;Serialize failed: &quot; .. tostring(err2) .. &quot;\n&quot;)</div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unicode_5fto_5fcp1252_0',['unicode_to_cp1252',['../data_8c.html#a55a8136a54ea3e872311bb79e36d6c84',1,'data.c']]]
+  ['version_5finit_0',['Version_init',['../protocol_8h.html#a5551fd2291a2067ae6c34c972cbe4347',1,'Version_init(void):&#160;protocol.c'],['../protocol_8c.html#a5551fd2291a2067ae6c34c972cbe4347',1,'Version_init(void):&#160;protocol.c']]]
 ];

@@ -11,5 +11,6 @@ var searchData=
   ['fill_5ftile_8',['fill_tile',['../structEmf.html#ae926d272e3f5c2be6be03582c87256fd',1,'Emf']]],
   ['fire_9',['fire',['../structCharacterElementalStats.html#a4bdf6efbf21157a9e6bbdb067c3d07b0',1,'CharacterElementalStats']]],
   ['fire_5fresistance_10',['fire_resistance',['../structEifRecord.html#a265be808ae1729bec7c2713ec576e0d9',1,'EifRecord']]],
-  ['full_5fname_11',['full_name',['../structAccountCreateClientPacket.html#ac7c4a2b50af00b6bb93d4069808fcb2e',1,'AccountCreateClientPacket']]]
+  ['free_11',['free',['../structEoSerializeVTable.html#aaf21c9191603ecd2cf70bff9e33bdecf',1,'EoSerializeVTable']]],
+  ['full_5fname_12',['full_name',['../structAccountCreateClientPacket.html#ac7c4a2b50af00b6bb93d4069808fcb2e',1,'AccountCreateClientPacket']]]
 ];
