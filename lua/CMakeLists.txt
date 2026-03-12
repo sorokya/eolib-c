@@ -50,6 +50,25 @@ install(TARGETS lua_eolib
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+install(TARGETS lua_eolib
+	LIBRARY DESTINATION . COMPONENT lua_bindings EXCLUDE_FROM_ALL
+	RUNTIME DESTINATION . COMPONENT lua_bindings EXCLUDE_FROM_ALL
+)
+
+install(FILES "${CMAKE_SOURCE_DIR}/lua/eolib.d.lua"
+	DESTINATION .
+	COMPONENT lua_bindings
+	EXCLUDE_FROM_ALL
+)
+
+if(WIN32)
+	install(FILES "$<TARGET_FILE:eolib>"
+		DESTINATION .
+		COMPONENT lua_bindings
+		EXCLUDE_FROM_ALL
+	)
+endif()
+
 find_program(LUA_INTERPRETER NAMES lua lua5.4 lua5.3 lua5.2 lua5.1 luajit)
 
 if(LUA_INTERPRETER)

@@ -276,15 +276,16 @@ jobs:
         shell: msys2 {0}
         run: cmake --build build --target lua-test
 
-      - name: Upload Lua annotations
-        if: matrix.os == 'ubuntu-24.04' && matrix.compiler == 'gcc'
-        uses: actions/upload-artifact@v7
-        with:
-          name: lua-annotations
-          path: lua/eolib.d.lua
-
       - name: Package
         run: cpack --config build/CPackConfig.cmake -C ${{ matrix.build_type }} -B build/package
+
+      - name: Package Lua
+        if: matrix.upload == true
+        shell: bash
+        run: |
+          VERSION=$(grep -oP 'set\(EOLIB_VERSION "\K[^"]+' CMakeLists.txt)
+          cmake --install build --config ${{ matrix.build_type }} --component lua_bindings --prefix lua-stage
+          cd lua-stage && cmake -E tar cf "../build/package/eolib-${VERSION}-Lua-${{ matrix.package_platform }}.zip" --format=zip -- .
 
       - name: Upload Packages
         if: matrix.upload == true
@@ -343,4 +344,3 @@ jobs:
           files: |
             dist/**/*.zip
             dist/**/*.tar.xz
-            dist/eolib.d.lua
