@@ -10,7 +10,7 @@ set(CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 
 include(GNUInstallDirs)
 
-set(EOLIB_VERSION "0.1.0")
+set(EOLIB_VERSION "0.1.1")
 
 find_package(PkgConfig)
 if(PkgConfig_FOUND)
