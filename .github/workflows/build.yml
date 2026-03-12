@@ -16,8 +16,9 @@ jobs:
             compiler: gcc
             cc: gcc
             cxx: g++
-            package_platform: Linux.GCC.x64
+            package_platform: Linux.x64
             build_type: Release
+            upload: true
 
           - os: ubuntu-24.04
             compiler: clang
@@ -25,13 +26,15 @@ jobs:
             cxx: clang++
             package_platform: Linux.Clang.x64
             build_type: Release
+            upload: false
 
           - os: ubuntu-24.04-arm
             compiler: gcc
             cc: gcc
             cxx: g++
-            package_platform: Linux.GCC.arm64
+            package_platform: Linux.arm64
             build_type: Release
+            upload: true
 
           - os: ubuntu-24.04-arm
             compiler: clang
@@ -39,6 +42,7 @@ jobs:
             cxx: clang++
             package_platform: Linux.Clang.arm64
             build_type: Release
+            upload: false
 
           - os: macos-26
             compiler: clang
@@ -46,11 +50,13 @@ jobs:
             cxx: clang++
             package_platform: macOS.arm64
             build_type: Release
+            upload: true
 
           - os: macos-26
             compiler: gcc
-            package_platform: macOS.arm64.gcc
+            package_platform: macOS.GCC.arm64
             build_type: Release
+            upload: false
 
           - os: macos-26-intel
             compiler: clang
@@ -58,11 +64,13 @@ jobs:
             cxx: clang++
             package_platform: macOS.x64
             build_type: Release
+            upload: true
 
           - os: macos-26-intel
             compiler: gcc
-            package_platform: macOS.x64.gcc
+            package_platform: macOS.GCC.x64
             build_type: Release
+            upload: false
 
           - os: windows-2025
             compiler: msvc
@@ -71,6 +79,7 @@ jobs:
             vcpkg_triplet: x64-windows
             package_platform: Windows.VS2022.x64
             build_type: Release
+            upload: true
 
           - os: windows-2025
             compiler: clang-cl
@@ -80,6 +89,7 @@ jobs:
             vcpkg_triplet: x64-windows
             package_platform: Windows.ClangCL.x64
             build_type: Release
+            upload: false
 
           - os: windows-2025
             compiler: mingw
@@ -89,6 +99,7 @@ jobs:
             generator: Ninja
             package_platform: Windows.MinGW.x64
             build_type: Release
+            upload: true
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -248,6 +259,7 @@ jobs:
         run: cpack --config build/CPackConfig.cmake -C ${{ matrix.build_type }} -B build/package
 
       - name: Upload Packages
+        if: matrix.upload == true
         uses: actions/upload-artifact@v7
         with:
           name: package-${{ matrix.os }}-${{ matrix.compiler }}
