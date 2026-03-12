@@ -29,8 +29,16 @@ if(NOT JSONC_FOUND)
 	set(JSONC_LIBRARIES json-c::json-c)
 endif()
 
-add_executable(code_gen tools/code_gen.c)
-target_include_directories(code_gen PRIVATE ${LIBXML2_INCLUDE_DIRS})
+add_executable(code_gen
+    tools/code_gen.c
+    tools/code_gen_utils.c
+    tools/code_gen_analysis.c
+    tools/code_gen_xml.c
+    tools/code_gen_protocol.c
+    tools/code_gen_tests.c
+    tools/code_gen_lua.c
+)
+target_include_directories(code_gen PRIVATE ${LIBXML2_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/tools)
 if(JSONC_FOUND)
 	target_link_libraries(code_gen PRIVATE ${LIBXML2_LIBRARIES} PkgConfig::JSONC)
 else()
