@@ -24,16 +24,16 @@ sudo apt-get install -y liblua5.4-dev
 Then build:
 
 ```sh
-cmake . -DEOLIB_BUILD_LUA_BINDINGS=ON
-make lua_eolib
+cmake -S . -B build -DEOLIB_BUILD_LUA_BINDINGS=ON
+cmake --build build --target lua_eolib
 ```
 
-This produces `lua/eolib.so` (or `eolib.dll` on Windows).
+This produces `build/lua/eolib.so` (or `eolib.dll` on Windows).
 
 ## Installation
 
 ```sh
-make install
+cmake --install build
 ```
 
 The shared library (`eolib.so` / `eolib.dll`) is installed to
@@ -231,16 +231,16 @@ item.type_data = { defense = 50, weight = 20 }
 ## Running the tests
 
 ```sh
-make lua-test
+cmake --build build --target lua-test
 ```
 
 Or manually from a Lua interpreter with `eolib.so` in `LUA_CPATH`:
 
 ```sh
-LUA_CPATH="./lua/?.so" lua lua/tests/test_data.lua
-LUA_CPATH="./lua/?.so" lua lua/tests/test_encrypt.lua
-LUA_CPATH="./lua/?.so" lua lua/tests/test_sequencer.lua
-LUA_CPATH="./lua/?.so" lua lua/tests/test_protocol.lua
+LUA_CPATH="./build/lua/?.so" lua lua/tests/test_data.lua
+LUA_CPATH="./build/lua/?.so" lua lua/tests/test_encrypt.lua
+LUA_CPATH="./build/lua/?.so" lua lua/tests/test_sequencer.lua
+LUA_CPATH="./build/lua/?.so" lua lua/tests/test_protocol.lua
 ```
 
 ## IDE support (lua-language-server)

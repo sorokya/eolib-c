@@ -70,20 +70,20 @@ pacman -S --needed mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-
 ## Build
 
 ```bash
-cmake . -DCMAKE_BUILD_TYPE=Release
-make
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 ```
 
 ## Run tests
 
 ```bash
-make test
+ctest --test-dir build
 ```
 
 ## Install
 
 ```bash
-make install
+cmake --install build
 ```
 
 ## Lua bindings
@@ -101,16 +101,16 @@ Lua development headers (pick one):
 ### Build
 
 ```bash
-cmake . -DEOLIB_BUILD_LUA_BINDINGS=ON
-make lua_eolib
+cmake -S . -B build -DEOLIB_BUILD_LUA_BINDINGS=ON
+cmake --build build --target lua_eolib
 ```
 
-This produces `lua/eolib.so` (or `.dll` on Windows).
+This produces `build/lua/eolib.so` (or `.dll` on Windows).
 
 ### Run Lua tests
 
 ```bash
-make lua-test
+cmake --build build --target lua-test
 ```
 
 ### IDE support
@@ -120,7 +120,52 @@ providing full intellisense (autocomplete, type hints, inline docs) for
 [lua-language-server](https://github.com/LuaLS/lua-language-server). See
 [lua/README.md](lua/README.md) for setup instructions.
 
-## Error Handling
+## Protocol Types
+
+All generated structs and packets implement the `EoSerialize` interface (packets
+also implement `EoPacket`). Use the `TypeName_init()` function to create a
+zero-initialized instance with its vtable set, then use the `eo_*` dispatch
+functions to serialize, deserialize, query the size, or free heap memory:
+
+```c
+#include "eolib/protocol.h"
+
+// Initialize
+LoginRequestClientPacket pkt = LoginRequestClientPacket_init();
+pkt.username = "player";
+pkt.password = "secret";
+
+// Serialize
+size_t needed = eo_get_size((const EoSerialize *)&pkt);
+EoWriter writer = eo_writer_init_with_capacity(needed);
+eo_serialize((const EoSerialize *)&pkt, &writer);
+// writer.data now holds the bytes, writer.length is the byte count
+
+// Free heap fields (e.g. strings, arrays) when done
+eo_free((EoSerialize *)&pkt);
+eo_writer_free(&writer);
+
+// Deserialize
+uint8_t *bytes = ...;
+size_t len = ...;
+EoReader reader = eo_reader_init(bytes, len);
+LoginRequestClientPacket pkt2 = LoginRequestClientPacket_init();
+eo_deserialize((EoSerialize *)&pkt2, &reader);
+printf("username: %s\n", pkt2.username);
+eo_free((EoSerialize *)&pkt2);
+```
+
+Packets additionally expose their family/action IDs:
+
+```c
+uint8_t family = eo_packet_get_family((const EoPacket *)&pkt);
+uint8_t action = eo_packet_get_action((const EoPacket *)&pkt);
+```
+
+See the [full documentation](https://sorokya.github.io/eolib-c/) for the complete
+API reference, memory safety guide, and worked examples.
+
+
 
 All fallible functions return an `EoResult` value. A return value of `EO_SUCCESS` (0)
 means the operation completed without error. Any other value indicates a failure and
