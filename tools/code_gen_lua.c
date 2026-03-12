@@ -1244,6 +1244,8 @@ void write_lua_annotations(ProtocolDef *protocols, size_t protocol_count)
         for (size_t i = 0; i < proto->structs_count; ++i)
         {
             StructDef *s = &proto->structs[i];
+            if (s->comment)
+                write_lua_doc_comment(f, s->comment);
             fprintf(f, "---@class %s\n", s->name);
             write_cats_elements(f, &s->elements,
                 all_enums, all_enums_count,
@@ -1285,6 +1287,8 @@ void write_lua_annotations(ProtocolDef *protocols, size_t protocol_count)
             if (skip) continue;
             string_list_push(&written_packets, name_buf);
 
+            if (pkt->comment)
+                write_lua_doc_comment(f, pkt->comment);
             fprintf(f, "---@class %s\n", name_buf);
             write_cats_elements(f, &pkt->elements,
                 all_enums, all_enums_count,

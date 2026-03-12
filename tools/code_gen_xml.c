@@ -344,6 +344,16 @@ static StructDef parse_struct(xmlNode *node)
 {
     StructDef def = {0};
     def.name = get_attr(node, "name");
+    def.comment = NULL;
+    for (xmlNode *child = node->children; child; child = child->next)
+    {
+        if (child->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(child->name, (const xmlChar *)"comment"))
+        {
+            def.comment = get_node_text(child);
+            break;
+        }
+    }
     def.elements = parse_elements(node);
     return def;
 }

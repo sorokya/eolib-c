@@ -28,7 +28,7 @@ static void write_size_elements(FILE *source, const char *struct_name,
     const char *value_access);
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
     EnumDef *enums, size_t enums_count, StructDef *structs,
-    size_t structs_count);
+    size_t structs_count, const char *comment);
 
 static void write_enum_def(FILE *header, FILE *source, EnumDef *def)
 {
@@ -1838,7 +1838,7 @@ static void write_size_elements(FILE *source, const char *struct_name,
 
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
                              EnumDef *enums, size_t enums_count, StructDef *structs,
-                             size_t structs_count)
+                             size_t structs_count, const char *comment)
 {
     int has_storage = element_list_has_storage(elements);
     int has_heap = has_storage && element_list_has_heap(elements, enums, enums_count,
@@ -1846,21 +1846,49 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
 
     if (has_storage)
     {
+        if (comment)
+            write_doc_comment(header, comment, "");
         fprintf(header, "typedef struct %s {\n", name);
         write_struct_fields(header, name, elements, enums, enums_count, structs, structs_count);
         fprintf(header, "} %s;\n\n", name);
 
         fprintf(header,
+                "/** @brief Serializes a ::%s to an ::EoWriter.\n"
+                " * @param value Pointer to the ::%s to serialize.\n"
+                " * @param writer Writer to serialize into.\n"
+                " * @return ::EO_SUCCESS on success, or an error code on failure.\n"
+                " */\n",
+                name, name);
+        fprintf(header,
                 "EoResult %s_serialize(const %s *value, EoWriter *writer);\n",
                 name,
                 name);
         fprintf(header,
+                "/** @brief Deserializes a ::%s from an ::EoReader.\n"
+                " * @param out Output struct. Must be zero-initialized (e.g. `%s out = {0}`) before calling.\n"
+                " * @param reader Reader to deserialize from.\n"
+                " * @return ::EO_SUCCESS on success, or an error code on failure.\n"
+                " */\n",
+                name, name);
+        fprintf(header,
                 "EoResult %s_deserialize(%s *out, EoReader *reader);\n",
                 name,
                 name);
+        fprintf(header,
+                "/** @brief Returns the serialized byte size of a ::%s.\n"
+                " * @param value Pointer to the ::%s to measure. Returns 0 if @p value is NULL.\n"
+                " * @return Number of bytes that %s_serialize() would write.\n"
+                " */\n",
+                name, name, name);
         fprintf(header, "size_t %s_size(const %s *value);\n", name, name);
         if (has_heap)
         {
+            fprintf(header,
+                    "/** @brief Frees heap-allocated fields within a ::%s and zeroes the struct.\n"
+                    " * @param value Pointer to the struct to free. If NULL, this function does nothing.\n"
+                    " * @note It is safe to call this on a zero-initialized struct.\n"
+                    " */\n",
+                    name);
             fprintf(header, "void %s_free(%s *value);\n", name, name);
         }
         fprintf(header, "\n");
@@ -1908,12 +1936,31 @@ static void write_struct_def(FILE *header, FILE *source, const char *name, Eleme
         return;
     }
 
+    if (comment)
+        write_doc_comment(header, comment, "");
+    fprintf(header,
+            "/** @brief Serializes a ::%s to an ::EoWriter.\n"
+            " * @param writer Writer to serialize into.\n"
+            " * @return ::EO_SUCCESS on success, or an error code on failure.\n"
+            " */\n",
+            name);
     fprintf(header,
             "EoResult %s_serialize(EoWriter *writer);\n",
             name);
     fprintf(header,
+            "/** @brief Deserializes a ::%s from an ::EoReader.\n"
+            " * @param reader Reader to deserialize from.\n"
+            " * @return ::EO_SUCCESS on success, or an error code on failure.\n"
+            " */\n",
+            name);
+    fprintf(header,
             "EoResult %s_deserialize(EoReader *reader);\n",
             name);
+    fprintf(header,
+            "/** @brief Returns the serialized byte size of a ::%s.\n"
+            " * @return Number of bytes that %s_serialize() would write.\n"
+            " */\n",
+            name, name);
     fprintf(header, "size_t %s_size(void);\n\n", name);
 
     fprintf(source, "EoResult %s_serialize(EoWriter *writer) {\n", name);
@@ -2014,7 +2061,8 @@ void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
             }
             write_struct_def(header, source, protocol->structs[i].name,
                              &protocol->structs[i].elements, all_enums,
-                             all_enums_count, all_structs, all_structs_count);
+                             all_enums_count, all_structs, all_structs_count,
+                             protocol->structs[i].comment);
             string_list_push(&written_structs, protocol->structs[i].name);
         }
     }
@@ -2039,7 +2087,8 @@ void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
             snprintf(name_buffer, sizeof(name_buffer), "%s%s%sPacket",
                      protocol->packets[i].family, protocol->packets[i].action, source_suffix);
             write_struct_def(header, source, name_buffer, &protocol->packets[i].elements,
-                             all_enums, all_enums_count, all_structs, all_structs_count);
+                             all_enums, all_enums_count, all_structs, all_structs_count,
+                             protocol->packets[i].comment);
         }
     }
 

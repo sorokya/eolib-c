@@ -130,6 +130,7 @@ struct StructElement
 typedef struct
 {
     char *name;
+    char *comment;
     ElementList elements;
 } StructDef;
 

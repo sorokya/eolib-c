@@ -22,7 +22,7 @@ code_gen
 eolib**tests
 codegen.stamp
 
-include/protocol.h
+include/eolib/protocol.h
 src/protocol.c
 tests/packet_tests.c
 tests/packet_tests.list
