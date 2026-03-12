@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EOLib</title>
+  <link rel="stylesheet" href="https://unpkg.com/98.css" />
+  <style>
+    body {
+      background: #008080;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px;
+    }
+
+    .window { width: 400px; max-width: 100%; }
+
+    .icon-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      padding: 16px 8px;
+    }
+
+    .icon-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: inherit;
+      width: 80px;
+    }
+
+    .icon-link:hover .icon-img { outline: 1px dotted white; }
+    .icon-link:hover .icon-label { background: #000080; color: white; }
+
+    .icon-img {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .icon-label {
+      font-size: 11px;
+      text-align: center;
+      color: white;
+      text-shadow: 1px 1px #000;
+      padding: 1px 3px;
+      word-break: break-word;
+    }
+
+    .status-bar { margin-top: 0; }
+  </style>
+</head>
+<body>
+
+<div class="window">
+  <div class="title-bar">
+    <div class="title-bar-text">EOLib — Endless Online Protocol Library</div>
+    <div class="title-bar-controls">
+      <button aria-label="Minimize"></button>
+      <button aria-label="Maximize"></button>
+      <button aria-label="Close"></button>
+    </div>
+  </div>
+  <div class="window-body">
+    <p style="margin-bottom:12px">
+      A C library for reading and writing <strong>Endless Online</strong> protocol data.
+      Includes packet serialization, encryption, sequencing, and data file support.
+    </p>
+
+    <div class="icon-grid">
+      <a class="icon-link" href="demo/">
+        <div class="icon-img">🎮</div>
+        <div class="icon-label">WASM Demo</div>
+      </a>
+      <a class="icon-link" href="docs/">
+        <div class="icon-img">📖</div>
+        <div class="icon-label">API Docs</div>
+      </a>
+      <a class="icon-link" href="https://github.com/sorokya/eolib-c" target="_blank" rel="noopener">
+        <div class="icon-img">💾</div>
+        <div class="icon-label">Source Code</div>
+      </a>
+    </div>
+  </div>
+  <div class="status-bar">
+    <p class="status-bar-field">EOLib v0.1.0</p>
+    <p class="status-bar-field">MIT License</p>
+  </div>
+</div>
+
+</body>
+</html>

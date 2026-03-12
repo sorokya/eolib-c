@@ -1,4 +1,4 @@
-name: Documentation Build
+name: GitHub Pages
 on:
   push:
     branches: [master]
@@ -16,17 +16,31 @@ jobs:
         with:
           submodules: "recursive"
 
-      - name: Install libjson
+      - name: Install dependencies
         run: sudo apt-get install -y libjson-c-dev
 
-      - name: Build Library
+      - name: Build Library (generates protocol sources for Doxygen)
         uses: threeal/cmake-action@v2.1.0
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Build WASM demo
+        run: cd wasm && ./build.sh
 
       - name: Build Documentation
         uses: mattnotmitt/doxygen-action@v1.9.5
 
-      - name: Publish Documentation
+      - name: Assemble Pages
+        run: |
+          mkdir -p dist/docs dist/demo
+          cp -r docs/html/. dist/docs/
+          cp wasm/index.html wasm/eolib.js wasm/eolib.wasm dist/demo/
+          cp .github/pages-index.html dist/index.html
+
+      - name: Publish to GitHub Pages
+        if: github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/html
+          publish_dir: ./dist
