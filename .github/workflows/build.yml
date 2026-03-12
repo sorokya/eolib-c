@@ -114,6 +114,7 @@ jobs:
             mingw-w64-x86_64-ninja
             mingw-w64-x86_64-libxml2
             mingw-w64-x86_64-json-c
+            mingw-w64-x86_64-lua
 
       - name: Setup Clang (Linux)
         if: matrix.compiler == 'clang' && startsWith(matrix.os, 'ubuntu')
@@ -126,6 +127,10 @@ jobs:
       - name: Setup json-c (Linux)
         if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'ubuntu')
         run: sudo apt-get update && sudo apt-get install -y libjson-c-dev
+
+      - name: Setup Lua (Linux)
+        if: (matrix.compiler == 'gcc' || matrix.compiler == 'clang') && startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get update && sudo apt-get install -y liblua5.4-dev
 
       - name: Set Compiler Env (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
@@ -144,7 +149,7 @@ jobs:
       - name: Setup libxml2/json-c (macOS)
         if: startsWith(matrix.os, 'macos')
         run: |
-          brew install libxml2 json-c
+          brew install libxml2 json-c lua
           if [[ -d /opt/homebrew/opt/libxml2/lib/pkgconfig ]]; then
             echo "PKG_CONFIG_PATH=/opt/homebrew/opt/libxml2/lib/pkgconfig" >> "$GITHUB_ENV"
           elif [[ -d /usr/local/opt/libxml2/lib/pkgconfig ]]; then
@@ -165,6 +170,7 @@ jobs:
           -A ${{ matrix.msvc_arch }}
           -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\\scripts\\buildsystems\\vcpkg.cmake
           -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}
+          -DEOLIB_BUILD_LUA_BINDINGS=ON
           ${{ matrix.toolset && format('-T {0}', matrix.toolset) || '' }}
 
       - name: Build (MSVC/ClangCL)
@@ -182,6 +188,7 @@ jobs:
           cmake -S . -B build -G "${{ matrix.generator }}"
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}
+          -DEOLIB_BUILD_LUA_BINDINGS=ON
 
       - name: Build (MinGW)
         if: matrix.compiler == 'mingw'
@@ -201,6 +208,7 @@ jobs:
           -DCMAKE_CXX_COMPILER=$CXX
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}
+          -DEOLIB_BUILD_LUA_BINDINGS=ON
 
       - name: Build (Unix)
         if: matrix.compiler == 'gcc' || matrix.compiler == 'clang'
@@ -219,6 +227,18 @@ jobs:
 
       - name: Run Tests
         run: ctest --output-on-failure -C ${{ matrix.build_type }} --test-dir build
+
+      - name: Run Lua Tests
+        if: matrix.compiler != 'msvc' && matrix.compiler != 'clang-cl'
+        shell: ${{ matrix.compiler == 'mingw' && 'msys2 {0}' || 'bash' }}
+        run: cmake --build build --target lua-test
+
+      - name: Upload Lua annotations
+        if: matrix.os == 'ubuntu-24.04' && matrix.compiler == 'gcc'
+        uses: actions/upload-artifact@v7
+        with:
+          name: lua-annotations
+          path: lua/eolib.d.lua
 
       - name: Package
         run: cpack --config build/CPackConfig.cmake -C ${{ matrix.build_type }} -B build/package
@@ -250,3 +270,4 @@ jobs:
           files: |
             dist/**/*.zip
             dist/**/*.tar.xz
+            dist/eolib.d.lua

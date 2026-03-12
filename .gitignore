@@ -35,3 +35,7 @@ tests/packet_tests.list
 
 docs/html
 build
+
+lua/src/lua_protocol.c
+lua/src/lua_protocol.h
+lua/eolib.d.lua

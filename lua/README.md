@@ -243,6 +243,27 @@ LUA_CPATH="./lua/?.so" lua lua/tests/test_sequencer.lua
 LUA_CPATH="./lua/?.so" lua lua/tests/test_protocol.lua
 ```
 
+## IDE support (lua-language-server)
+
+A LuaCATS annotation file `lua/eolib.d.lua` is generated alongside the source
+code. It provides full type information — classes, fields, enums, and function
+signatures — for every type in the library.
+
+Add it to your project's `.luarc.json`:
+
+```json
+{
+  "workspace.library": ["/path/to/eolib-c/lua/eolib.d.lua"]
+}
+```
+
+Or download `eolib.d.lua` from the [GitHub release](https://github.com/sorokya/eolib-c/releases) and drop it anywhere in your workspace library path.
+
+Once configured, editors using [lua-language-server](https://github.com/LuaLS/lua-language-server) (VS Code, Neovim, etc.) will show:
+- Autocompletion for all packet types, enums, structs, and module functions
+- Inline type hints and parameter docs
+- Type-error highlighting
+
 ## Error handling
 
 All functions raise Lua errors on failure (e.g. buffer underrun, allocation failure).

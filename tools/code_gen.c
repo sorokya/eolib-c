@@ -5675,6 +5675,421 @@ static void write_lua_files(ProtocolDef *protocols, size_t protocol_count)
 }
 
 
+static void write_lua_doc_comment(FILE *f, const char *comment)
+{
+    if (!comment || comment[0] == '\0') return;
+    char *copy = xstrdup(comment);
+    char *line = strtok(copy, "\n");
+    while (line)
+    {
+        char *start = line;
+        while (*start && isspace((unsigned char)*start)) start++;
+        char *end = start + strlen(start);
+        while (end > start && isspace((unsigned char)*(end - 1))) end--;
+        *end = '\0';
+        if (start[0] != '\0')
+            fprintf(f, "--- %s\n", start);
+        line = strtok(NULL, "\n");
+    }
+    free(copy);
+}
+
+/* =========================================================================
+ * LuaCATS annotation generation (eolib.d.lua for lua-language-server)
+ * ======================================================================= */
+
+/* Map a protocol data_type string to a Lua type annotation string */
+static const char *lua_cats_type(const char *data_type,
+    EnumDef *enums, size_t enums_count,
+    StructDef *structs, size_t structs_count)
+{
+    if (!data_type) return "any";
+    if (strcmp(data_type, "byte")   == 0 ||
+        strcmp(data_type, "char")   == 0 ||
+        strcmp(data_type, "short")  == 0 ||
+        strcmp(data_type, "three")  == 0 ||
+        strcmp(data_type, "int")    == 0) return "integer";
+    if (strcmp(data_type, "string")               == 0 ||
+        strcmp(data_type, "encoded_string")       == 0 ||
+        strcmp(data_type, "fixed_string")         == 0 ||
+        strcmp(data_type, "fixed_encoded_string") == 0 ||
+        strcmp(data_type, "blob")                 == 0) return "string";
+    if (strcmp(data_type, "bool") == 0) return "boolean";
+    for (size_t i = 0; i < enums_count; ++i)
+        if (strcmp(enums[i].name, data_type) == 0) return data_type;
+    for (size_t i = 0; i < structs_count; ++i)
+        if (strcmp(structs[i].name, data_type) == 0) return data_type;
+    return "any";
+}
+
+static void write_cats_elements(FILE *f, ElementList *elements,
+    EnumDef *enums, size_t enums_count,
+    StructDef *structs, size_t structs_count)
+{
+    for (size_t i = 0; i < elements->elements_count; ++i)
+    {
+        StructElement *el = &elements->elements[i];
+        if (el->kind == ELEMENT_FIELD)
+        {
+            FieldDef *fd = &el->as.field;
+            if (!fd->name) continue;
+            const char *t = lua_cats_type(fd->data_type, enums, enums_count, structs, structs_count);
+            if (fd->comment) write_lua_doc_comment(f, fd->comment);
+            fprintf(f, "---@field %s %s%s\n", fd->name, t, fd->optional ? "?" : "");
+        }
+        else if (el->kind == ELEMENT_ARRAY)
+        {
+            ArrayDef *ad = &el->as.array;
+            if (!ad->name) continue;
+            const char *t = lua_cats_type(ad->data_type, enums, enums_count, structs, structs_count);
+            if (ad->comment) write_lua_doc_comment(f, ad->comment);
+            fprintf(f, "---@field %s %s[]%s\n", ad->name, t, ad->optional ? "?" : "");
+        }
+        else if (el->kind == ELEMENT_SWITCH)
+        {
+            SwitchDef *sd = &el->as.sw;
+            fprintf(f, "---@field %s_data table?\n", sd->field);
+        }
+        else if (el->kind == ELEMENT_CHUNKED)
+        {
+            write_cats_elements(f, &el->as.chunked,
+                enums, enums_count, structs, structs_count);
+        }
+    }
+}
+
+static void write_lua_annotations(ProtocolDef *protocols, size_t protocol_count)
+{
+    /* Collect all enums and structs across all protocol files */
+    size_t all_enums_cap = 0, all_structs_cap = 0;
+    size_t all_enums_count = 0, all_structs_count = 0;
+    EnumDef *all_enums = NULL;
+    StructDef *all_structs = NULL;
+
+    for (size_t p = 0; p < protocol_count; ++p)
+    {
+        ProtocolDef *proto = &protocols[p];
+        for (size_t i = 0; i < proto->enums_count; ++i)
+        {
+            if (all_enums_count >= all_enums_cap)
+            {
+                all_enums_cap = ARRAY_GROW_CAPACITY(all_enums_cap);
+                all_enums = realloc(all_enums, all_enums_cap * sizeof(EnumDef));
+            }
+            all_enums[all_enums_count++] = proto->enums[i];
+        }
+        for (size_t i = 0; i < proto->structs_count; ++i)
+        {
+            if (all_structs_count >= all_structs_cap)
+            {
+                all_structs_cap = ARRAY_GROW_CAPACITY(all_structs_cap);
+                all_structs = realloc(all_structs, all_structs_cap * sizeof(StructDef));
+            }
+            all_structs[all_structs_count++] = proto->structs[i];
+        }
+    }
+
+    ensure_dir("lua");
+    FILE *f = fopen("lua/eolib.d.lua", "w");
+    if (!f) { fprintf(stderr, "Failed to open lua/eolib.d.lua\n"); return; }
+
+    fprintf(f,
+        "-- eolib.d.lua\n"
+        "-- LuaCATS type definitions for the eolib Lua module.\n"
+        "-- Generated by tools/code_gen.c — do not edit directly.\n"
+        "--\n"
+        "-- Usage with lua-language-server:\n"
+        "--   Add to your .luarc.json:\n"
+        "--     { \"workspace.library\": [\"/path/to/eolib.d.lua\"] }\n"
+        "\n"
+        "---@meta\n"
+        "\n"
+    );
+
+    /* ---- EoWriter ---- */
+    fprintf(f,
+        "---@class EoWriter\n"
+        "local EoWriter = {}\n"
+        "\n"
+        "---@return EoWriter\n"
+        "function EoWriter.new() end\n"
+        "\n"
+        "---@param value integer\n"
+        "function EoWriter:add_byte(value) end\n"
+        "---@param value integer\n"
+        "function EoWriter:add_char(value) end\n"
+        "---@param value integer\n"
+        "function EoWriter:add_short(value) end\n"
+        "---@param value integer\n"
+        "function EoWriter:add_three(value) end\n"
+        "---@param value integer\n"
+        "function EoWriter:add_int(value) end\n"
+        "---@param value string\n"
+        "function EoWriter:add_string(value) end\n"
+        "---@param value string\n"
+        "function EoWriter:add_encoded_string(value) end\n"
+        "---@param value string\n"
+        "---@param length integer\n"
+        "---@param padded boolean\n"
+        "function EoWriter:add_fixed_string(value, length, padded) end\n"
+        "---@param value string\n"
+        "---@param length integer\n"
+        "---@param padded boolean\n"
+        "function EoWriter:add_fixed_encoded_string(value, length, padded) end\n"
+        "---@param bytes string\n"
+        "function EoWriter:add_bytes(bytes) end\n"
+        "---@return string\n"
+        "function EoWriter:to_bytes() end\n"
+        "---@return integer\n"
+        "function EoWriter:get_length() end\n"
+        "---@param enabled boolean\n"
+        "function EoWriter:set_string_sanitization_mode(enabled) end\n"
+        "---@return boolean\n"
+        "function EoWriter:get_string_sanitization_mode() end\n"
+        "\n"
+    );
+
+    /* ---- EoReader ---- */
+    fprintf(f,
+        "---@class EoReader\n"
+        "local EoReader = {}\n"
+        "\n"
+        "---@param bytes string\n"
+        "---@return EoReader\n"
+        "function EoReader.new(bytes) end\n"
+        "\n"
+        "---@return integer\n"
+        "function EoReader:get_byte() end\n"
+        "---@return integer\n"
+        "function EoReader:get_char() end\n"
+        "---@return integer\n"
+        "function EoReader:get_short() end\n"
+        "---@return integer\n"
+        "function EoReader:get_three() end\n"
+        "---@return integer\n"
+        "function EoReader:get_int() end\n"
+        "---@return string\n"
+        "function EoReader:get_string() end\n"
+        "---@return string\n"
+        "function EoReader:get_encoded_string() end\n"
+        "---@param length integer\n"
+        "---@return string\n"
+        "function EoReader:get_fixed_string(length) end\n"
+        "---@param length integer\n"
+        "---@return string\n"
+        "function EoReader:get_fixed_encoded_string(length) end\n"
+        "---@param count integer\n"
+        "---@return string\n"
+        "function EoReader:get_bytes(count) end\n"
+        "---@return integer\n"
+        "function EoReader:remaining() end\n"
+        "---@param enabled boolean\n"
+        "function EoReader:set_chunked_reading_mode(enabled) end\n"
+        "---@return boolean\n"
+        "function EoReader:get_chunked_reading_mode() end\n"
+        "function EoReader:next_chunk() end\n"
+        "\n"
+    );
+
+    /* ---- EoSequencer ---- */
+    fprintf(f,
+        "---@class EoSequencer\n"
+        "local EoSequencer = {}\n"
+        "\n"
+        "---@param start integer\n"
+        "---@return EoSequencer\n"
+        "function EoSequencer.new(start) end\n"
+        "\n"
+        "---@return integer\n"
+        "function EoSequencer:next() end\n"
+        "\n"
+    );
+
+    /* ---- eolib module ---- */
+    fprintf(f,
+        "---@class eolib\n"
+        "---@field EoWriter EoWriter\n"
+        "---@field EoReader EoReader\n"
+        "---@field EoSequencer EoSequencer\n"
+        "---@field CHAR_MAX integer\n"
+        "---@field SHORT_MAX integer\n"
+        "---@field THREE_MAX integer\n"
+        "---@field INT_MAX integer\n"
+        "---@field NUMBER_PADDING integer\n"
+        "---@field BREAK_BYTE integer\n"
+        "local eolib = {}\n"
+        "\n"
+        "---@param challenge integer\n"
+        "---@return integer\n"
+        "function eolib.server_verification_hash(challenge) end\n"
+        "\n"
+        "---@param bytes string\n"
+        "---@param swap_multiple integer\n"
+        "---@return string\n"
+        "function eolib.encrypt_packet(bytes, swap_multiple) end\n"
+        "\n"
+        "---@param bytes string\n"
+        "---@param swap_multiple integer\n"
+        "---@return string\n"
+        "function eolib.decrypt_packet(bytes, swap_multiple) end\n"
+        "\n"
+        "---@return integer\n"
+        "function eolib.generate_swap_multiple() end\n"
+        "\n"
+        "---@param bytes string\n"
+        "---@param multiple integer\n"
+        "---@return string\n"
+        "function eolib.swap_multiples(bytes, multiple) end\n"
+        "\n"
+        "---@return integer\n"
+        "function eolib.generate_sequence_start() end\n"
+        "\n"
+        "---@param s1 integer\n"
+        "---@param s2 integer\n"
+        "---@return integer\n"
+        "function eolib.sequence_start_from_init(s1, s2) end\n"
+        "\n"
+        "---@param s1 integer\n"
+        "---@param s2 integer\n"
+        "---@return integer\n"
+        "function eolib.sequence_start_from_ping(s1, s2) end\n"
+        "\n"
+        "---@param start integer\n"
+        "---@return integer, integer\n"
+        "function eolib.sequence_init_bytes(start) end\n"
+        "\n"
+        "---@param start integer\n"
+        "---@return integer, integer\n"
+        "function eolib.sequence_ping_bytes(start) end\n"
+        "\n"
+        "---@param value integer\n"
+        "---@return string\n"
+        "function eolib.encode_number(value) end\n"
+        "\n"
+        "---@param bytes string\n"
+        "---@return integer\n"
+        "function eolib.decode_number(bytes) end\n"
+        "\n"
+        "---@param s string\n"
+        "---@return string\n"
+        "function eolib.encode_string(s) end\n"
+        "\n"
+        "---@param s string\n"
+        "---@return string\n"
+        "function eolib.decode_string(s) end\n"
+        "\n"
+        "---@param s string\n"
+        "---@return string\n"
+        "function eolib.string_to_windows_1252(s) end\n"
+        "\n"
+    );
+
+    /* ---- Enums ---- */
+    for (size_t i = 0; i < all_enums_count; ++i)
+    {
+        EnumDef *e = &all_enums[i];
+        if (e->comment) write_lua_doc_comment(f, e->comment);
+        fprintf(f, "---@enum %s\n", e->name);
+        fprintf(f, "eolib.%s = {\n", e->name);
+        for (size_t v = 0; v < e->values_count; ++v)
+        {
+            EnumValue *ev = &e->values[v];
+            if (ev->comment)
+            {
+                char *c = xstrdup(ev->comment);
+                char *s = c; while (*s && isspace((unsigned char)*s)) s++;
+                char *end = s + strlen(s);
+                while (end > s && isspace((unsigned char)*(end-1))) end--;
+                *end = '\0';
+                fprintf(f, "    %s = %d, -- %s\n", ev->name, ev->value, s);
+                free(c);
+            }
+            else
+                fprintf(f, "    %s = %d,\n", ev->name, ev->value);
+        }
+        fprintf(f, "}\n\n");
+    }
+
+    /* ---- Structs ---- */
+    for (size_t p = 0; p < protocol_count; ++p)
+    {
+        ProtocolDef *proto = &protocols[p];
+        for (size_t i = 0; i < proto->structs_count; ++i)
+        {
+            StructDef *s = &proto->structs[i];
+            fprintf(f, "---@class %s\n", s->name);
+            write_cats_elements(f, &s->elements,
+                all_enums, all_enums_count,
+                all_structs, all_structs_count);
+            fprintf(f, "local %s = {}\n", s->name);
+            fprintf(f, "\n");
+            fprintf(f, "---@return %s\n", s->name);
+            fprintf(f, "function %s.new() end\n", s->name);
+            fprintf(f, "\n");
+            fprintf(f, "---@return string\n");
+            fprintf(f, "function %s:serialize() end\n", s->name);
+            fprintf(f, "\n");
+            fprintf(f, "---@param writer EoWriter\n");
+            fprintf(f, "function %s:write(writer) end\n", s->name);
+            fprintf(f, "\n");
+            fprintf(f, "---@param bytes string\n");
+            fprintf(f, "---@return %s\n", s->name);
+            fprintf(f, "function %s.deserialize(bytes) end\n", s->name);
+            fprintf(f, "\n");
+            fprintf(f, "eolib.%s = %s\n\n", s->name, s->name);
+        }
+    }
+
+    /* ---- Packets ---- */
+    StringList written_packets = {0};
+    for (size_t p = 0; p < protocol_count; ++p)
+    {
+        ProtocolDef *proto = &protocols[p];
+        int is_server = strstr(proto->path, "/server/") != NULL;
+        for (size_t i = 0; i < proto->packets_count; ++i)
+        {
+            PacketDef *pkt = &proto->packets[i];
+            char name_buf[256];
+            snprintf(name_buf, sizeof(name_buf), "%s%s%sPacket",
+                pkt->family, pkt->action, is_server ? "Server" : "Client");
+
+            /* Deduplicate */
+            int skip = 0;
+            for (size_t w = 0; w < written_packets.count; ++w)
+                if (strcmp(written_packets.items[w], name_buf) == 0) { skip = 1; break; }
+            if (skip) continue;
+            string_list_push(&written_packets, name_buf);
+
+            fprintf(f, "---@class %s\n", name_buf);
+            write_cats_elements(f, &pkt->elements,
+                all_enums, all_enums_count,
+                all_structs, all_structs_count);
+            fprintf(f, "local %s = {}\n", name_buf);
+            fprintf(f, "\n");
+            fprintf(f, "---@return %s\n", name_buf);
+            fprintf(f, "function %s.new() end\n", name_buf);
+            fprintf(f, "\n");
+            fprintf(f, "---@return string\n");
+            fprintf(f, "function %s:serialize() end\n", name_buf);
+            fprintf(f, "\n");
+            fprintf(f, "---@param writer EoWriter\n");
+            fprintf(f, "function %s:write(writer) end\n", name_buf);
+            fprintf(f, "\n");
+            fprintf(f, "---@param bytes string\n");
+            fprintf(f, "---@return %s\n", name_buf);
+            fprintf(f, "function %s.deserialize(bytes) end\n", name_buf);
+            fprintf(f, "\n");
+            fprintf(f, "eolib.%s = %s\n\n", name_buf, name_buf);
+        }
+    }
+
+    fprintf(f, "return eolib\n");
+    fclose(f);
+    free(all_enums);
+    free(all_structs);
+}
+
+
 int main(void)
 {
     StringList protocol_paths = {0};
@@ -5710,6 +6125,7 @@ int main(void)
     write_protocol_files(protocols, protocol_count);
     write_packet_tests(protocols, protocol_count);
     write_lua_files(protocols, protocol_count);
+    write_lua_annotations(protocols, protocol_count);
 
     return 0;
 }

@@ -113,6 +113,13 @@ This produces `lua/eolib.so` (or `.dll` on Windows).
 make lua-test
 ```
 
+### IDE support
+
+A `lua/eolib.d.lua` LuaCATS annotation file is generated with the build,
+providing full intellisense (autocomplete, type hints, inline docs) for
+[lua-language-server](https://github.com/LuaLS/lua-language-server). See
+[lua/README.md](lua/README.md) for setup instructions.
+
 ## Error Handling
 
 All fallible functions return an `EoResult` value. A return value of `EO_SUCCESS` (0)
