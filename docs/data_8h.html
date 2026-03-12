@@ -164,6 +164,14 @@ Functions</h2></td></tr>
 <tr class="memitem:ad7a3432932ac59e4343b1174c3b915d0" id="r_ad7a3432932ac59e4343b1174c3b915d0"><td class="memItemLeft"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad7a3432932ac59e4343b1174c3b915d0">eo_reader_get_fixed_string</a> (<a class="el" href="structEoReader.html">EoReader</a> *reader, size_t length, char **out_value)</td></tr>
 <tr class="memitem:a0e0d44c40a50bbeb034b5e469cd07b29" id="r_a0e0d44c40a50bbeb034b5e469cd07b29"><td class="memItemLeft"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0e0d44c40a50bbeb034b5e469cd07b29">eo_reader_get_fixed_encoded_string</a> (<a class="el" href="structEoReader.html">EoReader</a> *reader, size_t length, char **out_value)</td></tr>
 <tr class="memitem:ac6597b5554aaeb83230e10ae9e5b3a20" id="r_ac6597b5554aaeb83230e10ae9e5b3a20"><td class="memItemLeft"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac6597b5554aaeb83230e10ae9e5b3a20">eo_reader_get_bytes</a> (<a class="el" href="structEoReader.html">EoReader</a> *reader, size_t length, uint8_t **out_value)</td></tr>
+<tr class="memitem:ad27b9b877e027d42789f64a6a9b175d1" id="r_ad27b9b877e027d42789f64a6a9b175d1"><td class="memItemLeft">static <a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad27b9b877e027d42789f64a6a9b175d1">eo_deserialize</a> (<a class="el" href="structEoSerialize.html">EoSerialize</a> *serialize, <a class="el" href="structEoReader.html">EoReader</a> *reader)</td></tr>
+<tr class="memitem:a16b65896f30543beea64054960c1020f" id="r_a16b65896f30543beea64054960c1020f"><td class="memItemLeft">static <a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a16b65896f30543beea64054960c1020f">eo_serialize</a> (const <a class="el" href="structEoSerialize.html">EoSerialize</a> *serialize, <a class="el" href="structEoWriter.html">EoWriter</a> *writer)</td></tr>
+<tr class="memitem:a1934c365c535fb041a8657684e35a75b" id="r_a1934c365c535fb041a8657684e35a75b"><td class="memItemLeft">static size_t&#160;</td><td class="memItemRight"><a class="el" href="#a1934c365c535fb041a8657684e35a75b">eo_get_size</a> (const <a class="el" href="structEoSerialize.html">EoSerialize</a> *serialize)</td></tr>
+<tr class="memitem:af620164ad52e3e17d8d93cbe3787639c" id="r_af620164ad52e3e17d8d93cbe3787639c"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="#af620164ad52e3e17d8d93cbe3787639c">eo_free</a> (<a class="el" href="structEoSerialize.html">EoSerialize</a> *serialize)</td></tr>
+<tr class="memitem:aed621fa65e93cccb65539ba1769c3a34" id="r_aed621fa65e93cccb65539ba1769c3a34"><td class="memItemLeft">static uint8_t&#160;</td><td class="memItemRight"><a class="el" href="#aed621fa65e93cccb65539ba1769c3a34">eo_packet_get_family</a> (const <a class="el" href="structEoPacket.html">EoPacket</a> *packet)</td></tr>
+<tr class="memdesc:aed621fa65e93cccb65539ba1769c3a34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the family of an EO packet.  <br /></td></tr>
+<tr class="memitem:a8d430cb5b037009804382493989cc061" id="r_a8d430cb5b037009804382493989cc061"><td class="memItemLeft">static uint8_t&#160;</td><td class="memItemRight"><a class="el" href="#a8d430cb5b037009804382493989cc061">eo_packet_get_action</a> (const <a class="el" href="structEoPacket.html">EoPacket</a> *packet)</td></tr>
+<tr class="memdesc:a8d430cb5b037009804382493989cc061"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the action of an EO packet.  <br /></td></tr>
 </table>
 <a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
 <a id="a31161f86c2ec91355b5dce996f031d1d" name="a31161f86c2ec91355b5dce996f031d1d"></a>
@@ -399,6 +407,45 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ad27b9b877e027d42789f64a6a9b175d1" name="ad27b9b877e027d42789f64a6a9b175d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad27b9b877e027d42789f64a6a9b175d1">&#9670;&#160;</a></span>eo_deserialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> eo_deserialize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structEoSerialize.html">EoSerialize</a> *</td>          <td class="paramname"><span class="paramname"><em>serialize</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structEoReader.html">EoReader</a> *</td>          <td class="paramname"><span class="paramname"><em>reader</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Deserializes data from a reader into a struct implementing <a class="el" href="structEoSerialize.html">EoSerialize</a>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">serialize</td><td>Struct to populate. </td></tr>
+    <tr><td class="paramname">reader</td><td>Reader to consume from. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if serialize or reader is NULL, or a non-zero <a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> if deserialization fails. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00407">407</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+
+</div>
+</div>
 <a id="ae1d4985819d90c5f3c7bb3587de2d3ee" name="ae1d4985819d90c5f3c7bb3587de2d3ee"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae1d4985819d90c5f3c7bb3587de2d3ee">&#9670;&#160;</a></span>eo_encode_number()</h2>
 
@@ -458,6 +505,146 @@ Functions</h2></td></tr>
 <dl class="section remark"><dt>Remarks</dt><dd>This is a low-level transform exposed for advanced use. Prefer <span class="tt"><a class="el" href="#a256a34416b7764b677a5c0adefb551c8">eo_writer_add_encoded_string</a></span> and related functions which apply this transform automatically. Calling this twice on the same buffer (double-encoding) will corrupt the data. </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00372">372</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+
+</div>
+</div>
+<a id="af620164ad52e3e17d8d93cbe3787639c" name="af620164ad52e3e17d8d93cbe3787639c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af620164ad52e3e17d8d93cbe3787639c">&#9670;&#160;</a></span>eo_free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eo_free </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structEoSerialize.html">EoSerialize</a> *</td>          <td class="paramname"><span class="paramname"><em>serialize</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Frees any heap-allocated memory owned by a struct implementing <a class="el" href="structEoSerialize.html">EoSerialize</a>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">serialize</td><td>Struct to free. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>This function does not free the struct itself, only any internal memory it owns. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00442">442</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+
+</div>
+</div>
+<a id="a1934c365c535fb041a8657684e35a75b" name="a1934c365c535fb041a8657684e35a75b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1934c365c535fb041a8657684e35a75b">&#9670;&#160;</a></span>eo_get_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eo_get_size </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structEoSerialize.html">EoSerialize</a> *</td>          <td class="paramname"><span class="paramname"><em>serialize</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the size in bytes of the serialized form of a struct implementing <a class="el" href="structEoSerialize.html">EoSerialize</a>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">serialize</td><td>Struct to query. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Size in bytes of the serialized form, or 0 if serialize is NULL. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00431">431</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+
+</div>
+</div>
+<a id="a8d430cb5b037009804382493989cc061" name="a8d430cb5b037009804382493989cc061"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d430cb5b037009804382493989cc061">&#9670;&#160;</a></span>eo_packet_get_action()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eo_packet_get_action </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structEoPacket.html">EoPacket</a> *</td>          <td class="paramname"><span class="paramname"><em>packet</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the action of an EO packet. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">packet</td><td>EO packet to query. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Action of the EO packet. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00480">480</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
+
+</div>
+</div>
+<a id="aed621fa65e93cccb65539ba1769c3a34" name="aed621fa65e93cccb65539ba1769c3a34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed621fa65e93cccb65539ba1769c3a34">&#9670;&#160;</a></span>eo_packet_get_family()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eo_packet_get_family </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structEoPacket.html">EoPacket</a> *</td>          <td class="paramname"><span class="paramname"><em>packet</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the family of an EO packet. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">packet</td><td>EO packet to query. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Family of the EO packet. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00469">469</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
 </div>
 </div>
@@ -930,6 +1117,45 @@ Functions</h2></td></tr>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00828">828</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+
+</div>
+</div>
+<a id="a16b65896f30543beea64054960c1020f" name="a16b65896f30543beea64054960c1020f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16b65896f30543beea64054960c1020f">&#9670;&#160;</a></span>eo_serialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> eo_serialize </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structEoSerialize.html">EoSerialize</a> *</td>          <td class="paramname"><span class="paramname"><em>serialize</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structEoWriter.html">EoWriter</a> *</td>          <td class="paramname"><span class="paramname"><em>writer</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Serializes a struct implementing <a class="el" href="structEoSerialize.html">EoSerialize</a> into a writer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">serialize</td><td>Struct to serialize. </td></tr>
+    <tr><td class="paramname">writer</td><td>Writer to append to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>EO_SUCCESS on success, EO_NULL_PTR if serialize or writer is NULL, or a non-zero <a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> if serialization fails. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="data_8h_source.html#l00420">420</a> of file <a class="el" href="data_8h_source.html">data.h</a>.</p>
 
 </div>
 </div>

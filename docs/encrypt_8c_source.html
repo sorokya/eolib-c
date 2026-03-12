@@ -98,7 +98,7 @@ $(function(){initNavTree('encrypt_8c_source.html','',''); });
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#if defined(_WIN32)</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;windows.h&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;bcrypt.h&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">static</span> uint32_t csprng_uniform(uint32_t upper_bound)</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">static</span> uint32_t <a class="code hl_function" href="encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160">csprng_uniform</a>(uint32_t upper_bound)</div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    uint32_t val;</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    BCryptGenRandom(NULL, (PUCHAR)&amp;val, <span class="keyword">sizeof</span>(val), BCRYPT_USE_SYSTEM_PREFERRED_RNG);</div>
@@ -106,24 +106,26 @@ $(function(){initNavTree('encrypt_8c_source.html','',''); });
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#elif defined(__EMSCRIPTEN__)</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">static</span> uint32_t csprng_uniform(uint32_t upper_bound)</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">static</span> uint32_t <a class="code hl_function" href="encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160">csprng_uniform</a>(uint32_t upper_bound)</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">return</span> (uint32_t)rand() % upper_bound;</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">static</span> uint32_t csprng_uniform(uint32_t upper_bound)</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">static</span> uint32_t <a class="code hl_function" href="encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160">csprng_uniform</a>(uint32_t upper_bound)</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> arc4random_uniform(upper_bound);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;sys/random.h&gt;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">static</span> uint32_t csprng_uniform(uint32_t upper_bound)</div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160">   27</a></span><span class="keyword">static</span> uint32_t <a class="code hl_function" href="encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160">csprng_uniform</a>(uint32_t upper_bound)</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    uint32_t val;</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    getrandom(&amp;val, <span class="keyword">sizeof</span>(val), 0);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> val % upper_bound;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
@@ -181,7 +183,7 @@ $(function(){initNavTree('encrypt_8c_source.html','',''); });
 <div class="foldopen" id="foldopen00083" data-start="{" data-end="}">
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="encrypt_8h.html#a76efd02ded701c916b41743668708087">   83</a></span>uint8_t <a class="code hl_function" href="encrypt_8c.html#a76efd02ded701c916b41743668708087">eo_generate_swap_multiple</a>()</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>{</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span> (uint8_t)(csprng_uniform(7) + 6);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span> (uint8_t)(<a class="code hl_function" href="encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160">csprng_uniform</a>(7) + 6);</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
 </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
@@ -304,6 +306,7 @@ $(function(){initNavTree('encrypt_8c_source.html','',''); });
 <div class="ttc" id="aencrypt_8c_html_a76efd02ded701c916b41743668708087"><div class="ttname"><a href="encrypt_8c.html#a76efd02ded701c916b41743668708087">eo_generate_swap_multiple</a></div><div class="ttdeci">uint8_t eo_generate_swap_multiple()</div><div class="ttdef"><b>Definition</b> <a href="#l00083">encrypt.c:83</a></div></div>
 <div class="ttc" id="aencrypt_8c_html_aac3f12c644fb3fd97011a918a374249c"><div class="ttname"><a href="encrypt_8c.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet</a></div><div class="ttdeci">void eo_decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="#l00144">encrypt.c:144</a></div></div>
 <div class="ttc" id="aencrypt_8c_html_ab94542c28d7d5334f261648c2a258954"><div class="ttname"><a href="encrypt_8c.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash</a></div><div class="ttdeci">int32_t eo_server_verification_hash(int32_t challenge)</div><div class="ttdef"><b>Definition</b> <a href="#l00035">encrypt.c:35</a></div></div>
+<div class="ttc" id="aencrypt_8c_html_ade6a4c07c7c89dd70af9558497f6b160"><div class="ttname"><a href="encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160">csprng_uniform</a></div><div class="ttdeci">static uint32_t csprng_uniform(uint32_t upper_bound)</div><div class="ttdef"><b>Definition</b> <a href="#l00027">encrypt.c:27</a></div></div>
 <div class="ttc" id="aencrypt_8h_html"><div class="ttname"><a href="encrypt_8h.html">encrypt.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

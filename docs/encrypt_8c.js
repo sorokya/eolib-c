@@ -1,5 +1,6 @@
 var encrypt_8c =
 [
+    [ "csprng_uniform", "encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160", null ],
     [ "eo_decrypt_packet", "encrypt_8c.html#aac3f12c644fb3fd97011a918a374249c", null ],
     [ "eo_encrypt_packet", "encrypt_8c.html#a645b4d5c8fb8c3a4791aff3a4f0aa77a", null ],
     [ "eo_generate_swap_multiple", "encrypt_8c.html#a76efd02ded701c916b41743668708087", null ],

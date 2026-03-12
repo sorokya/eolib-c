@@ -103,6 +103,9 @@ $(function(){initNavTree('data_8c.html','',''); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a4592ce8f8ef82fc2e1cb312ee1843d24" id="r_a4592ce8f8ef82fc2e1cb312ee1843d24"><td class="memItemLeft">static size_t&#160;</td><td class="memItemRight"><a class="el" href="#a4592ce8f8ef82fc2e1cb312ee1843d24">eo_reader_next_break_index</a> (const <a class="el" href="structEoReader.html">EoReader</a> *reader)</td></tr>
+<tr class="memitem:a55a8136a54ea3e872311bb79e36d6c84" id="r_a55a8136a54ea3e872311bb79e36d6c84"><td class="memItemLeft">static uint8_t&#160;</td><td class="memItemRight"><a class="el" href="#a55a8136a54ea3e872311bb79e36d6c84">unicode_to_cp1252</a> (uint32_t codepoint)</td></tr>
+<tr class="memitem:a6d36085e4eea4cbfc553348472129903" id="r_a6d36085e4eea4cbfc553348472129903"><td class="memItemLeft">static size_t&#160;</td><td class="memItemRight"><a class="el" href="#a6d36085e4eea4cbfc553348472129903">normalize_to_cp1252</a> (const char *input, char *output, size_t input_len)</td></tr>
 <tr class="memitem:a03a0cc9c72081bfb686e660917b3a357" id="r_a03a0cc9c72081bfb686e660917b3a357"><td class="memItemLeft"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a03a0cc9c72081bfb686e660917b3a357">eo_string_to_windows_1252</a> (const char *value, char **out_value)</td></tr>
 <tr class="memitem:a4c905a2a32256dcd09294b8f8586dd62" id="r_a4c905a2a32256dcd09294b8f8586dd62"><td class="memItemLeft">const char *&#160;</td><td class="memItemRight"><a class="el" href="#a4c905a2a32256dcd09294b8f8586dd62">eo_result_string</a> (<a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> result)</td></tr>
 <tr class="memitem:a99589ab52690d949323821b92e0c0c95" id="r_a99589ab52690d949323821b92e0c0c95"><td class="memItemLeft"><a class="el" href="structEoWriter.html">EoWriter</a>&#160;</td><td class="memItemRight"><a class="el" href="#a99589ab52690d949323821b92e0c0c95">eo_writer_init</a> (void)</td></tr>
@@ -140,6 +143,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ad7a3432932ac59e4343b1174c3b915d0" id="r_ad7a3432932ac59e4343b1174c3b915d0"><td class="memItemLeft"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad7a3432932ac59e4343b1174c3b915d0">eo_reader_get_fixed_string</a> (<a class="el" href="structEoReader.html">EoReader</a> *reader, size_t length, char **out_value)</td></tr>
 <tr class="memitem:a0e0d44c40a50bbeb034b5e469cd07b29" id="r_a0e0d44c40a50bbeb034b5e469cd07b29"><td class="memItemLeft"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0e0d44c40a50bbeb034b5e469cd07b29">eo_reader_get_fixed_encoded_string</a> (<a class="el" href="structEoReader.html">EoReader</a> *reader, size_t length, char **out_value)</td></tr>
 <tr class="memitem:ac6597b5554aaeb83230e10ae9e5b3a20" id="r_ac6597b5554aaeb83230e10ae9e5b3a20"><td class="memItemLeft"><a class="el" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac6597b5554aaeb83230e10ae9e5b3a20">eo_reader_get_bytes</a> (<a class="el" href="structEoReader.html">EoReader</a> *reader, size_t length, uint8_t **out_value)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a02ec1c0456d08b52ce1acfdfd962d463" id="r_a02ec1c0456d08b52ce1acfdfd962d463"><td class="memItemLeft">static const uint32_t&#160;</td><td class="memItemRight"><a class="el" href="#a02ec1c0456d08b52ce1acfdfd962d463">cp1252_unicode_extras</a> [32]</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="a3b0ba48c039728d2ffef2ec68375c1fb" name="a3b0ba48c039728d2ffef2ec68375c1fb"></a>
@@ -654,6 +661,33 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The initialized reader with chunked reading mode disabled. </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00811">811</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+
+</div>
+</div>
+<a id="a4592ce8f8ef82fc2e1cb312ee1843d24" name="a4592ce8f8ef82fc2e1cb312ee1843d24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4592ce8f8ef82fc2e1cb312ee1843d24">&#9670;&#160;</a></span>eo_reader_next_break_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eo_reader_next_break_index </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structEoReader.html">EoReader</a> *</td>          <td class="paramname"><span class="paramname"><em>reader</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00890">890</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>
@@ -1294,6 +1328,94 @@ Functions</h2></td></tr>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00412">412</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+
+</div>
+</div>
+<a id="a6d36085e4eea4cbfc553348472129903" name="a6d36085e4eea4cbfc553348472129903"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d36085e4eea4cbfc553348472129903">&#9670;&#160;</a></span>normalize_to_cp1252()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t normalize_to_cp1252 </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>input</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>output</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>input_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00080">80</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+
+</div>
+</div>
+<a id="a55a8136a54ea3e872311bb79e36d6c84" name="a55a8136a54ea3e872311bb79e36d6c84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55a8136a54ea3e872311bb79e36d6c84">&#9670;&#160;</a></span>unicode_to_cp1252()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t unicode_to_cp1252 </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>codepoint</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00055">55</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
+
+</div>
+</div>
+<a name="doc-var-members" id="doc-var-members"></a><h2 id="header-doc-var-members" class="groupheader">Variable Documentation</h2>
+<a id="a02ec1c0456d08b52ce1acfdfd962d463" name="a02ec1c0456d08b52ce1acfdfd962d463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02ec1c0456d08b52ce1acfdfd962d463">&#9670;&#160;</a></span>cp1252_unicode_extras</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t cp1252_unicode_extras[32]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="data_8c_source.html#l00020">20</a> of file <a class="el" href="data_8c_source.html">data.c</a>.</p>
 
 </div>
 </div>

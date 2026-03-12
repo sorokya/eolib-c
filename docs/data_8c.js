@@ -16,6 +16,7 @@ var data_8c =
     [ "eo_reader_get_string", "data_8c.html#a17c96c49748152b85b247fe24ed940bb", null ],
     [ "eo_reader_get_three", "data_8c.html#aaa332f9a69a12a3e6d01edca066d5db2", null ],
     [ "eo_reader_init", "data_8c.html#abd8a5d1506e8f972cc1f422ee4a14c0b", null ],
+    [ "eo_reader_next_break_index", "data_8c.html#a4592ce8f8ef82fc2e1cb312ee1843d24", null ],
     [ "eo_reader_next_chunk", "data_8c.html#a5451f754eed0d67f6cf8d787d473b725", null ],
     [ "eo_reader_remaining", "data_8c.html#ad23c880c0461f7677243a8b6cbce3b31", null ],
     [ "eo_reader_set_chunked_reading_mode", "data_8c.html#a52311f5b227367f2266ead93527e916e", null ],
@@ -36,5 +37,8 @@ var data_8c =
     [ "eo_writer_get_string_sanitization_mode", "data_8c.html#a81e9cd39932b4fddb7c67c884416d876", null ],
     [ "eo_writer_init", "data_8c.html#a99589ab52690d949323821b92e0c0c95", null ],
     [ "eo_writer_init_with_capacity", "data_8c.html#a4166672651d154329ed8daa5383f4680", null ],
-    [ "eo_writer_set_string_sanitization_mode", "data_8c.html#ac86563d30c5a58badb9ba5577befa5b4", null ]
+    [ "eo_writer_set_string_sanitization_mode", "data_8c.html#ac86563d30c5a58badb9ba5577befa5b4", null ],
+    [ "normalize_to_cp1252", "data_8c.html#a6d36085e4eea4cbfc553348472129903", null ],
+    [ "unicode_to_cp1252", "data_8c.html#a55a8136a54ea3e872311bb79e36d6c84", null ],
+    [ "cp1252_unicode_extras", "data_8c.html#a02ec1c0456d08b52ce1acfdfd962d463", null ]
 ];

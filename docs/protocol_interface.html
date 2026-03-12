@@ -113,32 +113,36 @@ Dispatch Functions</h1>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Function  </th><th class="markdownTableHeadNone">Description  </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">eo_deserialize()  </td><td class="markdownTableBodyNone">Read fields from an <a class="el" href="structEoReader.html">EoReader</a>  </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="data_8h.html#ad27b9b877e027d42789f64a6a9b175d1">eo_deserialize()</a>  </td><td class="markdownTableBodyNone">Read fields from an <a class="el" href="structEoReader.html">EoReader</a>  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">eo_serialize()  </td><td class="markdownTableBodyNone">Write fields to an <a class="el" href="structEoWriter.html">EoWriter</a>  </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="data_8h.html#a16b65896f30543beea64054960c1020f">eo_serialize()</a>  </td><td class="markdownTableBodyNone">Write fields to an <a class="el" href="structEoWriter.html">EoWriter</a>  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">eo_get_size()  </td><td class="markdownTableBodyNone">Return the exact serialized byte count  </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="data_8h.html#a1934c365c535fb041a8657684e35a75b">eo_get_size()</a>  </td><td class="markdownTableBodyNone">Return the exact serialized byte count  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">eo_free()  </td><td class="markdownTableBodyNone">Release any heap-allocated fields  </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="data_8h.html#af620164ad52e3e17d8d93cbe3787639c">eo_free()</a>  </td><td class="markdownTableBodyNone">Release any heap-allocated fields  </td></tr>
 </table>
 <p>All four accept a pointer-to-<a class="el" href="structEoSerialize.html">EoSerialize</a> as their first argument. Cast any generated struct or packet to <span class="tt">(<a class="el" href="structEoSerialize.html">EoSerialize</a> *)</span> (or <span class="tt">(const <a class="el" href="structEoSerialize.html">EoSerialize</a> *)</span> for read-only operations):</p>
 <div class="fragment"><div class="line"><a class="code hl_struct" href="structLoginRequestClientPacket.html">LoginRequestClientPacket</a> pkt = <a class="code hl_function" href="protocol_8h.html#a7858e2c3c1c41053a01bc0aef9722176">LoginRequestClientPacket_init</a>();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Deserialize</span></div>
-<div class="line"><a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> r = eo_deserialize((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt, &amp;reader);</div>
+<div class="line"><a class="code hl_enumeration" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a> r = <a class="code hl_function" href="data_8h.html#ad27b9b877e027d42789f64a6a9b175d1">eo_deserialize</a>((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt, &amp;reader);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Query size</span></div>
-<div class="line"><span class="keywordtype">size_t</span> sz = eo_get_size((<span class="keyword">const</span> <a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
+<div class="line"><span class="keywordtype">size_t</span> sz = <a class="code hl_function" href="data_8h.html#a1934c365c535fb041a8657684e35a75b">eo_get_size</a>((<span class="keyword">const</span> <a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Serialize</span></div>
 <div class="line"><a class="code hl_struct" href="structEoWriter.html">EoWriter</a> writer = <a class="code hl_function" href="data_8h.html#a4166672651d154329ed8daa5383f4680">eo_writer_init_with_capacity</a>(sz);</div>
-<div class="line">eo_serialize((<span class="keyword">const</span> <a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt, &amp;writer);</div>
+<div class="line"><a class="code hl_function" href="data_8h.html#a16b65896f30543beea64054960c1020f">eo_serialize</a>((<span class="keyword">const</span> <a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt, &amp;writer);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Free heap fields when done</span></div>
-<div class="line">eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
+<div class="line"><a class="code hl_function" href="data_8h.html#af620164ad52e3e17d8d93cbe3787639c">eo_free</a>((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
 <div class="line"><a class="code hl_function" href="data_8h.html#ab673f3a197602d8c81f06db856cde1c0">eo_writer_free</a>(&amp;writer);</div>
+<div class="ttc" id="adata_8h_html_a16b65896f30543beea64054960c1020f"><div class="ttname"><a href="data_8h.html#a16b65896f30543beea64054960c1020f">eo_serialize</a></div><div class="ttdeci">static EoResult eo_serialize(const EoSerialize *serialize, EoWriter *writer)</div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00420">data.h:420</a></div></div>
+<div class="ttc" id="adata_8h_html_a1934c365c535fb041a8657684e35a75b"><div class="ttname"><a href="data_8h.html#a1934c365c535fb041a8657684e35a75b">eo_get_size</a></div><div class="ttdeci">static size_t eo_get_size(const EoSerialize *serialize)</div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00431">data.h:431</a></div></div>
 <div class="ttc" id="adata_8h_html_a4166672651d154329ed8daa5383f4680"><div class="ttname"><a href="data_8h.html#a4166672651d154329ed8daa5383f4680">eo_writer_init_with_capacity</a></div><div class="ttdeci">EoWriter eo_writer_init_with_capacity(size_t capacity)</div><div class="ttdef"><b>Definition</b> <a href="data_8c_source.html#l00213">data.c:213</a></div></div>
 <div class="ttc" id="adata_8h_html_ab673f3a197602d8c81f06db856cde1c0"><div class="ttname"><a href="data_8h.html#ab673f3a197602d8c81f06db856cde1c0">eo_writer_free</a></div><div class="ttdeci">void eo_writer_free(EoWriter *writer)</div><div class="ttdef"><b>Definition</b> <a href="data_8c_source.html#l00223">data.c:223</a></div></div>
+<div class="ttc" id="adata_8h_html_ad27b9b877e027d42789f64a6a9b175d1"><div class="ttname"><a href="data_8h.html#ad27b9b877e027d42789f64a6a9b175d1">eo_deserialize</a></div><div class="ttdeci">static EoResult eo_deserialize(EoSerialize *serialize, EoReader *reader)</div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00407">data.h:407</a></div></div>
+<div class="ttc" id="adata_8h_html_af620164ad52e3e17d8d93cbe3787639c"><div class="ttname"><a href="data_8h.html#af620164ad52e3e17d8d93cbe3787639c">eo_free</a></div><div class="ttdeci">static void eo_free(EoSerialize *serialize)</div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00442">data.h:442</a></div></div>
 <div class="ttc" id="aresult_8h_html_a80b9d1a97427ad2c8d1f68935e33c52b"><div class="ttname"><a href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52b">EoResult</a></div><div class="ttdeci">EoResult</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00011">result.h:12</a></div></div>
 <div class="ttc" id="astructEoSerialize_html"><div class="ttname"><a href="structEoSerialize.html">EoSerialize</a></div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00395">data.h:396</a></div></div>
 <div class="ttc" id="astructEoWriter_html"><div class="ttname"><a href="structEoWriter.html">EoWriter</a></div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00024">data.h:25</a></div></div>
@@ -147,18 +151,20 @@ Packet-Specific Dispatch</h1>
 <p>Packet types additionally implement <a class="el" href="structEoPacket.html">EoPacket</a>, which carries a second vtable with <span class="tt">get_family</span> and <span class="tt">get_action</span> slots. Use the packet dispatch helpers to query the hard-coded family/action values without inspecting enum constants manually:</p>
 <div class="fragment"><div class="line"><a class="code hl_struct" href="structLoginRequestClientPacket.html">LoginRequestClientPacket</a> pkt = <a class="code hl_function" href="protocol_8h.html#a7858e2c3c1c41053a01bc0aef9722176">LoginRequestClientPacket_init</a>();</div>
 <div class="line"> </div>
-<div class="line">uint8_t family = eo_packet_get_family((<span class="keyword">const</span> <a class="code hl_struct" href="structEoPacket.html">EoPacket</a> *)&amp;pkt);</div>
-<div class="line">uint8_t action = eo_packet_get_action((<span class="keyword">const</span> <a class="code hl_struct" href="structEoPacket.html">EoPacket</a> *)&amp;pkt);</div>
+<div class="line">uint8_t family = <a class="code hl_function" href="data_8h.html#aed621fa65e93cccb65539ba1769c3a34">eo_packet_get_family</a>((<span class="keyword">const</span> <a class="code hl_struct" href="structEoPacket.html">EoPacket</a> *)&amp;pkt);</div>
+<div class="line">uint8_t action = <a class="code hl_function" href="data_8h.html#a8d430cb5b037009804382493989cc061">eo_packet_get_action</a>((<span class="keyword">const</span> <a class="code hl_struct" href="structEoPacket.html">EoPacket</a> *)&amp;pkt);</div>
 <div class="line"><span class="comment">// family == PACKET_FAMILY_LOGIN, action == PACKET_ACTION_REQUEST</span></div>
+<div class="ttc" id="adata_8h_html_a8d430cb5b037009804382493989cc061"><div class="ttname"><a href="data_8h.html#a8d430cb5b037009804382493989cc061">eo_packet_get_action</a></div><div class="ttdeci">static uint8_t eo_packet_get_action(const EoPacket *packet)</div><div class="ttdoc">Gets the action of an EO packet.</div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00480">data.h:480</a></div></div>
+<div class="ttc" id="adata_8h_html_aed621fa65e93cccb65539ba1769c3a34"><div class="ttname"><a href="data_8h.html#aed621fa65e93cccb65539ba1769c3a34">eo_packet_get_family</a></div><div class="ttdeci">static uint8_t eo_packet_get_family(const EoPacket *packet)</div><div class="ttdoc">Gets the family of an EO packet.</div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00469">data.h:469</a></div></div>
 <div class="ttc" id="astructEoPacket_html"><div class="ttname"><a href="structEoPacket.html">EoPacket</a></div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00458">data.h:459</a></div></div>
 </div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="pi_generic"></a>
 Writing Generic Code</h1>
 <p>Because every struct shares the <a class="el" href="structEoSerialize.html">EoSerialize</a> base, you can write helpers that operate on any struct without knowing its concrete type:</p>
 <div class="fragment"><div class="line"><span class="comment">// Serialize any struct to a newly-allocated byte buffer.</span></div>
 <div class="line"><span class="keyword">static</span> uint8_t *to_bytes(<span class="keyword">const</span> <a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *s, <span class="keywordtype">size_t</span> *out_len) {</div>
-<div class="line">    <span class="keywordtype">size_t</span> sz = eo_get_size(s);</div>
+<div class="line">    <span class="keywordtype">size_t</span> sz = <a class="code hl_function" href="data_8h.html#a1934c365c535fb041a8657684e35a75b">eo_get_size</a>(s);</div>
 <div class="line">    <a class="code hl_struct" href="structEoWriter.html">EoWriter</a> writer = <a class="code hl_function" href="data_8h.html#a4166672651d154329ed8daa5383f4680">eo_writer_init_with_capacity</a>(sz);</div>
-<div class="line">    <span class="keywordflow">if</span> (eo_serialize(s, &amp;writer) != <a class="code hl_enumvalue" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a>) {</div>
+<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_function" href="data_8h.html#a16b65896f30543beea64054960c1020f">eo_serialize</a>(s, &amp;writer) != <a class="code hl_enumvalue" href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a>) {</div>
 <div class="line">        <a class="code hl_function" href="data_8h.html#ab673f3a197602d8c81f06db856cde1c0">eo_writer_free</a>(&amp;writer);</div>
 <div class="line">        <span class="keywordflow">return</span> NULL;</div>
 <div class="line">    }</div>
@@ -180,7 +186,7 @@ Writing Generic Code</h1>
 <div class="line">uint8_t *bytes = to_bytes((<span class="keyword">const</span> <a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt, &amp;len);</div>
 <div class="line"><span class="comment">// use bytes...</span></div>
 <div class="line">free(bytes);</div>
-<div class="line">eo_free((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
+<div class="line"><a class="code hl_function" href="data_8h.html#af620164ad52e3e17d8d93cbe3787639c">eo_free</a>((<a class="code hl_struct" href="structEoSerialize.html">EoSerialize</a> *)&amp;pkt);</div>
 <div class="ttc" id="aresult_8h_html_a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367"><div class="ttname"><a href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a></div><div class="ttdeci">@ EO_SUCCESS</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00014">result.h:14</a></div></div>
 <div class="ttc" id="astructEoWriter_html_aecff46a5b8d0e3ca60c0f5388eb2d146"><div class="ttname"><a href="structEoWriter.html#aecff46a5b8d0e3ca60c0f5388eb2d146">EoWriter::length</a></div><div class="ttdeci">size_t length</div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00027">data.h:27</a></div></div>
 <div class="ttc" id="astructEoWriter_html_af6ff365ad20774b13b037065f4068325"><div class="ttname"><a href="structEoWriter.html#af6ff365ad20774b13b037065f4068325">EoWriter::data</a></div><div class="ttdeci">uint8_t * data</div><div class="ttdef"><b>Definition</b> <a href="data_8h_source.html#l00026">data.h:26</a></div></div>
