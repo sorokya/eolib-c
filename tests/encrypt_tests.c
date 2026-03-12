@@ -1,4 +1,4 @@
-#include "encrypt.h"
+#include "eolib/encrypt.h"
 #include "test_utils.h"
 
 static void test_encrypt_packet_known_vector()

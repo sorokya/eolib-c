@@ -47,7 +47,7 @@ else()
 endif()
 
 set(EOLIB_PROTOCOL_C ${CMAKE_CURRENT_SOURCE_DIR}/src/protocol.c)
-set(EOLIB_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/include/protocol.h)
+set(EOLIB_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/include/eolib/protocol.h)
 set(EOLIB_PACKET_TESTS_C ${CMAKE_CURRENT_SOURCE_DIR}/tests/packet_tests.c)
 set(EOLIB_LUA_PROTOCOL_C ${CMAKE_CURRENT_SOURCE_DIR}/lua/src/lua_protocol.c)
 set(EOLIB_LUA_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/lua/src/lua_protocol.h)
@@ -98,7 +98,7 @@ install(TARGETS eolib
 	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY include/eolib DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 include(CMakePackageConfigHelpers)
 set(EOLIB_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/eolib")

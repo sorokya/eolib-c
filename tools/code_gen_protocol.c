@@ -1954,7 +1954,7 @@ void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
         return;
     }
 
-    FILE *header = fopen("include/protocol.h", "w");
+    FILE *header = fopen("include/eolib/protocol.h", "w");
     FILE *source = fopen("src/protocol.c", "w");
     if (!header || !source)
     {
@@ -1977,7 +1977,7 @@ void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
     fprintf(header, "#include <stdbool.h>\n#include <stddef.h>\n#include <stdint.h>\n\n");
     fprintf(header, "#include \"data.h\"\n\n");
 
-    fprintf(source, "#include \"protocol.h\"\n\n");
+    fprintf(source, "#include \"eolib/protocol.h\"\n\n");
     fprintf(source, "#include <string.h>\n#include <stdlib.h>\n\n");
 
     size_t all_enums_count = 0;

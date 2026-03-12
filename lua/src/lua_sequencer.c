@@ -1,6 +1,6 @@
 #include "eolib_lua.h"
-#include "sequencer.h"
-#include "result.h"
+#include "eolib/sequencer.h"
+#include "eolib/result.h"
 
 /* -------------------------------------------------------------------------
  * EoSequencer userdata

@@ -610,8 +610,8 @@ void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
 
     fprintf(f, "%s", CODEGEN_WARNING);
     fprintf(f, "#include \"test_utils.h\"\n");
-    fprintf(f, "#include \"data.h\"\n");
-    fprintf(f, "#include \"protocol.h\"\n");
+    fprintf(f, "#include \"eolib/data.h\"\n");
+    fprintf(f, "#include \"eolib/protocol.h\"\n");
     fprintf(f, "#include <stdio.h>\n");
     fprintf(f, "#include <stdlib.h>\n");
     fprintf(f, "#include <string.h>\n\n");

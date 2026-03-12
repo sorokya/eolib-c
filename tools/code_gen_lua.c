@@ -825,9 +825,9 @@ void write_lua_files(ProtocolDef *protocols, size_t protocol_count)
     fprintf(source, "%s", CODEGEN_WARNING);
     fprintf(source, "#include \"lua_protocol.h\"\n");
     fprintf(source, "#include \"eolib_lua.h\"\n");
-    fprintf(source, "#include \"protocol.h\"\n");
-    fprintf(source, "#include \"result.h\"\n");
-    fprintf(source, "#include \"data.h\"\n");
+    fprintf(source, "#include \"eolib/protocol.h\"\n");
+    fprintf(source, "#include \"eolib/result.h\"\n");
+    fprintf(source, "#include \"eolib/data.h\"\n");
     fprintf(source, "#include <stdlib.h>\n#include <string.h>\n\n");
 
     StringList written_fwd = {0};

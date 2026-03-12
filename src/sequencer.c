@@ -1,5 +1,5 @@
-#include "sequencer.h"
-#include "data.h"
+#include "eolib/sequencer.h"
+#include "eolib/data.h"
 
 #if defined(_WIN32)
 #include <windows.h>

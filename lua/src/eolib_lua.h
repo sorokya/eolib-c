@@ -3,7 +3,7 @@
 
 #include <lua.h>
 #include <lauxlib.h>
-#include "data.h"
+#include "eolib/data.h"
 
 typedef struct { EoWriter writer; } LuaEoWriter;
 

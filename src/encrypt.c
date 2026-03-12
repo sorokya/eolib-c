@@ -1,5 +1,5 @@
-#include "data.h"
-#include "encrypt.h"
+#include "eolib/data.h"
+#include "eolib/encrypt.h"
 
 #if defined(_WIN32)
 #include <windows.h>

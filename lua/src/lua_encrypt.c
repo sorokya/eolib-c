@@ -1,5 +1,5 @@
 #include "eolib_lua.h"
-#include "encrypt.h"
+#include "eolib/encrypt.h"
 
 #include <stdlib.h>
 #include <string.h>

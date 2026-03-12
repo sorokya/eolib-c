@@ -1,6 +1,6 @@
 #include "eolib_lua.h"
-#include "data.h"
-#include "result.h"
+#include "eolib/data.h"
+#include "eolib/result.h"
 
 #include <stdlib.h>
 #include <string.h>

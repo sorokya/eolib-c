@@ -1,5 +1,5 @@
 #include "test_utils.h"
-#include "data.h"
+#include "eolib/data.h"
 
 #include <limits.h>
 #include <stdlib.h>

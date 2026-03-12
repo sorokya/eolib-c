@@ -1,5 +1,5 @@
-#include "data.h"
-#include "result.h"
+#include "eolib/data.h"
+#include "eolib/result.h"
 
 #include <limits.h>
 #include <stdlib.h>
