@@ -234,7 +234,7 @@ jobs:
 
       - name: Reconfigure (MSVC/ClangCL)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
-        run: cmake -S . -B build -D CMAKE_SUPPRESS_REGENERATION=ON
+        run: cmake -S . -B build -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }} -D CMAKE_SUPPRESS_REGENERATION=ON
 
       - name: Configure (MinGW)
         if: matrix.compiler == 'mingw'
@@ -300,7 +300,7 @@ jobs:
         run: |
           VERSION=$(sed -n 's/.*set(EOLIB_VERSION "\([^"]*\)").*/\1/p' CMakeLists.txt)
           cmake --install build --config ${{ matrix.build_type }} --component lua_bindings --prefix lua-stage
-          cd lua-stage && cmake -E tar cf "../build/package/eolib-${VERSION}-Lua-${{ matrix.package_platform }}.zip" --format=zip -- .
+          cd lua-stage && cmake -E tar cf "../build/package/eolib-Lua-${VERSION}-${{ matrix.package_platform }}.zip" --format=zip -- .
 
       - name: Upload Packages
         if: matrix.upload == true
