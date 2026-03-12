@@ -140,6 +140,7 @@ jobs:
         with:
           msystem: ${{ matrix.msys_system }}
           update: true
+          cache: true
           install: >-
             ${{ matrix.msys_pkg_prefix }}-gcc
             ${{ matrix.msys_pkg_prefix }}-cmake
@@ -178,8 +179,18 @@ jobs:
           echo "CC=${gcc_path:-gcc}" >> "$GITHUB_ENV"
           echo "CXX=${gxx_path:-g++}" >> "$GITHUB_ENV"
 
+      - name: Cache Homebrew packages (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: brew-${{ matrix.os }}-libxml2-json-c-lua
+
       - name: Setup libxml2/json-c (macOS)
         if: startsWith(matrix.os, 'macos')
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
         run: |
           brew install libxml2 json-c lua
           if [[ -d /opt/homebrew/opt/libxml2/lib/pkgconfig ]]; then
@@ -191,6 +202,8 @@ jobs:
       - name: Setup libxml2 (Windows)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         uses: lukka/run-vcpkg@v11
+        env:
+          VCPKG_BINARY_SOURCES: default,rw
         with:
           vcpkgJsonGlob: vcpkg.json
           vcpkgConfigurationJsonGlob: vcpkg-configuration.json
@@ -199,8 +212,10 @@ jobs:
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         uses: actions/cache@v4
         with:
-          path: ${{ runner.workspace }}\vcpkg_installed
-          key: vcpkg-${{ matrix.os }}-${{ matrix.vcpkg_triplet }}-62159a45e18f3a9ac0548628dcaf74fcb60c6ff9
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-${{ matrix.os }}-${{ matrix.vcpkg_triplet }}-${{ hashFiles('vcpkg*.json') }}
+          restore-keys: |
+            vcpkg-${{ matrix.os }}-${{ matrix.vcpkg_triplet }}-
 
       - name: Configure (MSVC/ClangCL)
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
