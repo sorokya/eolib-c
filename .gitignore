@@ -39,3 +39,6 @@ build
 lua/src/lua_protocol.c
 lua/src/lua_protocol.h
 lua/eolib.d.lua
+
+wasm/eolib.wasm
+wasm/packets.js
