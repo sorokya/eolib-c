@@ -17,7 +17,7 @@
     }
 
     .main-window {
-      width: 740px;
+      width: 900px;
       max-width: 100%;
     }
 
@@ -108,7 +108,63 @@
       width: 100%;
     }
 
-    /* Loading overlay */
+    /* Packets tab two-column layout */
+    .pkt-layout {
+      display: flex;
+      gap: 8px;
+      min-height: 420px;
+    }
+
+    .pkt-list-col {
+      flex: 0 0 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .pkt-detail-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    #pkt-list {
+      flex: 1;
+      font-family: monospace;
+      font-size: 11px;
+      min-height: 380px;
+      overflow-x: hidden;
+      width: 100%;
+      scrollbar-width: auto;
+    }
+
+    #pkt-list::-webkit-scrollbar,
+    #pkt-list::-webkit-scrollbar-track,
+    #pkt-list::-webkit-scrollbar-thumb,
+    #pkt-list::-webkit-scrollbar-button {
+      all: unset;
+    }
+
+    #pkt-props {
+      font-family: monospace;
+      font-size: 11px;
+      background: white;
+      box-shadow: inset -1px -1px #fff, inset 1px 1px grey,
+        inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+      padding: 4px 6px;
+      max-height: 180px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .roundtrip-ok  { color: green; font-weight: bold; }
+    .roundtrip-err { color: red;   font-weight: bold; }
+
+  
     #loadingOverlay {
       position: fixed;
       inset: 0;
@@ -158,6 +214,7 @@
         <li role="tab"><a href="#tab-strings">String Codec</a></li>
         <li role="tab"><a href="#tab-encrypt">Encryption</a></li>
         <li role="tab"><a href="#tab-sequencer">Sequencer</a></li>
+        <li role="tab"><a href="#tab-packets">Packets</a></li>
       </menu>
 
       <!-- Tab content window -->
@@ -394,6 +451,63 @@
             </fieldset>
           </article>
 
+          <!-- ══════════════════════════════════════════════════
+             TAB 5: PACKETS
+        ══════════════════════════════════════════════════ -->
+          <article role="tabpanel" id="tab-packets" class="tab-panel">
+            <div class="pkt-layout">
+
+              <!-- Left: packet list -->
+              <div class="pkt-list-col">
+                <label for="pkt-list" style="font-size:11px">Captured Packets</label>
+                <select id="pkt-list" size="20" onchange="onPacketSelect(this)">
+                  <option disabled selected>Loading…</option>
+                </select>
+              </div>
+
+              <!-- Right: details + roundtrip -->
+              <div class="pkt-detail-col">
+
+                <fieldset>
+                  <legend>Packet Details</legend>
+                  <div class="field-row" style="margin-bottom:4px">
+                    <label style="min-width:80px">Name:</label>
+                    <span id="pkt-name" style="font-family:monospace;font-size:11px">—</span>
+                  </div>
+                  <div class="field-row" style="margin-bottom:4px">
+                    <label style="min-width:80px">Capture:</label>
+                    <span id="pkt-capture" style="font-family:monospace;font-size:11px;color:#444">—</span>
+                  </div>
+                  <div class="field-row" style="margin-bottom:6px">
+                    <label style="min-width:80px">Note:</label>
+                    <span id="pkt-comment" style="font-size:11px;font-style:italic;color:#444">—</span>
+                  </div>
+                  <div class="field-row-stacked">
+                    <label>Expected bytes (hex)</label>
+                    <div class="result" id="pkt-expected-hex" style="min-height:20px">—</div>
+                  </div>
+                  <div class="field-row-stacked" style="margin-top:6px">
+                    <label>Properties</label>
+                    <div id="pkt-props">—</div>
+                  </div>
+                </fieldset>
+
+                <fieldset>
+                  <legend>Roundtrip (deserialize → serialize)</legend>
+                  <div class="field-row" style="gap:8px;align-items:center">
+                    <button id="pkt-roundtrip-btn" onclick="doRoundtrip()" disabled>Roundtrip</button>
+                    <span id="pkt-roundtrip-status"></span>
+                  </div>
+                  <div class="field-row-stacked" style="margin-top:6px">
+                    <label>Serialized output bytes (hex)</label>
+                    <div class="result" id="pkt-roundtrip-hex" style="min-height:20px">—</div>
+                  </div>
+                </fieldset>
+
+              </div><!-- pkt-detail-col -->
+            </div><!-- pkt-layout -->
+          </article>
+
         </div><!-- window-body -->
       </div><!-- inner window -->
 
@@ -406,6 +520,7 @@
     </div>
   </div><!-- main window -->
 
+  <script src="packets.js"></script>
   <script src="eolib.js"></script>
   <script>
     // ─────────────────────────────────────────────────────────────────────────────
@@ -429,6 +544,9 @@
       api.encode_string = M.cwrap('wasm_encode_string', null, ['number', 'number']);
       api.decode_string = M.cwrap('wasm_decode_string', null, ['number', 'number']);
       api.str_to_cp1252 = M.cwrap('wasm_string_to_windows_1252', 'number', ['number']);
+      api.packet_roundtrip = M.cwrap('wasm_packet_roundtrip', 'number',
+                                     ['number', 'number', 'number', 'number', 'number']);
+      api.get_roundtrip_len = M.cwrap('wasm_get_roundtrip_len', 'number', []);
 
       document.getElementById('loadingOverlay').classList.add('hidden');
       document.getElementById('wasmStatusText').textContent = 'WASM ready';
@@ -436,6 +554,7 @@
       doEncodeNumber();
       buildSequence();
       doConvertCP1252();
+      populatePacketList();
     }).catch(err => {
       document.getElementById('loadingText').textContent = 'Failed to load WASM module';
       const el = document.getElementById('loadError');
@@ -714,6 +833,117 @@
       if (isNaN(s1) || isNaN(s2)) { setResult('ping-result', 'Enter valid byte values.', false); return; }
       const start = api.seq_from_ping(s1, s2);
       setResult('ping-result', `${start}   [formula: ${s1} − ${s2} = ${start}]`);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Packets tab
+    // ─────────────────────────────────────────────────────────────────────────────
+    let selectedPacket = null;
+
+    function b64ToBytes(b64) {
+      const bin = atob(b64);
+      return Uint8Array.from(bin, c => c.charCodeAt(0));
+    }
+
+    function fmtHexBytes(bytes) {
+      return Array.from(bytes)
+        .map(b => b.toString(16).toUpperCase().padStart(2, '0'))
+        .join(' ') || '(empty)';
+    }
+
+    function populatePacketList() {
+      if (typeof PACKETS === 'undefined') return;
+      const sel = document.getElementById('pkt-list');
+      sel.innerHTML = '';
+
+      const sorted = PACKETS
+        .map((pkt, idx) => ({ pkt, idx }))
+        .sort((a, b) => {
+          const fam = a.pkt.family.localeCompare(b.pkt.family);
+          if (fam !== 0) return fam;
+          const act = a.pkt.action.localeCompare(b.pkt.action);
+          if (act !== 0) return act;
+          return a.pkt.direction - b.pkt.direction;
+        });
+
+      sorted.forEach(({ pkt, idx }) => {
+        const opt = document.createElement('option');
+        const arrow = pkt.direction === 0 ? '▶' : '◀';
+        const parts = pkt.id.split('_');
+        const variant = parts.length > 3 ? ' +' + parts.slice(2).join('').replace(/([A-Z])/g, ' $1').trim().split(' ').slice(0, 2).join('') : '';
+        opt.value = idx;
+        opt.title = `${pkt.direction === 0 ? 'Client→Server' : 'Server→Client'}: ${pkt.family} ${pkt.action}${variant}`;
+        opt.textContent = `${arrow} ${pkt.family} ${pkt.action}${variant}`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function onPacketSelect(sel) {
+      const idx = parseInt(sel.value, 10);
+      if (isNaN(idx) || idx < 0 || idx >= PACKETS.length) return;
+      selectedPacket = PACKETS[idx];
+
+      const dir = selectedPacket.direction === 0 ? 'Client→Server' : 'Server→Client';
+      document.getElementById('pkt-name').textContent =
+        `${selectedPacket.family} ${selectedPacket.action} [${dir}]`;
+
+      document.getElementById('pkt-capture').textContent =
+        selectedPacket.capture + '.json';
+
+      document.getElementById('pkt-comment').textContent =
+        selectedPacket.comment || '—';
+
+      const bytes = b64ToBytes(selectedPacket.expected);
+      document.getElementById('pkt-expected-hex').textContent = fmtHexBytes(bytes);
+
+      const propsEl = document.getElementById('pkt-props');
+      propsEl.textContent = JSON.stringify(selectedPacket.properties, null, 2);
+
+      document.getElementById('pkt-roundtrip-btn').disabled = !M;
+      document.getElementById('pkt-roundtrip-status').textContent = '';
+      document.getElementById('pkt-roundtrip-hex').textContent = '—';
+    }
+
+    function doRoundtrip() {
+      if (!M || !selectedPacket) return;
+
+      const expected = b64ToBytes(selectedPacket.expected);
+      const { ptr, free } = heapAlloc(expected);
+
+      const resultPtr = api.packet_roundtrip(
+        selectedPacket.familyId,
+        selectedPacket.actionId,
+        selectedPacket.direction,
+        ptr,
+        expected.length
+      );
+      free();
+
+      const statusEl = document.getElementById('pkt-roundtrip-status');
+      const hexEl = document.getElementById('pkt-roundtrip-hex');
+
+      if (!resultPtr) {
+        statusEl.textContent = '✗ roundtrip returned null';
+        statusEl.className = 'roundtrip-err';
+        hexEl.textContent = '—';
+        return;
+      }
+
+      const outLen = api.get_roundtrip_len();
+      const outBytes = heapRead(resultPtr, outLen);
+
+      hexEl.textContent = fmtHexBytes(outBytes);
+
+      const match = outLen === expected.length &&
+        outBytes.every((b, i) => b === expected[i]);
+
+      if (match) {
+        statusEl.textContent = '✓ bytes match';
+        statusEl.className = 'roundtrip-ok';
+      } else {
+        statusEl.textContent = `✗ mismatch (got ${outLen} bytes, expected ${expected.length})`;
+        statusEl.className = 'roundtrip-err';
+      }
     }
   </script>
 </body>
