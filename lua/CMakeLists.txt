@@ -61,6 +61,12 @@ install(FILES "${CMAKE_SOURCE_DIR}/lua/eolib.d.lua"
 	EXCLUDE_FROM_ALL
 )
 
+install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.txt"
+	DESTINATION .
+	COMPONENT lua_bindings
+	EXCLUDE_FROM_ALL
+)
+
 if(WIN32)
 	install(FILES "$<TARGET_FILE:eolib>"
 		DESTINATION .
