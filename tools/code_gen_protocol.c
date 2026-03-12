@@ -28,7 +28,8 @@ static void write_size_elements(FILE *source, const char *struct_name,
     const char *value_access);
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
     EnumDef *enums, size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *comment);
+    size_t structs_count, const char *comment,
+    const char *packet_family, const char *packet_action);
 
 static void write_enum_def(FILE *header, FILE *source, EnumDef *def)
 {
@@ -296,23 +297,14 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             }
             else if (is_struct)
             {
-                if (struct_has_storage(structs, structs_count, type_name))
-                {
-                    if (field->optional)
-                        fprintf(source,
-                                "    if ((result = %s_serialize(%s%s%s, writer)) != 0) return result;\n",
-                                type_name, value_expr, value_access, field_name);
-                    else
-                        fprintf(source,
-                                "    if ((result = %s_serialize(&%s%s%s, writer)) != 0) return result;\n",
-                                type_name, value_expr, value_access, field_name);
-                }
-                else
-                {
+                if (field->optional)
                     fprintf(source,
-                            "    if ((result = %s_serialize(writer)) != 0) return result;\n",
-                            type_name);
-                }
+                            "    if ((result = %s_serialize_fn((const EoSerialize *)%s%s%s, writer)) != 0) return result;\n",
+                            type_name, value_expr, value_access, field_name);
+                else
+                    fprintf(source,
+                            "    if ((result = %s_serialize_fn((const EoSerialize *)&%s%s%s, writer)) != 0) return result;\n",
+                            type_name, value_expr, value_access, field_name);
             }
             else if (strcmp(type_name, "bool") == 0)
             {
@@ -531,36 +523,9 @@ static void write_serialize_elements(FILE *source, const char *struct_name,
             }
             else if (is_struct)
             {
-                if (is_static)
-                {
-                    if (struct_has_storage(structs, structs_count, type_name))
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_serialize(&%s%s%s[i], writer)) != 0) return result;\n",
-                                type_name, value_expr, value_access, field_name);
-                    }
-                    else
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_serialize(writer)) != 0) return result;\n",
-                                type_name);
-                    }
-                }
-                else
-                {
-                    if (struct_has_storage(structs, structs_count, type_name))
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_serialize(&%s%s%s[i], writer)) != 0) return result;\n",
-                                type_name, value_expr, value_access, field_name);
-                    }
-                    else
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_serialize(writer)) != 0) return result;\n",
-                                type_name);
-                    }
-                }
+                fprintf(source,
+                        "        if ((result = %s_serialize_fn((const EoSerialize *)&%s%s%s[i], writer)) != 0) return result;\n",
+                        type_name, value_expr, value_access, field_name);
             }
             else if (strcmp(type_name, "bool") == 0)
             {
@@ -839,18 +804,9 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             }
             else if (is_struct)
             {
-                if (struct_has_storage(structs, structs_count, type_name))
-                {
-                    fprintf(source,
-                            "    if ((result = %s_deserialize(%s, reader)) != 0) return result;\n",
-                            type_name, addr_buffer);
-                }
-                else
-                {
-                    fprintf(source,
-                            "    if ((result = %s_deserialize(reader)) != 0) return result;\n",
-                            type_name);
-                }
+                fprintf(source,
+                        "    if ((result = %s_deserialize_fn((EoSerialize *)%s, reader)) != 0) return result;\n",
+                        type_name, addr_buffer);
             }
             else if (strcmp(type_name, "bool") == 0)
             {
@@ -949,18 +905,9 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 }
                 else if (is_struct)
                 {
-                    if (struct_has_storage(structs, structs_count, type_name))
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_deserialize(&%s%s%s[i], reader)) != 0) return result;\n",
-                                type_name, out_expr, out_access, field_name);
-                    }
-                    else
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_deserialize(reader)) != 0) return result;\n",
-                                type_name);
-                    }
+                    fprintf(source,
+                            "        if ((result = %s_deserialize_fn((EoSerialize *)&%s%s%s[i], reader)) != 0) return result;\n",
+                            type_name, out_expr, out_access, field_name);
                 }
                 else if (strcmp(type_name, "bool") == 0)
                 {
@@ -993,18 +940,9 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 }
                 else if (is_struct)
                 {
-                    if (struct_has_storage(structs, structs_count, type_name))
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_deserialize(&%s%s%s[i], reader)) != 0) return result;\n",
-                                type_name, out_expr, out_access, field_name);
-                    }
-                    else
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_deserialize(reader)) != 0) return result;\n",
-                                type_name);
-                    }
+                    fprintf(source,
+                            "        if ((result = %s_deserialize_fn((EoSerialize *)&%s%s%s[i], reader)) != 0) return result;\n",
+                            type_name, out_expr, out_access, field_name);
                 }
                 else if (strcmp(type_name, "bool") == 0)
                 {
@@ -1051,19 +989,10 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                 }
                 else if (is_struct)
                 {
-                    if (struct_has_storage(structs, structs_count, type_name))
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_deserialize(&%s%s%s[%s%s%s_length++], reader)) != 0) return result;\n",
-                                type_name, out_expr, out_access, field_name, out_expr,
-                                out_access, field_name);
-                    }
-                    else
-                    {
-                        fprintf(source,
-                                "        if ((result = %s_deserialize(reader)) != 0) return result;\n",
-                                type_name);
-                    }
+                    fprintf(source,
+                            "        if ((result = %s_deserialize_fn((EoSerialize *)&%s%s%s[%s%s%s_length++], reader)) != 0) return result;\n",
+                            type_name, out_expr, out_access, field_name, out_expr,
+                            out_access, field_name);
                 }
                 else if (strcmp(type_name, "bool") == 0)
                 {
@@ -1231,7 +1160,7 @@ static void write_free_elements(FILE *source, const char *struct_name,
                 if (field->optional)
                 {
                     if (struct_has_heap(structs, structs_count, type_name, enums, enums_count))
-                        fprintf(source, "    if (%s%s%s) { %s_free(%s%s%s); free(%s%s%s); }\n",
+                        fprintf(source, "    if (%s%s%s) { %s_free_fn((EoSerialize *)%s%s%s); free(%s%s%s); }\n",
                                 value_expr, value_access, field_name,
                                 type_name, value_expr, value_access, field_name,
                                 value_expr, value_access, field_name);
@@ -1241,7 +1170,7 @@ static void write_free_elements(FILE *source, const char *struct_name,
                 else
                 {
                     if (struct_has_heap(structs, structs_count, type_name, enums, enums_count))
-                        fprintf(source, "    %s_free(&%s%s%s);\n", type_name, value_expr, value_access,
+                        fprintf(source, "    %s_free_fn((EoSerialize *)&%s%s%s);\n", type_name, value_expr, value_access,
                                 field_name);
                 }
             }
@@ -1290,7 +1219,7 @@ static void write_free_elements(FILE *source, const char *struct_name,
                 if (elem_has_heap)
                 {
                     fprintf(source,
-                            "    { size_t _fi; for (_fi = 0; _fi < %s%s%s_length; _fi++) %s_free(&%s%s%s[_fi]); }\n",
+                            "    { size_t _fi; for (_fi = 0; _fi < %s%s%s_length; _fi++) %s_free_fn((EoSerialize *)&%s%s%s[_fi]); }\n",
                             value_expr, value_access, field_name, type_name,
                             value_expr, value_access, field_name);
                 }
@@ -1299,7 +1228,7 @@ static void write_free_elements(FILE *source, const char *struct_name,
             else if (is_static && elem_has_heap)
             {
                 fprintf(source,
-                        "    { size_t _fi; for (_fi = 0; _fi < %s; _fi++) %s_free(&%s%s%s[_fi]); }\n",
+                        "    { size_t _fi; for (_fi = 0; _fi < %s; _fi++) %s_free_fn((EoSerialize *)&%s%s%s[_fi]); }\n",
                         array->length, type_name, value_expr, value_access, field_name);
             }
 
@@ -1607,17 +1536,15 @@ static void write_size_elements(FILE *source, const char *struct_name,
 
             if (is_struct)
             {
-                if (field_name && struct_has_storage(structs, structs_count, type_name))
+                if (field_name)
                 {
                     if (field->optional)
-                        fprintf(source, "    total += %s_size(%s%s%s);\n",
+                        fprintf(source, "    total += %s_get_size_fn((const EoSerialize *)%s%s%s);\n",
                                 type_name, value_expr, value_access, field_name);
                     else
-                        fprintf(source, "    total += %s_size(&%s%s%s);\n",
+                        fprintf(source, "    total += %s_get_size_fn((const EoSerialize *)&%s%s%s);\n",
                                 type_name, value_expr, value_access, field_name);
                 }
-                else
-                    fprintf(source, "    total += %s_size();\n", type_name);
             }
             else if (strcmp(type_name, "blob") == 0 && field_name)
             {
@@ -1723,11 +1650,8 @@ static void write_size_elements(FILE *source, const char *struct_name,
 
                 if (is_struct)
                 {
-                    if (struct_has_storage(structs, structs_count, type_name))
-                        fprintf(source, "        total += %s_size(&%s%s%s[_i]);\n",
-                                type_name, value_expr, value_access, field_name);
-                    else
-                        fprintf(source, "        total += %s_size();\n", type_name);
+                    fprintf(source, "        total += %s_get_size_fn((const EoSerialize *)&%s%s%s[_i]);\n",
+                            type_name, value_expr, value_access, field_name);
                 }
                 else if (strcmp(type_name, "string") == 0 ||
                          strcmp(type_name, "encoded_string") == 0)
@@ -1838,159 +1762,167 @@ static void write_size_elements(FILE *source, const char *struct_name,
 
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
                              EnumDef *enums, size_t enums_count, StructDef *structs,
-                             size_t structs_count, const char *comment)
+                             size_t structs_count, const char *comment,
+                             const char *packet_family, const char *packet_action)
 {
     int has_storage = element_list_has_storage(elements);
     int has_heap = has_storage && element_list_has_heap(elements, enums, enums_count,
                                                         structs, structs_count);
+    int is_packet = (packet_family != NULL);
 
-    if (has_storage)
-    {
-        if (comment)
-            write_doc_comment(header, comment, "");
-        fprintf(header, "typedef struct %s {\n", name);
-        write_struct_fields(header, name, elements, enums, enums_count, structs, structs_count);
-        fprintf(header, "} %s;\n\n", name);
-
-        fprintf(header,
-                "/** @brief Serializes a ::%s to an ::EoWriter.\n"
-                " * @param value Pointer to the ::%s to serialize.\n"
-                " * @param writer Writer to serialize into.\n"
-                " * @return ::EO_SUCCESS on success, or an error code on failure.\n"
-                " */\n",
-                name, name);
-        fprintf(header,
-                "EoResult %s_serialize(const %s *value, EoWriter *writer);\n",
-                name,
-                name);
-        fprintf(header,
-                "/** @brief Deserializes a ::%s from an ::EoReader.\n"
-                " * @param out Output struct. Must be zero-initialized (e.g. `%s out = {0}`) before calling.\n"
-                " * @param reader Reader to deserialize from.\n"
-                " * @return ::EO_SUCCESS on success, or an error code on failure.\n"
-                " */\n",
-                name, name);
-        fprintf(header,
-                "EoResult %s_deserialize(%s *out, EoReader *reader);\n",
-                name,
-                name);
-        fprintf(header,
-                "/** @brief Returns the serialized byte size of a ::%s.\n"
-                " * @param value Pointer to the ::%s to measure. Returns 0 if @p value is NULL.\n"
-                " * @return Number of bytes that %s_serialize() would write.\n"
-                " */\n",
-                name, name, name);
-        fprintf(header, "size_t %s_size(const %s *value);\n", name, name);
-        if (has_heap)
-        {
-            fprintf(header,
-                    "/** @brief Frees heap-allocated fields within a ::%s and zeroes the struct.\n"
-                    " * @param value Pointer to the struct to free. If NULL, this function does nothing.\n"
-                    " * @note It is safe to call this on a zero-initialized struct.\n"
-                    " */\n",
-                    name);
-            fprintf(header, "void %s_free(%s *value);\n", name, name);
-        }
-        fprintf(header, "\n");
-
-        fprintf(source, "EoResult %s_serialize(const %s *value, EoWriter *writer) {\n", name, name);
-        fprintf(source, "    EoResult result = EO_SUCCESS;\n");
-        fprintf(source,
-                "    bool previous_sanitization = eo_writer_get_string_sanitization_mode(writer);\n");
-
-        write_serialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
-                                 "value", "->");
-
-        fprintf(source,
-                "    eo_writer_set_string_sanitization_mode(writer, previous_sanitization);\n");
-        fprintf(source, "    return result;\n}\n\n");
-
-        fprintf(source, "EoResult %s_deserialize(%s *out, EoReader *reader) {\n", name, name);
-        fprintf(source, "    EoResult result = EO_SUCCESS;\n");
-        fprintf(source,
-                "    bool previous_chunked = eo_reader_get_chunked_reading_mode(reader);\n");
-        fprintf(source, "    memset(out, 0, sizeof(*out));\n");
-
-        write_deserialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
-                                   "out", "->");
-
-        fprintf(source, "    eo_reader_set_chunked_reading_mode(reader, previous_chunked);\n");
-        fprintf(source, "    return result;\n}\n\n");
-
-        fprintf(source, "size_t %s_size(const %s *value) {\n", name, name);
-        fprintf(source, "    if (!value) return 0;\n");
-        fprintf(source, "    size_t total = %d;\n",
-                compute_elements_precomputed_size(elements, enums, enums_count, structs, structs_count));
-        write_size_elements(source, name, elements, enums, enums_count, structs, structs_count,
-                            "value", "->");
-        fprintf(source, "    return total;\n}\n\n");
-
-        if (has_heap)
-        {
-            fprintf(source, "void %s_free(%s *value) {\n", name, name);
-            fprintf(source, "    if (!value) return;\n");
-            write_free_elements(source, name, elements, enums, enums_count, structs, structs_count,
-                                "value", "->");
-            fprintf(source, "}\n\n");
-        }
-        return;
-    }
-
+    /* ---- Header ---- */
     if (comment)
         write_doc_comment(header, comment, "");
+    fprintf(header, "typedef struct %s {\n", name);
+    if (is_packet)
+        fprintf(header, "    EoPacket _eo;\n");
+    else
+        fprintf(header, "    EoSerialize _eo;\n");
+    if (has_storage)
+        write_struct_fields(header, name, elements, enums, enums_count, structs, structs_count);
+    fprintf(header, "} %s;\n\n", name);
     fprintf(header,
-            "/** @brief Serializes a ::%s to an ::EoWriter.\n"
-            " * @param writer Writer to serialize into.\n"
-            " * @return ::EO_SUCCESS on success, or an error code on failure.\n"
-            " */\n",
-            name);
-    fprintf(header,
-            "EoResult %s_serialize(EoWriter *writer);\n",
-            name);
-    fprintf(header,
-            "/** @brief Deserializes a ::%s from an ::EoReader.\n"
-            " * @param reader Reader to deserialize from.\n"
-            " * @return ::EO_SUCCESS on success, or an error code on failure.\n"
-            " */\n",
-            name);
-    fprintf(header,
-            "EoResult %s_deserialize(EoReader *reader);\n",
-            name);
-    fprintf(header,
-            "/** @brief Returns the serialized byte size of a ::%s.\n"
-            " * @return Number of bytes that %s_serialize() would write.\n"
+            "/** @brief Creates a new ::%s with the serialization vtable initialized.\n"
+            " * @return A zero-initialized ::%s with its vtable pointer set.\n"
             " */\n",
             name, name);
-    fprintf(header, "size_t %s_size(void);\n\n", name);
+    fprintf(header, "%s %s_init(void);\n\n", name, name);
 
-    fprintf(source, "EoResult %s_serialize(EoWriter *writer) {\n", name);
+    /* ---- Source: forward declarations ---- */
+    fprintf(source,
+            "static EoResult %s_serialize_fn(const EoSerialize *self, EoWriter *writer);\n",
+            name);
+    fprintf(source,
+            "static EoResult %s_deserialize_fn(EoSerialize *self, EoReader *reader);\n",
+            name);
+    fprintf(source, "static size_t %s_get_size_fn(const EoSerialize *self);\n", name);
+    if (has_heap)
+        fprintf(source, "static void %s_free_fn(EoSerialize *self);\n", name);
+    if (is_packet)
+    {
+        fprintf(source, "static uint8_t %s_get_family_fn(const EoPacket *self);\n", name);
+        fprintf(source, "static uint8_t %s_get_action_fn(const EoPacket *self);\n", name);
+    }
+    fprintf(source, "\n");
+
+    /* ---- Source: vtable definitions ---- */
+    fprintf(source, "static const EoSerializeVTable %s_vtable = {\n", name);
+    fprintf(source, "    %s_deserialize_fn,\n", name);
+    fprintf(source, "    %s_serialize_fn,\n", name);
+    fprintf(source, "    %s_get_size_fn,\n", name);
+    if (has_heap)
+        fprintf(source, "    %s_free_fn,\n", name);
+    else
+        fprintf(source, "    NULL,\n");
+    fprintf(source, "};\n");
+
+    if (is_packet)
+    {
+        fprintf(source, "static const EoPacketVTable %s_packet_vtable = {\n", name);
+        fprintf(source, "    %s_get_family_fn,\n", name);
+        fprintf(source, "    %s_get_action_fn,\n", name);
+        fprintf(source, "};\n");
+    }
+    fprintf(source, "\n");
+
+    /* ---- Source: init ---- */
+    fprintf(source, "%s %s_init(void) {\n", name, name);
+    fprintf(source, "    %s result = {0};\n", name);
+    if (is_packet)
+    {
+        fprintf(source, "    result._eo.base.vtable = &%s_vtable;\n", name);
+        fprintf(source, "    result._eo.vtable = &%s_packet_vtable;\n", name);
+    }
+    else
+    {
+        fprintf(source, "    result._eo.vtable = &%s_vtable;\n", name);
+    }
+    fprintf(source, "    return result;\n}\n\n");
+
+    /* ---- Source: serialize ---- */
+    fprintf(source,
+            "static EoResult %s_serialize_fn(const EoSerialize *self, EoWriter *writer) {\n",
+            name);
+    if (has_storage)
+        fprintf(source, "    const %s *value = (const %s *)self;\n", name, name);
+    else
+        fprintf(source, "    (void)self;\n");
     fprintf(source, "    EoResult result = EO_SUCCESS;\n");
     fprintf(source,
             "    bool previous_sanitization = eo_writer_get_string_sanitization_mode(writer);\n");
-
     write_serialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
-                             "", "");
-
+                             has_storage ? "value" : "", has_storage ? "->" : "");
     fprintf(source,
             "    eo_writer_set_string_sanitization_mode(writer, previous_sanitization);\n");
     fprintf(source, "    return result;\n}\n\n");
 
-    fprintf(source, "EoResult %s_deserialize(EoReader *reader) {\n", name);
+    /* ---- Source: deserialize ---- */
+    fprintf(source,
+            "static EoResult %s_deserialize_fn(EoSerialize *self, EoReader *reader) {\n",
+            name);
+    fprintf(source, "    %s *out = (%s *)self;\n", name, name);
     fprintf(source, "    EoResult result = EO_SUCCESS;\n");
     fprintf(source,
             "    bool previous_chunked = eo_reader_get_chunked_reading_mode(reader);\n");
-
+    fprintf(source, "    memset(out, 0, sizeof(*out));\n");
+    if (is_packet)
+    {
+        fprintf(source, "    out->_eo.base.vtable = &%s_vtable;\n", name);
+        fprintf(source, "    out->_eo.vtable = &%s_packet_vtable;\n", name);
+    }
+    else
+    {
+        fprintf(source, "    out->_eo.vtable = &%s_vtable;\n", name);
+    }
     write_deserialize_elements(source, name, elements, enums, enums_count, structs, structs_count,
-                               "", "");
-
+                               has_storage ? "out" : "", has_storage ? "->" : "");
     fprintf(source, "    eo_reader_set_chunked_reading_mode(reader, previous_chunked);\n");
     fprintf(source, "    return result;\n}\n\n");
 
-    fprintf(source, "size_t %s_size(void) {\n", name);
+    /* ---- Source: get_size ---- */
+    fprintf(source, "static size_t %s_get_size_fn(const EoSerialize *self) {\n", name);
+    if (has_storage)
+    {
+        fprintf(source, "    const %s *value = (const %s *)self;\n", name, name);
+        fprintf(source, "    if (!value) return 0;\n");
+    }
+    else
+    {
+        fprintf(source, "    (void)self;\n");
+    }
     fprintf(source, "    size_t total = %d;\n",
             compute_elements_precomputed_size(elements, enums, enums_count, structs, structs_count));
-    write_size_elements(source, name, elements, enums, enums_count, structs, structs_count, "", "");
+    write_size_elements(source, name, elements, enums, enums_count, structs, structs_count,
+                        has_storage ? "value" : "", has_storage ? "->" : "");
     fprintf(source, "    return total;\n}\n\n");
+
+    /* ---- Source: free (only when has_heap) ---- */
+    if (has_heap)
+    {
+        fprintf(source, "static void %s_free_fn(EoSerialize *self) {\n", name);
+        fprintf(source, "    %s *value = (%s *)self;\n", name, name);
+        fprintf(source, "    if (!value) return;\n");
+        write_free_elements(source, name, elements, enums, enums_count, structs, structs_count,
+                            "value", "->");
+        fprintf(source, "}\n\n");
+    }
+
+    /* ---- Source: get_family / get_action (packets only) ---- */
+    if (is_packet)
+    {
+        char *family_upper = to_upper_snake(packet_family);
+        char *action_upper = to_upper_snake(packet_action);
+        fprintf(source, "static uint8_t %s_get_family_fn(const EoPacket *self) {\n", name);
+        fprintf(source, "    (void)self;\n");
+        fprintf(source, "    return PACKET_FAMILY_%s;\n", family_upper);
+        fprintf(source, "}\n\n");
+        fprintf(source, "static uint8_t %s_get_action_fn(const EoPacket *self) {\n", name);
+        fprintf(source, "    (void)self;\n");
+        fprintf(source, "    return PACKET_ACTION_%s;\n", action_upper);
+        fprintf(source, "}\n\n");
+        free(family_upper);
+        free(action_upper);
+    }
 }
 
 void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
@@ -2062,7 +1994,7 @@ void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
             write_struct_def(header, source, protocol->structs[i].name,
                              &protocol->structs[i].elements, all_enums,
                              all_enums_count, all_structs, all_structs_count,
-                             protocol->structs[i].comment);
+                             protocol->structs[i].comment, NULL, NULL);
             string_list_push(&written_structs, protocol->structs[i].name);
         }
     }
@@ -2088,7 +2020,8 @@ void write_protocol_files(ProtocolDef *protocols, size_t protocol_count)
                      protocol->packets[i].family, protocol->packets[i].action, source_suffix);
             write_struct_def(header, source, name_buffer, &protocol->packets[i].elements,
                              all_enums, all_enums_count, all_structs, all_structs_count,
-                             protocol->packets[i].comment);
+                             protocol->packets[i].comment,
+                             protocol->packets[i].family, protocol->packets[i].action);
         }
     }
 

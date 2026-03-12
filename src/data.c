@@ -1172,45 +1172,4 @@ EoResult eo_reader_get_bytes(EoReader *reader, size_t length, uint8_t **out_valu
     return EO_SUCCESS;
 }
 
-static inline EoResult eo_deserialize(EoSerialize *serialize, EoReader *reader)
-{
-    if (!serialize || !reader)
-    {
-        return EO_NULL_PTR;
-    }
 
-    return serialize->vtable->deserialize(serialize, reader);
-}
-
-static inline EoResult eo_serialize(const EoSerialize *serialize, EoWriter *writer)
-{
-    if (!serialize || !writer)
-    {
-        return EO_NULL_PTR;
-    }
-
-    return serialize->vtable->serialize(serialize, writer);
-}
-
-static inline size_t eo_get_size(const EoSerialize *serialize)
-{
-    return serialize ? serialize->vtable->get_size(serialize) : 0;
-}
-
-static inline void eo_free(EoSerialize *serialize)
-{
-    if (serialize)
-    {
-        serialize->vtable->free(serialize);
-    }
-}
-
-static inline uint8_t eo_packet_get_family(const EoPacket *packet)
-{
-    return packet ? packet->vtable->get_family(packet) : 0;
-}
-
-static inline uint8_t eo_packet_get_action(const EoPacket *packet)
-{
-    return packet ? packet->vtable->get_action(packet) : 0;
-}

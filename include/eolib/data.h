@@ -387,8 +387,8 @@ typedef struct EoSerialize EoSerialize;
 typedef struct
 {
     EoResult (*deserialize)(EoSerialize *self, EoReader *reader);
-    EoResult (*serialize)(EoSerialize *self, EoWriter *writer);
-    size_t (*get_size)(EoSerialize *self);
+    EoResult (*serialize)(const EoSerialize *self, EoWriter *writer);
+    size_t (*get_size)(const EoSerialize *self);
     void (*free)(EoSerialize *self);
 } EoSerializeVTable;
 
@@ -404,7 +404,11 @@ struct EoSerialize
  * @return EO_SUCCESS on success, EO_NULL_PTR if serialize or reader is NULL,
  *        or a non-zero EoResult if deserialization fails.
  */
-static inline EoResult eo_deserialize(EoSerialize *serialize, EoReader *reader);
+static inline EoResult eo_deserialize(EoSerialize *serialize, EoReader *reader)
+{
+    if (!serialize || !reader) return EO_NULL_PTR;
+    return serialize->vtable->deserialize(serialize, reader);
+}
 
 /**
  * Serializes a struct implementing EoSerialize into a writer.
@@ -413,21 +417,33 @@ static inline EoResult eo_deserialize(EoSerialize *serialize, EoReader *reader);
  * @return EO_SUCCESS on success, EO_NULL_PTR if serialize or writer is NULL,
  *       or a non-zero EoResult if serialization fails.
  */
-static inline EoResult eo_serialize(const EoSerialize *serialize, EoWriter *writer);
+static inline EoResult eo_serialize(const EoSerialize *serialize, EoWriter *writer)
+{
+    if (!serialize || !writer) return EO_NULL_PTR;
+    return serialize->vtable->serialize(serialize, writer);
+}
 
 /**
  * Returns the size in bytes of the serialized form of a struct implementing EoSerialize.
  * @param serialize Struct to query.
  * @return Size in bytes of the serialized form, or 0 if serialize is NULL.
  */
-static inline size_t eo_get_size(const EoSerialize *serialize);
+static inline size_t eo_get_size(const EoSerialize *serialize)
+{
+    if (!serialize) return 0;
+    return serialize->vtable->get_size(serialize);
+}
 
 /**
  * Frees any heap-allocated memory owned by a struct implementing EoSerialize.
  * @param serialize Struct to free.
  * @remarks This function does not free the struct itself, only any internal memory it owns.
  */
-static inline void eo_free(EoSerialize *serialize);
+static inline void eo_free(EoSerialize *serialize)
+{
+    if (!serialize || !serialize->vtable || !serialize->vtable->free) return;
+    serialize->vtable->free(serialize);
+}
 
 /**
  * @brief Interface for EO packets, which are serializable objects with a family and action.
@@ -450,13 +466,21 @@ struct EoPacket
  * @param packet EO packet to query.
  * @return Family of the EO packet.
  */
-static inline uint8_t eo_packet_get_family(const EoPacket *packet);
+static inline uint8_t eo_packet_get_family(const EoPacket *packet)
+{
+    if (!packet) return 0;
+    return packet->vtable->get_family(packet);
+}
 
 /**
  * @brief Gets the action of an EO packet.
  * @param packet EO packet to query.
  * @return Action of the EO packet.
  */
-static inline uint8_t eo_packet_get_action(const EoPacket *packet);
+static inline uint8_t eo_packet_get_action(const EoPacket *packet)
+{
+    if (!packet) return 0;
+    return packet->vtable->get_action(packet);
+}
 
 #endif

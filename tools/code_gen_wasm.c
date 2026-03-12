@@ -150,26 +150,13 @@ typedef struct
 static void write_dispatch_case(FILE *f, const DispatchEntry *e)
 {
     fprintf(f, "                    if (direction == %d) {\n", e->direction);
-    if (e->has_storage)
-    {
-        fprintf(f, "                        %s pkt;\n", e->struct_name);
-        fprintf(f, "                        result = %s_deserialize(&pkt, &reader);\n",
-                e->struct_name);
-        fprintf(f, "                        if (result != -1) {\n");
-        fprintf(f, "                            result = %s_serialize(&pkt, &writer);\n",
-                e->struct_name);
-        if (e->has_heap)
-            fprintf(f, "                            %s_free(&pkt);\n", e->struct_name);
-        fprintf(f, "                        }\n");
-    }
-    else
-    {
-        fprintf(f, "                        result = %s_deserialize(&reader);\n",
-                e->struct_name);
-        fprintf(f, "                        if (result != -1)\n");
-        fprintf(f, "                            result = %s_serialize(&writer);\n",
-                e->struct_name);
-    }
+    fprintf(f, "                        %s pkt = %s_init();\n",
+            e->struct_name, e->struct_name);
+    fprintf(f, "                        result = eo_deserialize((EoSerialize *)&pkt, &reader);\n");
+    fprintf(f, "                        if (result != -1) {\n");
+    fprintf(f, "                            result = eo_serialize((const EoSerialize *)&pkt, &writer);\n");
+    fprintf(f, "                            eo_free((EoSerialize *)&pkt);\n");
+    fprintf(f, "                        }\n");
     fprintf(f, "                    }\n");
 }
 

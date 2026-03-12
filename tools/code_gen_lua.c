@@ -690,13 +690,11 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
 
         fprintf(f, "static int lua_%s_serialize(lua_State *L)\n{\n", name);
         fprintf(f, "    luaL_checktype(L, 1, LUA_TTABLE);\n");
-        fprintf(f, "    %s __val;\n", name);
-        fprintf(f, "    memset(&__val, 0, sizeof(__val));\n");
+        fprintf(f, "    %s __val = %s_init();\n", name, name);
         fprintf(f, "    lua_table_to_%s(L, 1, &__val);\n", name);
-        fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(%s_size(&__val));\n", name);
-        fprintf(f, "    EoResult __r = %s_serialize(&__val, &__writer);\n", name);
-        if (has_heap)
-            fprintf(f, "    %s_free(&__val);\n", name);
+        fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(eo_get_size((const EoSerialize *)&__val));\n");
+        fprintf(f, "    EoResult __r = eo_serialize((const EoSerialize *)&__val, &__writer);\n");
+        fprintf(f, "    eo_free((EoSerialize *)&__val);\n");
         fprintf(f,
             "    if (__r != EO_SUCCESS) { eo_writer_free(&__writer);"
             " return luaL_error(L, \"serialize failed: %%s\", eo_result_string(__r)); }\n");
@@ -708,28 +706,24 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         fprintf(f, "    size_t __len;\n");
         fprintf(f, "    const char *__data = luaL_checklstring(L, 1, &__len);\n");
         fprintf(f, "    EoReader __reader = eo_reader_init((const uint8_t *)__data, __len);\n");
-        fprintf(f, "    %s __val;\n", name);
-        fprintf(f, "    memset(&__val, 0, sizeof(__val));\n");
-        fprintf(f, "    EoResult __r = %s_deserialize(&__val, &__reader);\n", name);
+        fprintf(f, "    %s __val = %s_init();\n", name, name);
+        fprintf(f, "    EoResult __r = eo_deserialize((EoSerialize *)&__val, &__reader);\n");
         fprintf(f,
             "    if (__r != EO_SUCCESS) { return luaL_error(L, \"deserialize failed: %%s\","
             " eo_result_string(__r)); }\n");
         fprintf(f, "    %s_to_lua_table(L, &__val);\n", name);
         fprintf(f, "    eolib_setmetatable(L, \"eolib.%s\");\n", name);
-        if (has_heap)
-            fprintf(f, "    %s_free(&__val);\n", name);
+        fprintf(f, "    eo_free((EoSerialize *)&__val);\n");
         fprintf(f, "    return 1;\n}\n\n");
 
         fprintf(f, "static int lua_%s_write(lua_State *L)\n{\n", name);
         fprintf(f, "    luaL_checktype(L, 1, LUA_TTABLE);\n");
         fprintf(f,
             "    LuaEoWriter *__uw = (LuaEoWriter *)luaL_checkudata(L, 2, EOLIB_WRITER_MT);\n");
-        fprintf(f, "    %s __val;\n", name);
-        fprintf(f, "    memset(&__val, 0, sizeof(__val));\n");
+        fprintf(f, "    %s __val = %s_init();\n", name, name);
         fprintf(f, "    lua_table_to_%s(L, 1, &__val);\n", name);
-        fprintf(f, "    EoResult __r = %s_serialize(&__val, &__uw->writer);\n", name);
-        if (has_heap)
-            fprintf(f, "    %s_free(&__val);\n", name);
+        fprintf(f, "    EoResult __r = eo_serialize((const EoSerialize *)&__val, &__uw->writer);\n");
+        fprintf(f, "    eo_free((EoSerialize *)&__val);\n");
         fprintf(f,
             "    if (__r != EO_SUCCESS) { return luaL_error(L, \"write failed: %%s\","
             " eo_result_string(__r)); }\n");
@@ -758,8 +752,9 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
     {
         fprintf(f, "static int lua_%s_serialize(lua_State *L)\n{\n", name);
         fprintf(f, "    (void)L;\n");
-        fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(%s_size());\n", name);
-        fprintf(f, "    EoResult __r = %s_serialize(&__writer);\n", name);
+        fprintf(f, "    %s __val = %s_init();\n", name, name);
+        fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(eo_get_size((const EoSerialize *)&__val));\n");
+        fprintf(f, "    EoResult __r = eo_serialize((const EoSerialize *)&__val, &__writer);\n");
         fprintf(f,
             "    if (__r != EO_SUCCESS) { eo_writer_free(&__writer);"
             " return luaL_error(L, \"serialize failed: %%s\", eo_result_string(__r)); }\n");
@@ -771,7 +766,8 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         fprintf(f, "    size_t __len;\n");
         fprintf(f, "    const char *__data = luaL_checklstring(L, 1, &__len);\n");
         fprintf(f, "    EoReader __reader = eo_reader_init((const uint8_t *)__data, __len);\n");
-        fprintf(f, "    EoResult __r = %s_deserialize(&__reader);\n", name);
+        fprintf(f, "    %s __val = %s_init();\n", name, name);
+        fprintf(f, "    EoResult __r = eo_deserialize((EoSerialize *)&__val, &__reader);\n");
         fprintf(f,
             "    if (__r != EO_SUCCESS) { return luaL_error(L, \"deserialize failed: %%s\","
             " eo_result_string(__r)); }\n");

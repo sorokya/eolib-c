@@ -700,60 +700,37 @@ void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
             fprintf(f, "\n");
 
             int has_heap = packet_heap_map_lookup(&map, packet_name);
+            (void)has_heap; /* eo_free is safe to call even when there is nothing to free */
 
-            if (has_storage)
+            fprintf(f, "    %s packet = %s_init();\n", packet_name, packet_name);
+            fprintf(f,
+                    "    int deser_result = eo_deserialize((EoSerialize *)&packet, &reader);\n");
+            fprintf(f,
+                    "    expect(\"%s_deserialize\", deser_result != -1);\n",
+                    packet_name);
+            fprintf(f, "    if (deser_result == -1) return;\n");
+            fprintf(f, "\n");
+            if (has_storage && properties_obj)
             {
-                fprintf(f, "    %s packet;\n", packet_name);
-                fprintf(f,
-                        "    int deser_result = %s_deserialize(&packet, &reader);\n",
-                        packet_name);
-                fprintf(f,
-                        "    expect(\"%s_deserialize\", deser_result != -1);\n",
-                        packet_name);
-                fprintf(f, "    if (deser_result == -1) return;\n");
+                write_property_assertions(f, properties_obj, "packet.",
+                                          name_start, packet_name,
+                                          &known_structs, &fixed_arrays);
                 fprintf(f, "\n");
-                if (properties_obj)
-                {
-                    write_property_assertions(f, properties_obj, "packet.",
-                                              name_start, packet_name,
-                                              &known_structs, &fixed_arrays);
-                    fprintf(f, "\n");
-                }
-                fprintf(f, "    EoWriter writer = eo_writer_init_with_capacity("
-                           "expected_len > 0 ? expected_len : 1);\n");
-                fprintf(f,
-                        "    expect(\"%s_serialize\","
-                        " %s_serialize(&packet, &writer) != -1);\n",
-                        packet_name, packet_name);
-                if (expected_len > 0)
-                {
-                    fprintf(f,
-                            "    expect_equal_bytes(\"%s roundtrip\","
-                            " writer.data, expected, expected_len);\n",
-                            packet_name);
-                }
-                if (has_heap)
-                {
-                    fprintf(f, "    %s_free(&packet);\n", packet_name);
-                }
             }
-            else
+            fprintf(f, "    EoWriter writer = eo_writer_init_with_capacity("
+                       "eo_get_size((const EoSerialize *)&packet));\n");
+            fprintf(f,
+                    "    expect(\"%s_serialize\","
+                    " eo_serialize((const EoSerialize *)&packet, &writer) != -1);\n",
+                    packet_name);
+            if (expected_len > 0)
             {
                 fprintf(f,
-                        "    int deser_result = %s_deserialize(&reader);\n",
+                        "    expect_equal_bytes(\"%s roundtrip\","
+                        " writer.data, expected, expected_len);\n",
                         packet_name);
-                fprintf(f,
-                        "    expect(\"%s_deserialize\", deser_result != -1);\n",
-                        packet_name);
-                fprintf(f, "    if (deser_result == -1) return;\n");
-                fprintf(f, "\n");
-                fprintf(f, "    EoWriter writer = eo_writer_init_with_capacity("
-                           "expected_len > 0 ? expected_len : 1);\n");
-                fprintf(f,
-                        "    expect(\"%s_serialize\","
-                        " %s_serialize(&writer) != -1);\n",
-                        packet_name, packet_name);
             }
+            fprintf(f, "    eo_free((EoSerialize *)&packet);\n");
 
             fprintf(f, "    free(writer.data);\n");
             fprintf(f, "}\n\n");
