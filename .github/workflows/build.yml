@@ -201,6 +201,7 @@ jobs:
           cmake -S . -B build -G "${{ matrix.generator }}"
           -A ${{ matrix.msvc_arch }}
           -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\\scripts\\buildsystems\\vcpkg.cmake
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
           -DEOLIB_PACKAGE_PLATFORM=${{ matrix.package_platform }}
           -DEOLIB_BUILD_LUA_BINDINGS=ON
           ${{ matrix.toolset && format('-T {0}', matrix.toolset) || '' }}
@@ -258,7 +259,13 @@ jobs:
           key: vcpkg-${{ matrix.os }}-${{ matrix.vcpkg_triplet }}-62159a45e18f3a9ac0548628dcaf74fcb60c6ff9
 
       - name: Run Tests
+        if: matrix.compiler != 'mingw'
         run: ctest --output-on-failure -C ${{ matrix.build_type }} --test-dir build
+
+      - name: Run Tests (MinGW)
+        if: matrix.compiler == 'mingw'
+        shell: msys2 {0}
+        run: ctest --output-on-failure --test-dir build
 
       - name: Run Lua Tests
         if: matrix.compiler != 'msvc' && matrix.compiler != 'clang-cl' && matrix.compiler != 'mingw'
