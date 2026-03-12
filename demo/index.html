@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EOLib WASM Demo</title>
+  <link rel="stylesheet" href="https://unpkg.com/98.css" />
+  <style>
+    body {
+      background: #008080;
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .main-window {
+      width: 740px;
+      max-width: 100%;
+    }
+
+    /* Tab content panels */
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Result display areas */
+    .result {
+      background: white;
+      box-shadow: inset -1px -1px #fff, inset 1px 1px grey,
+        inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+      padding: 4px 6px;
+      min-height: 24px;
+      font-family: monospace;
+      font-size: 11px;
+      word-break: break-all;
+    }
+
+    .result.err {
+      color: red;
+    }
+
+    .result-label {
+      font-size: 11px;
+      margin: 6px 0 2px;
+    }
+
+    /* Hex byte chips */
+    .hex-byte {
+      display: inline-block;
+      border: 1px solid #808080;
+      background: #dfdfdf;
+      padding: 0 3px;
+      margin: 1px;
+      font-family: monospace;
+      font-size: 11px;
+    }
+
+    /* Make inputs/textareas fill their container when needed */
+    .full-width {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Two-column layout for side-by-side textareas */
+    .two-col {
+      display: flex;
+      gap: 8px;
+    }
+
+    .two-col>* {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Sequencer table */
+    .seq-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 11px;
+    }
+
+    .seq-table th,
+    .seq-table td {
+      border: 1px solid #dfdfdf;
+      padding: 2px 8px;
+      text-align: left;
+    }
+
+    .seq-table thead {
+      background: #dfdfdf;
+    }
+
+    .seq-table tr.highlight {
+      background: #000080;
+      color: white;
+    }
+
+    /* Stack label above input */
+    .field-row-stacked textarea,
+    .field-row-stacked input[type="text"] {
+      width: 100%;
+    }
+
+    /* Loading overlay */
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: #008080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #loadingOverlay.hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Loading overlay -->
+  <div id="loadingOverlay">
+    <div class="window" style="width:280px">
+      <div class="title-bar">
+        <div class="title-bar-text">Please wait…</div>
+      </div>
+      <div class="window-body">
+        <p id="loadingText">Loading WASM module…</p>
+        <p id="loadError" style="display:none;color:red;margin-top:6px"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main window -->
+  <div class="window main-window">
+    <div class="title-bar">
+      <div class="title-bar-text">🌙 EOLib WASM Demo</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close"></button>
+      </div>
+    </div>
+    <div class="window-body">
+
+      <!-- Tabs -->
+      <menu role="tablist">
+        <li role="tab" aria-selected="true"><a href="#tab-numbers">Number Codec</a></li>
+        <li role="tab"><a href="#tab-strings">String Codec</a></li>
+        <li role="tab"><a href="#tab-encrypt">Encryption</a></li>
+        <li role="tab"><a href="#tab-sequencer">Sequencer</a></li>
+      </menu>
+
+      <!-- Tab content window -->
+      <div class="window" style="margin-top:-2px">
+        <div class="window-body">
+
+          <!-- ══════════════════════════════════════════════════
+             TAB 1: NUMBER CODEC
+        ══════════════════════════════════════════════════ -->
+          <article role="tabpanel" id="tab-numbers" class="tab-panel active">
+            <fieldset>
+              <legend>Encode Number</legend>
+              <div class="field-row">
+                <label for="enc-value">Value</label>
+                <input id="enc-value" type="number" value="12345" min="0" style="width:110px" />
+                <label for="enc-size" style="margin-left:8px">Size</label>
+                <select id="enc-size">
+                  <option value="1">Char (1 byte, max 252)</option>
+                  <option value="2">Short (2 bytes, max 64008)</option>
+                  <option value="3">Three (3 bytes, max 16194276)</option>
+                  <option value="4" selected>Int (4 bytes, max 4097152080)</option>
+                </select>
+                <button onclick="doEncodeNumber()" style="margin-left:8px">Encode</button>
+              </div>
+              <p class="result-label">Encoded bytes (hex)</p>
+              <div class="result" id="enc-result">—</div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Decode Number</legend>
+              <div class="field-row-stacked">
+                <label for="dec-hex">Hex bytes (space-separated, 1–4)</label>
+                <input id="dec-hex" type="text" placeholder="e.g. 82 62 FE FE" class="full-width" />
+              </div>
+              <div class="field-row" style="margin-top:6px">
+                <button onclick="doDecodeNumber()">Decode</button>
+              </div>
+              <p class="result-label">Decoded value</p>
+              <div class="result" id="dec-result">—</div>
+            </fieldset>
+
+            <fieldset>
+              <legend>EO Number Limits</legend>
+              <table class="seq-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Bytes</th>
+                    <th>Max Value</th>
+                    <th>Constant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Char</td>
+                    <td>1</td>
+                    <td>252</td>
+                    <td>EO_CHAR_MAX</td>
+                  </tr>
+                  <tr>
+                    <td>Short</td>
+                    <td>2</td>
+                    <td>64,008</td>
+                    <td>EO_SHORT_MAX</td>
+                  </tr>
+                  <tr>
+                    <td>Three</td>
+                    <td>3</td>
+                    <td>16,194,276</td>
+                    <td>EO_THREE_MAX</td>
+                  </tr>
+                  <tr>
+                    <td>Int</td>
+                    <td>4</td>
+                    <td>4,097,152,080</td>
+                    <td>EO_INT_MAX</td>
+                  </tr>
+                </tbody>
+              </table>
+            </fieldset>
+          </article>
+
+          <!-- ══════════════════════════════════════════════════
+             TAB 2: STRING CODEC
+        ══════════════════════════════════════════════════ -->
+          <article role="tabpanel" id="tab-strings" class="tab-panel">
+            <fieldset>
+              <legend>Encode String</legend>
+              <div class="field-row-stacked">
+                <label for="str-enc-input">Plain text (ASCII / Windows-1252)</label>
+                <input id="str-enc-input" type="text" value="Hello, Endless!" class="full-width" />
+              </div>
+              <div class="field-row" style="margin-top:6px">
+                <button onclick="doEncodeString()">Encode</button>
+              </div>
+              <p class="result-label">Encoded bytes (hex)</p>
+              <div class="result" id="str-enc-hex">—</div>
+              <p class="result-label">Encoded as Latin-1 string</p>
+              <div class="result" id="str-enc-str">—</div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Decode String</legend>
+              <div class="field-row-stacked">
+                <label for="str-dec-input">Encoded hex bytes (space-separated)</label>
+                <input id="str-dec-input" type="text" placeholder="e.g. CF B4 9C EF …" class="full-width" />
+              </div>
+              <div class="field-row" style="margin-top:6px">
+                <button onclick="doDecodeString()">Decode</button>
+              </div>
+              <p class="result-label">Decoded text</p>
+              <div class="result" id="str-dec-result">—</div>
+            </fieldset>
+
+            <fieldset>
+              <legend>UTF-8 → Windows-1252 Conversion</legend>
+              <p style="margin-bottom:6px">
+                Characters with no CP1252 mapping are replaced with <code>?</code>.
+                Replaced characters are shown in <span style="color:red;font-weight:bold">red</span>.
+              </p>
+              <div class="field-row-stacked">
+                <label for="cp-input">UTF-8 input</label>
+                <input id="cp-input" type="text" value="Hello! café naïve résumé €50 你好 🎮" class="full-width"
+                  oninput="doConvertCP1252()" />
+              </div>
+              <div class="field-row" style="margin-top:6px;flex-wrap:wrap;gap:4px">
+                <button onclick="appendCP('emoji')">+ Emoji 🎮</button>
+                <button onclick="appendCP('cjk')">+ CJK 中文</button>
+                <button onclick="appendCP('latin')">+ Latin àéî</button>
+                <button onclick="appendCP('cp1252')">+ CP1252-only €""</button>
+                <button onclick="appendCP('arabic')">+ Arabic عربي</button>
+              </div>
+              <p class="result-label">Converted string</p>
+              <div class="result" id="cp-visual" style="font-size:13px">—</div>
+              <p class="result-label">Hex bytes (CP1252)</p>
+              <div class="result" id="cp-hex">—</div>
+            </fieldset>
+          </article>
+
+          <!-- ══════════════════════════════════════════════════
+             TAB 3: ENCRYPTION
+        ══════════════════════════════════════════════════ -->
+          <article role="tabpanel" id="tab-encrypt" class="tab-panel">
+            <fieldset>
+              <legend>Encrypt / Decrypt Packet</legend>
+              <div class="two-col">
+                <div class="field-row-stacked">
+                  <label for="pkt-plain">Unencrypted bytes (hex)</label>
+                  <textarea id="pkt-plain" rows="3">02 A4 3F 00 1B C8 77 22 EF 05</textarea>
+                </div>
+                <div class="field-row-stacked">
+                  <label for="pkt-encrypted">Encrypted bytes (hex)</label>
+                  <textarea id="pkt-encrypted" rows="3" placeholder="Result appears here…"></textarea>
+                </div>
+              </div>
+              <div class="field-row" style="margin-top:8px">
+                <label for="pkt-multiple">Swap multiple (6–12)</label>
+                <input id="pkt-multiple" type="number" value="6" min="6" max="12" style="width:60px" />
+                <button onclick="genMultiple()" style="margin-left:4px">Random</button>
+                <button onclick="doEncryptPacket()" style="margin-left:8px">Encrypt →</button>
+                <button onclick="doDecryptPacket()">← Decrypt</button>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Server Verification Hash</legend>
+              <p style="margin-bottom:6px">
+                During the INIT handshake the client must respond with <code>hash(challenge)</code>.
+              </p>
+              <div class="field-row">
+                <label for="hash-challenge">Challenge value</label>
+                <input id="hash-challenge" type="number" value="42" style="width:100px" />
+                <button onclick="doHash()" style="margin-left:8px">Compute</button>
+              </div>
+              <p class="result-label">Hash result</p>
+              <div class="result" id="hash-result">—</div>
+            </fieldset>
+          </article>
+
+          <!-- ══════════════════════════════════════════════════
+             TAB 4: SEQUENCER
+        ══════════════════════════════════════════════════ -->
+          <article role="tabpanel" id="tab-sequencer" class="tab-panel">
+            <fieldset>
+              <legend>Sequence Generator</legend>
+              <div class="field-row">
+                <label for="seq-start">Start value (0–243)</label>
+                <input id="seq-start" type="number" value="42" min="0" max="243" style="width:80px" />
+                <button onclick="genSeqStart()" style="margin-left:4px">Random</button>
+                <button onclick="buildSequence()" style="margin-left:8px">Generate</button>
+              </div>
+              <table class="seq-table" style="margin-top:8px" id="seq-table">
+                <thead>
+                  <tr>
+                    <th>Step</th>
+                    <th>Counter</th>
+                    <th>Value (start+counter)</th>
+                  </tr>
+                </thead>
+                <tbody id="seq-tbody"></tbody>
+              </table>
+            </fieldset>
+
+            <fieldset>
+              <legend>Init Handshake — Recover Start</legend>
+              <p style="margin-bottom:6px">
+                Server sends s1, s2 during INIT. Formula: <code>start = s1 × 7 + s2 − 13</code>
+              </p>
+              <div class="field-row">
+                <label for="init-s1">s1 (0–252)</label>
+                <input id="init-s1" type="number" value="8" min="0" max="252" style="width:70px" />
+                <label for="init-s2" style="margin-left:8px">s2 (0–252)</label>
+                <input id="init-s2" type="number" value="7" min="0" max="252" style="width:70px" />
+                <button onclick="doInitRecover()" style="margin-left:8px">Recover</button>
+              </div>
+              <p class="result-label">Recovered sequence start</p>
+              <div class="result" id="init-result">—</div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Ping Handshake — Recover Start</legend>
+              <p style="margin-bottom:6px">
+                Server refreshes the sequence on PING. Formula: <code>start = s1 − s2</code>
+              </p>
+              <div class="field-row">
+                <label for="ping-s1">s1</label>
+                <input id="ping-s1" type="number" value="55" min="0" max="252" style="width:70px" />
+                <label for="ping-s2" style="margin-left:8px">s2</label>
+                <input id="ping-s2" type="number" value="13" min="0" max="252" style="width:70px" />
+                <button onclick="doPingRecover()" style="margin-left:8px">Recover</button>
+              </div>
+              <p class="result-label">Recovered sequence start</p>
+              <div class="result" id="ping-result">—</div>
+            </fieldset>
+          </article>
+
+        </div><!-- window-body -->
+      </div><!-- inner window -->
+
+    </div><!-- window-body -->
+
+    <div class="status-bar">
+      <p class="status-bar-field" id="wasmStatusText">Loading…</p>
+      <p class="status-bar-field">EOLib v0.1.0</p>
+      <p class="status-bar-field">Endless Online Protocol</p>
+    </div>
+  </div><!-- main window -->
+
+  <script src="eolib.js"></script>
+  <script>
+    // ─────────────────────────────────────────────────────────────────────────────
+    // WASM bootstrap
+    // ─────────────────────────────────────────────────────────────────────────────
+    let M = null;
+    const api = {};
+
+    EolibModule().then(mod => {
+      M = mod;
+
+      api.encode_number_buf = M.cwrap('wasm_encode_number_buf', 'number', ['number']);
+      api.decode_number = M.cwrap('wasm_decode_number_bytes', 'number', ['number', 'number', 'number', 'number', 'number']);
+      api.server_hash = M.cwrap('wasm_server_verification_hash', 'number', ['number']);
+      api.gen_multiple = M.cwrap('wasm_generate_swap_multiple', 'number', []);
+      api.gen_seq_start = M.cwrap('wasm_generate_sequence_start', 'number', []);
+      api.seq_from_init = M.cwrap('wasm_sequence_start_from_init', 'number', ['number', 'number']);
+      api.seq_from_ping = M.cwrap('wasm_sequence_start_from_ping', 'number', ['number', 'number']);
+      api.encrypt_packet = M.cwrap('wasm_encrypt_packet', null, ['number', 'number', 'number']);
+      api.decrypt_packet = M.cwrap('wasm_decrypt_packet', null, ['number', 'number', 'number']);
+      api.encode_string = M.cwrap('wasm_encode_string', null, ['number', 'number']);
+      api.decode_string = M.cwrap('wasm_decode_string', null, ['number', 'number']);
+      api.str_to_cp1252 = M.cwrap('wasm_string_to_windows_1252', 'number', ['number']);
+
+      document.getElementById('loadingOverlay').classList.add('hidden');
+      document.getElementById('wasmStatusText').textContent = 'WASM ready';
+
+      doEncodeNumber();
+      buildSequence();
+      doConvertCP1252();
+    }).catch(err => {
+      document.getElementById('loadingText').textContent = 'Failed to load WASM module';
+      const el = document.getElementById('loadError');
+      el.style.display = 'block';
+      el.textContent = String(err);
+      document.getElementById('wasmStatusText').textContent = 'Load failed';
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────────────────────────────────────
+    function setResult(id, text, ok) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'result' + (ok === false ? ' err' : '');
+    }
+
+    function parseHexBytes(str) {
+      const parts = str.trim().split(/\s+/).filter(Boolean);
+      const out = [];
+      for (const p of parts) {
+        const v = parseInt(p, 16);
+        if (isNaN(v) || v < 0 || v > 255) throw new Error(`Invalid hex byte: "${p}"`);
+        out.push(v);
+      }
+      return out;
+    }
+
+    function toHexString(bytes) {
+      return Array.from(bytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+    }
+
+    function heapAlloc(bytes) {
+      const ptr = M._malloc(bytes.length);
+      M.HEAPU8.set(bytes, ptr);
+      return { ptr, free: () => M._free(ptr) };
+    }
+
+    function heapRead(ptr, len) {
+      return new Uint8Array(M.HEAPU8.buffer, ptr, len).slice();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Tab switching
+    // ─────────────────────────────────────────────────────────────────────────────
+    document.querySelectorAll('menu[role=tablist] li[role=tab]').forEach(tab => {
+      tab.addEventListener('click', e => {
+        e.preventDefault();
+        const targetId = tab.querySelector('a').getAttribute('href').slice(1);
+        document.querySelectorAll('menu[role=tablist] li[role=tab]').forEach(t =>
+          t.removeAttribute('aria-selected'));
+        document.querySelectorAll('.tab-panel').forEach(p =>
+          p.classList.remove('active'));
+        tab.setAttribute('aria-selected', 'true');
+        document.getElementById(targetId).classList.add('active');
+      });
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Number Codec
+    // ─────────────────────────────────────────────────────────────────────────────
+    function doEncodeNumber() {
+      if (!M) return;
+      const value = parseInt(document.getElementById('enc-value').value, 10);
+      const size = parseInt(document.getElementById('enc-size').value, 10);
+      if (isNaN(value) || value < 0) {
+        setResult('enc-result', 'Enter a valid non-negative integer.', false); return;
+      }
+      const ptr = api.encode_number_buf(value);
+      if (!ptr) {
+        setResult('enc-result', `Value ${value} is too large for EO Int (max 4,097,152,080).`, false); return;
+      }
+      const raw = heapRead(ptr, 4);
+      const hex = Array.from(raw.slice(0, size)).map(b => b.toString(16).toUpperCase().padStart(2, '0'));
+      document.getElementById('enc-result').innerHTML =
+        hex.map(h => `<span class="hex-byte">${h}</span>`).join('');
+      document.getElementById('enc-result').className = 'result';
+    }
+
+    function doDecodeNumber() {
+      if (!M) return;
+      let bytes;
+      try { bytes = parseHexBytes(document.getElementById('dec-hex').value); }
+      catch (e) { setResult('dec-result', e.message, false); return; }
+      if (bytes.length < 1 || bytes.length > 4) {
+        setResult('dec-result', 'Provide 1–4 hex bytes.', false); return;
+      }
+      const pad = [...bytes, 0, 0, 0, 0].slice(0, 4);
+      const val = api.decode_number(pad[0], pad[1], pad[2], pad[3], bytes.length);
+      setResult('dec-result', `${val}  (0x${val.toString(16).toUpperCase()})`);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // String Codec
+    // ─────────────────────────────────────────────────────────────────────────────
+    function doEncodeString() {
+      if (!M) return;
+      const text = document.getElementById('str-enc-input').value;
+      const bytes = new Uint8Array(text.length);
+      for (let i = 0; i < text.length; i++) bytes[i] = text.charCodeAt(i) & 0xFF;
+      const { ptr, free } = heapAlloc(bytes);
+      api.encode_string(ptr, bytes.length);
+      const result = heapRead(ptr, bytes.length);
+      free();
+      document.getElementById('str-enc-hex').innerHTML =
+        Array.from(result).map(b => `<span class="hex-byte">${b.toString(16).toUpperCase().padStart(2, '0')}</span>`).join('');
+      document.getElementById('str-enc-hex').className = 'result';
+      const str = Array.from(result).map(b => (b >= 0x20 && b <= 0x7E) ? String.fromCharCode(b) : '·').join('');
+      document.getElementById('str-enc-str').textContent = str;
+      document.getElementById('str-enc-str').className = 'result';
+      document.getElementById('str-dec-input').value = toHexString(result);
+    }
+
+    function doDecodeString() {
+      if (!M) return;
+      let bytes;
+      try { bytes = parseHexBytes(document.getElementById('str-dec-input').value); }
+      catch (e) { setResult('str-dec-result', e.message, false); return; }
+      if (bytes.length === 0) { setResult('str-dec-result', 'Enter hex bytes.', false); return; }
+      const { ptr, free } = heapAlloc(new Uint8Array(bytes));
+      api.decode_string(ptr, bytes.length);
+      const result = heapRead(ptr, bytes.length);
+      free();
+      setResult('str-dec-result', Array.from(result).map(b => String.fromCharCode(b)).join(''));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // UTF-8 → Windows-1252 conversion
+    // ─────────────────────────────────────────────────────────────────────────────
+    const CP_EXAMPLES = {
+      emoji: ' 🎮🌍😀',
+      cjk: ' 你好世界',
+      latin: ' àéîõüñ',
+      cp1252: ' €\u201C\u201D\u2018\u2019\u2013\u2014',
+      arabic: ' مرحبا',
+    };
+
+    function appendCP(key) {
+      const el = document.getElementById('cp-input');
+      el.value += CP_EXAMPLES[key];
+      doConvertCP1252();
+    }
+
+    function doConvertCP1252() {
+      if (!M) return;
+      const text = document.getElementById('cp-input').value;
+      if (!text) { setResult('cp-visual', '—'); setResult('cp-hex', '—'); return; }
+      const ptr = M.stringToNewUTF8(text);
+      const resultPtr = api.str_to_cp1252(ptr);
+      M._free(ptr);
+      let len = 0;
+      while (M.HEAPU8[resultPtr + len] !== 0) len++;
+      const resultBytes = heapRead(resultPtr, len);
+      const inputChars = [...text];
+      const visual = document.getElementById('cp-visual');
+      visual.innerHTML = '';
+      visual.className = 'result';
+      let replacements = 0;
+      resultBytes.forEach((byte, i) => {
+        const orig = inputChars[i] ?? '';
+        if (byte === 0x3F && orig !== '?') {
+          replacements++;
+          const span = document.createElement('span');
+          span.style.cssText = 'color:red;font-weight:bold';
+          span.title = `'${orig}' (U+${orig.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}) → no CP1252 mapping`;
+          span.textContent = '?';
+          visual.appendChild(span);
+        } else {
+          visual.appendChild(document.createTextNode(orig));
+        }
+      });
+      if (replacements > 0) {
+        const note = document.createElement('span');
+        note.style.cssText = 'color:gray;font-size:11px;margin-left:8px';
+        note.textContent = `(${replacements} character${replacements > 1 ? 's' : ''} replaced)`;
+        visual.appendChild(note);
+      }
+      document.getElementById('cp-hex').innerHTML =
+        Array.from(resultBytes).map(b =>
+          `<span class="hex-byte" style="color:${b === 0x3F ? 'red' : 'inherit'}">${b.toString(16).toUpperCase().padStart(2, '0')}</span>`
+        ).join('');
+      document.getElementById('cp-hex').className = 'result';
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Encryption
+    // ─────────────────────────────────────────────────────────────────────────────
+    function genMultiple() {
+      if (!M) return;
+      document.getElementById('pkt-multiple').value = api.gen_multiple();
+    }
+
+    function doEncryptPacket() {
+      if (!M) return;
+      let bytes;
+      try { bytes = parseHexBytes(document.getElementById('pkt-plain').value); }
+      catch (e) { setPktError(e.message); return; }
+      const multiple = parseInt(document.getElementById('pkt-multiple').value, 10);
+      if (multiple < 6 || multiple > 12) { setPktError('Swap multiple must be 6–12.'); return; }
+      const { ptr, free } = heapAlloc(new Uint8Array(bytes));
+      api.encrypt_packet(ptr, bytes.length, multiple);
+      const result = heapRead(ptr, bytes.length);
+      free();
+      const el = document.getElementById('pkt-encrypted');
+      el.value = toHexString(result);
+      el.style.color = '';
+    }
+
+    function doDecryptPacket() {
+      if (!M) return;
+      let bytes;
+      try { bytes = parseHexBytes(document.getElementById('pkt-encrypted').value); }
+      catch (e) { setPktError(e.message); return; }
+      const multiple = parseInt(document.getElementById('pkt-multiple').value, 10);
+      if (multiple < 6 || multiple > 12) { setPktError('Swap multiple must be 6–12.'); return; }
+      const { ptr, free } = heapAlloc(new Uint8Array(bytes));
+      api.decrypt_packet(ptr, bytes.length, multiple);
+      const result = heapRead(ptr, bytes.length);
+      free();
+      const el = document.getElementById('pkt-plain');
+      el.value = toHexString(result);
+      el.style.color = '';
+    }
+
+    function setPktError(msg) {
+      const el = document.getElementById('pkt-encrypted');
+      el.value = msg;
+      el.style.color = 'red';
+    }
+
+    function doHash() {
+      if (!M) return;
+      const challenge = parseInt(document.getElementById('hash-challenge').value, 10);
+      if (isNaN(challenge)) { setResult('hash-result', 'Enter a valid integer.', false); return; }
+      const hash = api.server_hash(challenge);
+      setResult('hash-result', `${hash}  (0x${(hash >>> 0).toString(16).toUpperCase()})`);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Sequencer
+    // ─────────────────────────────────────────────────────────────────────────────
+    function genSeqStart() {
+      if (!M) return;
+      document.getElementById('seq-start').value = api.gen_seq_start();
+    }
+
+    function buildSequence() {
+      if (!M) return;
+      const start = parseInt(document.getElementById('seq-start').value, 10);
+      if (isNaN(start) || start < 0 || start > 243) { alert('Start value must be 0–243.'); return; }
+      const tbody = document.getElementById('seq-tbody');
+      tbody.innerHTML = '';
+      let counter = 0;
+      for (let step = 1; step <= 10; step++) {
+        counter = (counter + 1) % 10;
+        const tr = document.createElement('tr');
+        if (step === 1) tr.className = 'highlight';
+        tr.innerHTML = `<td>${step}</td><td>${counter}</td><td>${start + counter}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function doInitRecover() {
+      if (!M) return;
+      const s1 = parseInt(document.getElementById('init-s1').value, 10);
+      const s2 = parseInt(document.getElementById('init-s2').value, 10);
+      if (isNaN(s1) || isNaN(s2)) { setResult('init-result', 'Enter valid byte values.', false); return; }
+      const start = api.seq_from_init(s1, s2);
+      setResult('init-result', `${start}   [formula: ${s1} × 7 + ${s2} − 13 = ${start}]`);
+    }
+
+    function doPingRecover() {
+      if (!M) return;
+      const s1 = parseInt(document.getElementById('ping-s1').value, 10);
+      const s2 = parseInt(document.getElementById('ping-s2').value, 10);
+      if (isNaN(s1) || isNaN(s2)) { setResult('ping-result', 'Enter valid byte values.', false); return; }
+      const start = api.seq_from_ping(s1, s2);
+      setResult('ping-result', `${start}   [formula: ${s1} − ${s2} = ${start}]`);
+    }
+  </script>
+</body>
+
+</html>
