@@ -10,6 +10,7 @@
  * **Sections:**
  * - @ref getting_started
  * - @ref getting_started_lua
+ * - @ref protocol_interface
  * - @ref error_handling
  * - @ref reading_data
  * - @ref writing_data
@@ -170,25 +171,26 @@
  * | eo_writer_add_three() | 3 | ::EO_THREE_MAX |
  * | eo_writer_add_int() | 4 | ::EO_INT_MAX |
  *
- * **Pre-allocating with `_size()` functions:**
+ * **Pre-allocating with `eo_get_size()`:**
  *
- * Every generated protocol struct has a corresponding `StructName_size()`
- * function that returns the exact number of bytes `StructName_serialize()`
- * will write. Pass that value to eo_writer_init_with_capacity() to allocate
- * the full buffer upfront and avoid repeated reallocations during serialization.
+ * `eo_get_size()` dispatches through the vtable to return the exact number
+ * of bytes `eo_serialize()` will write for a given struct. Pass that value
+ * to eo_writer_init_with_capacity() to allocate the full buffer upfront and
+ * avoid repeated reallocations during serialization.
  *
  * This is especially valuable when serializing large structures such as pub
  * files or packets with long string arrays.
  *
  * @code{.c}
- * LoginRequestClientPacket pkt = {0};
+ * LoginRequestClientPacket pkt = LoginRequestClientPacket_init();
  * pkt.username = "Admin";
  * pkt.password = "hunter2";
  *
  * // Calculate exact serialized size before writing.
- * EoWriter writer = eo_writer_init_with_capacity(LoginRequestClientPacket_size(&pkt));
+ * EoWriter writer = eo_writer_init_with_capacity(
+ *     eo_get_size((const EoSerialize *)&pkt));
  *
- * EoResult result = LoginRequestClientPacket_serialize(&pkt, &writer);
+ * EoResult result = eo_serialize((const EoSerialize *)&pkt, &writer);
  * if (result != EO_SUCCESS) {
  *     eo_writer_free(&writer);
  *     return result;
@@ -202,11 +204,14 @@
  * the sizes first:
  *
  * @code{.c}
- * size_t total = Eif_size(&eif);
+ * Eif eif = Eif_init();
+ * // ... populate eif ...
+ * size_t total = eo_get_size((const EoSerialize *)&eif);
  * EoWriter writer = eo_writer_init_with_capacity(total);
- * Eif_serialize(&eif, &writer);
+ * eo_serialize((const EoSerialize *)&eif, &writer);
  * // write writer.data to disk...
  * eo_writer_free(&writer);
+ * eo_free((EoSerialize *)&eif);
  * @endcode
  *
  * @note `eo_writer_init_with_capacity()` pre-allocates the requested bytes
@@ -354,4 +359,143 @@
  *
  * EoSequencer sequencer = eo_sequencer_init(start);
  * @endcode
+ */
+
+/**
+ * @page protocol_interface Protocol Struct Interface
+ *
+ * Every generated protocol struct and packet type implements the
+ * ::EoSerialize interface (and packets also implement ::EoPacket).
+ * This gives a uniform API for all ~400 generated types without
+ * individual exported serialize/deserialize/free symbols per type.
+ *
+ * @section pi_init Initialization
+ *
+ * Every type has a `static inline` `TypeName_init()` function declared in
+ * `protocol.h`. It returns a zero-initialized struct with its internal
+ * vtable pointer already set:
+ *
+ * @code{.c}
+ * Coords coords         = Coords_init();          // plain struct
+ * LoginRequestClientPacket pkt = LoginRequestClientPacket_init(); // packet
+ * Eif eif               = Eif_init();             // pub/map file struct
+ * @endcode
+ *
+ * @note Never use `= {0}` to initialize a generated struct.  That zeroes
+ * the vtable pointer, which will cause a null-pointer dereference the first
+ * time any `eo_*` function is called on it.
+ *
+ * @section pi_dispatch Dispatch Functions
+ *
+ * All operations go through the ::EoSerialize vtable via the following inline
+ * dispatch helpers declared in `data.h`:
+ *
+ * | Function | Description |
+ * |----------|-------------|
+ * | eo_deserialize() | Read fields from an ::EoReader |
+ * | eo_serialize() | Write fields to an ::EoWriter |
+ * | eo_get_size() | Return the exact serialized byte count |
+ * | eo_free() | Release any heap-allocated fields |
+ *
+ * All four accept a pointer-to-::EoSerialize as their first argument. Cast
+ * any generated struct or packet to `(EoSerialize *)` (or
+ * `(const EoSerialize *)` for read-only operations):
+ *
+ * @code{.c}
+ * LoginRequestClientPacket pkt = LoginRequestClientPacket_init();
+ *
+ * // Deserialize
+ * EoResult r = eo_deserialize((EoSerialize *)&pkt, &reader);
+ *
+ * // Query size
+ * size_t sz = eo_get_size((const EoSerialize *)&pkt);
+ *
+ * // Serialize
+ * EoWriter writer = eo_writer_init_with_capacity(sz);
+ * eo_serialize((const EoSerialize *)&pkt, &writer);
+ *
+ * // Free heap fields when done
+ * eo_free((EoSerialize *)&pkt);
+ * eo_writer_free(&writer);
+ * @endcode
+ *
+ * @section pi_packets Packet-Specific Dispatch
+ *
+ * Packet types additionally implement ::EoPacket, which carries a second
+ * vtable with `get_family` and `get_action` slots. Use the packet dispatch
+ * helpers to query the hard-coded family/action values without inspecting
+ * enum constants manually:
+ *
+ * @code{.c}
+ * LoginRequestClientPacket pkt = LoginRequestClientPacket_init();
+ *
+ * uint8_t family = eo_packet_get_family((const EoPacket *)&pkt);
+ * uint8_t action = eo_packet_get_action((const EoPacket *)&pkt);
+ * // family == PACKET_FAMILY_LOGIN, action == PACKET_ACTION_REQUEST
+ * @endcode
+ *
+ * @section pi_generic Writing Generic Code
+ *
+ * Because every struct shares the ::EoSerialize base, you can write helpers
+ * that operate on any struct without knowing its concrete type:
+ *
+ * @code{.c}
+ * // Serialize any struct to a newly-allocated byte buffer.
+ * static uint8_t *to_bytes(const EoSerialize *s, size_t *out_len) {
+ *     size_t sz = eo_get_size(s);
+ *     EoWriter writer = eo_writer_init_with_capacity(sz);
+ *     if (eo_serialize(s, &writer) != EO_SUCCESS) {
+ *         eo_writer_free(&writer);
+ *         return NULL;
+ *     }
+ *     uint8_t *buf = malloc(writer.length);
+ *     if (buf) {
+ *         memcpy(buf, writer.data, writer.length);
+ *         *out_len = writer.length;
+ *     }
+ *     eo_writer_free(&writer);
+ *     return buf;
+ * }
+ *
+ * // Usage with any generated type:
+ * LoginRequestClientPacket pkt = LoginRequestClientPacket_init();
+ * pkt.username = "Admin";
+ * pkt.password = "hunter2";
+ *
+ * size_t len;
+ * uint8_t *bytes = to_bytes((const EoSerialize *)&pkt, &len);
+ * // use bytes...
+ * free(bytes);
+ * eo_free((EoSerialize *)&pkt);
+ * @endcode
+ *
+ * @section pi_layout Memory Layout
+ *
+ * The C "inheritance by first-member" rule guarantees the casts above are
+ * safe. The generated struct layout is:
+ *
+ * @code{.c}
+ * // Plain struct (e.g. Coords):
+ * typedef struct Coords {
+ *     EoSerialize _eo;  // vtable pointer — must be first
+ *     int32_t x;
+ *     int32_t y;
+ * } Coords;
+ *
+ * // Packet (e.g. LoginRequestClientPacket):
+ * typedef struct LoginRequestClientPacket {
+ *     EoPacket _eo;   // EoPacket.base is EoSerialize — must be first
+ *     char *username;
+ *     char *password;
+ * } LoginRequestClientPacket;
+ * @endcode
+ *
+ * Since `_eo` is always the first member, a pointer to the struct and a
+ * pointer to its `_eo` field have the same address.  For packets the chain
+ * is `LoginRequestClientPacket` → `EoPacket` → `EoSerialize`, so
+ * `(EoSerialize *)&pkt` resolves all three levels correctly.
+ *
+ * @note The `_eo` member is an implementation detail. Do not read or write
+ *       it directly — always use the `_init()` function and the `eo_*`
+ *       dispatch helpers.
  */

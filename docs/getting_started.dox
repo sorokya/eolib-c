@@ -183,11 +183,13 @@
  *     if (family == PACKET_FAMILY_LOGIN && action == PACKET_ACTION_REQUEST) {
  *         EoReader reader = eo_reader_init(buf, len);
  *
- *         LoginRequestClientPacket pkt = {0};
- *         EoResult result = LoginRequestClientPacket_deserialize(&pkt, &reader);
+ *         // _init() sets up the vtable so eo_* dispatch functions work.
+ *         LoginRequestClientPacket pkt = LoginRequestClientPacket_init();
+ *         EoResult result = eo_deserialize((EoSerialize *)&pkt, &reader);
  *         if (result != EO_SUCCESS) {
  *             fprintf(stderr, "Deserialize failed: %s\n",
  *                     eo_result_string(result));
+ *             eo_free((EoSerialize *)&pkt);
  *             return 1;
  *         }
  *
@@ -196,13 +198,14 @@
  *                pkt.password ? strlen(pkt.password) : 0);
  *
  *         // Re-encode and report the output size.
- *         // Use _size() to pre-allocate the exact capacity needed.
- *         EoWriter writer = eo_writer_init_with_capacity(LoginRequestClientPacket_size(&pkt));
- *         result = LoginRequestClientPacket_serialize(&pkt, &writer);
+ *         // eo_get_size() queries the vtable for the exact serialized size.
+ *         EoWriter writer = eo_writer_init_with_capacity(
+ *             eo_get_size((const EoSerialize *)&pkt));
+ *         result = eo_serialize((const EoSerialize *)&pkt, &writer);
  *         if (result != EO_SUCCESS) {
  *             fprintf(stderr, "Serialize failed: %s\n",
  *                     eo_result_string(result));
- *             LoginRequestClientPacket_free(&pkt);
+ *             eo_free((EoSerialize *)&pkt);
  *             eo_writer_free(&writer);
  *             return 1;
  *         }
@@ -210,7 +213,7 @@
  *         printf("  re-encoded: %zu byte(s)\n", writer.length);
  *
  *         eo_writer_free(&writer);
- *         LoginRequestClientPacket_free(&pkt);
+ *         eo_free((EoSerialize *)&pkt);
  *     } else {
  *         printf("  (no decoder for family=%d action=%d)\n", family, action);
  *     }
@@ -322,13 +325,15 @@
  *     // Deserialize the EIF file.
  *     EoReader reader = eo_reader_init(data, (size_t)file_size);
  *
- *     Eif eif = {0};
- *     EoResult result = Eif_deserialize(&eif, &reader);
+ *     // _init() sets up the vtable; eo_deserialize/eo_free work on any struct.
+ *     Eif eif = Eif_init();
+ *     EoResult result = eo_deserialize((EoSerialize *)&eif, &reader);
  *     free(data);
  *
  *     if (result != EO_SUCCESS) {
  *         fprintf(stderr, "Failed to parse EIF: %s\n",
  *                 eo_result_string(result));
+ *         eo_free((EoSerialize *)&eif);
  *         return 1;
  *     }
  *
@@ -346,7 +351,7 @@
  *                item->name ? item->name : "(null)");
  *     }
  *
- *     Eif_free(&eif);
+ *     eo_free((EoSerialize *)&eif);
  *     return 0;
  * }
  * @endcode
@@ -421,51 +426,60 @@
  * eo_writer_free(&writer); // always free the writer itself
  * @endcode
  *
- * @subsection gs_memory_structs Protocol structs — zero-init, then free
+ * @subsection gs_memory_structs Protocol structs — init, then free
  *
- * Packet structs and pub/map file structs may contain heap-allocated strings
- * or arrays. The rules are:
+ * Every generated packet and data struct has an `_init()` function (a
+ * zero-cost `static inline`) that returns a properly initialized struct with
+ * its internal vtable pointer set. You **must** call `_init()` before passing
+ * a struct to any `eo_*` dispatch function.
  *
- * 1. **Always zero-initialize** before deserializing: `SomeStruct s = {0};`
- *    This ensures `_free()` is safe to call even if deserialization fails
- *    partway through.
- * 2. **Always call `_free()`** when you are done, including on error paths.
- *    Calling `_free()` on a zeroed struct is safe and does nothing.
+ * After initialization, use the `eo_*` dispatch functions for all operations:
+ * | Operation | Function |
+ * |-----------|----------|
+ * | Deserialize | `eo_deserialize((EoSerialize *)&s, &reader)` |
+ * | Serialize | `eo_serialize((const EoSerialize *)&s, &writer)` |
+ * | Get serialized size | `eo_get_size((const EoSerialize *)&s)` |
+ * | Free heap fields | `eo_free((EoSerialize *)&s)` |
+ *
+ * Always call `eo_free()` when you are done, including on error paths.
+ * Calling it before any heap fields are set is safe — it only frees what
+ * was actually allocated.
  *
  * @code{.c}
- * LoginRequestClientPacket pkt = {0}; // zero-init first!
+ * LoginRequestClientPacket pkt = LoginRequestClientPacket_init();
  *
- * EoResult result = LoginRequestClientPacket_deserialize(&pkt, &reader);
+ * EoResult result = eo_deserialize((EoSerialize *)&pkt, &reader);
  * if (result != EO_SUCCESS) {
- *     LoginRequestClientPacket_free(&pkt); // safe even on partial init
+ *     eo_free((EoSerialize *)&pkt); // safe even on partial deserialization
  *     return result;
  * }
  *
  * printf("username: %s\n", pkt.username);
- * LoginRequestClientPacket_free(&pkt); // free when done
+ * eo_free((EoSerialize *)&pkt); // free when done
  * @endcode
  *
  * The same pattern applies to pub and map file structs:
  *
  * @code{.c}
- * Eif eif = {0};
- * EoResult result = Eif_deserialize(&eif, &reader);
+ * Eif eif = Eif_init();
+ * EoResult result = eo_deserialize((EoSerialize *)&eif, &reader);
  * if (result != EO_SUCCESS) {
- *     Eif_free(&eif);
+ *     eo_free((EoSerialize *)&eif);
  *     return result;
  * }
  * // ... use eif.items[] ...
- * Eif_free(&eif);
+ * eo_free((EoSerialize *)&eif);
  * @endcode
  *
  * @note If a struct contains only numeric fields (no strings or arrays), its
- *       generated `_free()` function is still safe to call and does nothing —
- *       so it's always correct to call `_free()` without checking first.
+ *       `free` vtable slot is `NULL` and `eo_free()` is a safe no-op.
+ *       It is always correct to call `eo_free()` unconditionally.
  *
  * ---
  *
  * @section gs_next Next Steps
  *
+ * - @ref protocol_interface — deep dive into the vtable-based struct/packet API.
  * - @ref error_handling — understand every return code and how to handle them.
  * - @ref reading_data — deep dive into `EoReader` and chunked reading.
  * - @ref writing_data — deep dive into `EoWriter`.
