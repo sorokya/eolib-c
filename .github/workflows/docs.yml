@@ -28,8 +28,18 @@ jobs:
       - name: Build WASM demo
         run: cd wasm && ./build.sh
 
-      - name: Build Documentation
-        uses: mattnotmitt/doxygen-action@v1.9.5
+      - name: Install Doxygen
+        shell: bash
+        run: |
+          wget https://github.com/doxygen/doxygen/releases/download/Release_1_16_1/doxygen-1.16.1.linux.bin.tar.gz
+          tar xzvf doxygen-1.16.1.linux.bin.tar.gz
+          cd doxygen-1.16.1
+          sudo make install
+          cd ..
+          rm -rf doxygen-1.16.1*
+
+      - name: Generate Documentation
+        run: doxygen
 
       - name: Assemble Pages
         run: |
