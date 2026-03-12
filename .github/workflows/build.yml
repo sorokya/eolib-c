@@ -290,7 +290,7 @@ jobs:
         if: matrix.upload == true
         uses: actions/upload-artifact@v7
         with:
-          name: package-${{ matrix.os }}-${{ matrix.compiler }}
+          name: package-${{ matrix.package_platform }}
           path: |
             ./build/package/*.zip
             ./build/package/*.tar.xz
