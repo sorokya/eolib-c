@@ -229,8 +229,12 @@ jobs:
         run: ctest --output-on-failure -C ${{ matrix.build_type }} --test-dir build
 
       - name: Run Lua Tests
-        if: matrix.compiler != 'msvc' && matrix.compiler != 'clang-cl'
-        shell: ${{ matrix.compiler == 'mingw' && 'msys2 {0}' || 'bash' }}
+        if: matrix.compiler != 'msvc' && matrix.compiler != 'clang-cl' && matrix.compiler != 'mingw'
+        run: cmake --build build --target lua-test
+
+      - name: Run Lua Tests (MinGW)
+        if: matrix.compiler == 'mingw'
+        shell: msys2 {0}
         run: cmake --build build --target lua-test
 
       - name: Upload Lua annotations
