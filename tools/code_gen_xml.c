@@ -353,6 +353,16 @@ static PacketDef parse_packet(xmlNode *node)
     PacketDef def = {0};
     def.action = get_attr(node, "action");
     def.family = get_attr(node, "family");
+    def.comment = NULL;
+    for (xmlNode *child = node->children; child; child = child->next)
+    {
+        if (child->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(child->name, (const xmlChar *)"comment"))
+        {
+            def.comment = get_node_text(child);
+            break;
+        }
+    }
     def.elements = parse_elements(node);
     return def;
 }

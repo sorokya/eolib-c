@@ -37,6 +37,7 @@ add_executable(code_gen
     tools/code_gen_protocol.c
     tools/code_gen_tests.c
     tools/code_gen_lua.c
+    tools/code_gen_wasm.c
 )
 target_include_directories(code_gen PRIVATE ${LIBXML2_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/tools)
 if(JSONC_FOUND)
@@ -50,10 +51,13 @@ set(EOLIB_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/include/protocol.h)
 set(EOLIB_PACKET_TESTS_C ${CMAKE_CURRENT_SOURCE_DIR}/tests/packet_tests.c)
 set(EOLIB_LUA_PROTOCOL_C ${CMAKE_CURRENT_SOURCE_DIR}/lua/src/lua_protocol.c)
 set(EOLIB_LUA_PROTOCOL_H ${CMAKE_CURRENT_SOURCE_DIR}/lua/src/lua_protocol.h)
+set(EOLIB_WASM_DISPATCH_C ${CMAKE_CURRENT_SOURCE_DIR}/wasm/wasm_protocol_dispatch.c)
+set(EOLIB_WASM_PACKETS_JS ${CMAKE_CURRENT_SOURCE_DIR}/wasm/packets.js)
 
 add_custom_command(
 	OUTPUT ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H} ${EOLIB_PACKET_TESTS_C}
 		${EOLIB_LUA_PROTOCOL_C} ${EOLIB_LUA_PROTOCOL_H}
+		${EOLIB_WASM_DISPATCH_C} ${EOLIB_WASM_PACKETS_JS}
 	COMMAND code_gen
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	DEPENDS code_gen
@@ -63,6 +67,7 @@ add_custom_command(
 add_custom_target(generate_protocol ALL
 	DEPENDS ${EOLIB_PROTOCOL_C} ${EOLIB_PROTOCOL_H} ${EOLIB_PACKET_TESTS_C}
 		${EOLIB_LUA_PROTOCOL_C} ${EOLIB_LUA_PROTOCOL_H}
+		${EOLIB_WASM_DISPATCH_C} ${EOLIB_WASM_PACKETS_JS}
 )
 
 add_library(eolib SHARED

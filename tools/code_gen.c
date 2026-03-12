@@ -9,6 +9,7 @@
 #include "code_gen_protocol.h"
 #include "code_gen_tests.h"
 #include "code_gen_lua.h"
+#include "code_gen_wasm.h"
 
 int main(void)
 {
@@ -46,6 +47,7 @@ int main(void)
     write_packet_tests(protocols, protocol_count);
     write_lua_files(protocols, protocol_count);
     write_lua_annotations(protocols, protocol_count);
+    write_wasm_files(protocols, protocol_count);
 
     return 0;
 }

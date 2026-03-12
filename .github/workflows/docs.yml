@@ -35,7 +35,7 @@ jobs:
         run: |
           mkdir -p dist/docs dist/demo
           cp -r docs/html/. dist/docs/
-          cp wasm/index.html wasm/eolib.js wasm/eolib.wasm dist/demo/
+          cp wasm/index.html wasm/eolib.js wasm/eolib.wasm wasm/packets.js dist/demo/
           cp .github/pages-index.html dist/index.html
 
       - name: Publish to GitHub Pages

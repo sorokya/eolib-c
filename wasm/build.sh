@@ -48,14 +48,18 @@ EXPORTED_FUNCTIONS='[
   "_wasm_decrypt_packet",
   "_wasm_encode_string",
   "_wasm_decode_string",
-  "_wasm_string_to_windows_1252"
+  "_wasm_string_to_windows_1252",
+  "_wasm_packet_roundtrip",
+  "_wasm_get_roundtrip_len"
 ]'
 
 emcc \
     "$REPO_ROOT/src/data.c" \
     "$REPO_ROOT/src/encrypt.c" \
     "$REPO_ROOT/src/sequencer.c" \
+    "$REPO_ROOT/src/protocol.c" \
     "$SCRIPT_DIR/wasm_api.c" \
+    "$SCRIPT_DIR/wasm_protocol_dispatch.c" \
     -I "$REPO_ROOT/include" \
     -std=c11 \
     -D_POSIX_C_SOURCE=200809L \

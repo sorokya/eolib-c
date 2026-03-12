@@ -137,6 +137,7 @@ typedef struct
 {
     char *action;
     char *family;
+    char *comment;
     ElementList elements;
 } PacketDef;
 
