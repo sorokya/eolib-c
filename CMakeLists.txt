@@ -74,6 +74,8 @@ add_library(eolib SHARED
     src/data.c
     src/encrypt.c
 	src/sequencer.c
+	src/time.c
+	src/rng.c
 	${EOLIB_PROTOCOL_C}
 )
 
