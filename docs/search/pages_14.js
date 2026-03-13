@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['windows_0',['Windows',['../getting_started.html#gs_windows',1,'Windows'],['../getting_started_lua.html#gsl_windows',1,'Windows']]],
-  ['writing_20data_1',['Writing Data',['../writing_data.html',1,'']]],
-  ['writing_20generic_20code_2',['Writing Generic Code',['../protocol_interface.html#pi_generic',1,'']]]
+  ['ubuntu_20debian_0',['Ubuntu Debian',['../getting_started.html#gs_linux',1,'Linux (Ubuntu / Debian)'],['../getting_started_lua.html#gsl_linux',1,'Linux (Ubuntu / Debian)']]],
+  ['use_20in_20javascript_20typescript_20projects_1',['Use in JavaScript / TypeScript projects',['../wasm.html#wasm_ts',1,'']]]
 ];

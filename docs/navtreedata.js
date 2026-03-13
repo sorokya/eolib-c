@@ -76,6 +76,9 @@ var NAVTREE =
       [ "Writing Generic Code", "protocol_interface.html#pi_generic", null ],
       [ "Memory Layout", "protocol_interface.html#pi_layout", null ]
     ] ],
+    [ "WebAssembly (WASM)", "wasm.html", [
+      [ "Use in JavaScript / TypeScript projects", "wasm.html#wasm_ts", null ]
+    ] ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
       [ "Data Structure Index", "classes.html", null ],

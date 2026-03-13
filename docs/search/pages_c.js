@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['macos_0',['macOS',['../getting_started.html#gs_macos',1,'macOS'],['../getting_started_lua.html#gsl_macos',1,'macOS']]],
-  ['memory_20layout_1',['Memory Layout',['../protocol_interface.html#pi_layout',1,'']]],
-  ['memory_20safety_2',['Memory Safety',['../getting_started.html#gs_memory',1,'Memory Safety'],['../getting_started_lua.html#gsl_memory',1,'Memory Safety']]],
-  ['module_20eolib_20not_20found_3',['Troubleshooting: module &apos;eolib&apos; not found',['../getting_started_lua.html#gsl_troubleshoot',1,'']]]
+  ['language_20server_0',['IDE support (lua-language-server)',['../getting_started_lua.html#gsl_ide',1,'']]],
+  ['layout_1',['Memory Layout',['../protocol_interface.html#pi_layout',1,'']]],
+  ['library_2',['Getting the library',['../getting_started.html#gs_download',1,'']]],
+  ['linux_20ubuntu_20debian_3',['Linux Ubuntu Debian',['../getting_started.html#gs_linux',1,'Linux (Ubuntu / Debian)'],['../getting_started_lua.html#gsl_linux',1,'Linux (Ubuntu / Debian)']]],
+  ['lua_4',['Getting Started (Lua)',['../getting_started_lua.html',1,'']]],
+  ['lua_20language_20server_5',['IDE support (lua-language-server)',['../getting_started_lua.html#gsl_ide',1,'']]]
 ];

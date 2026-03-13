@@ -413,5 +413,6 @@ var searchData=
   ['train_5ftype_5fstat_410',['TRAIN_TYPE_STAT',['../protocol_8h.html#a25314e6330507cb9f78307b2bb8df79ba51cddf7792cd07395e3eb235c36c4290',1,'protocol.h']]],
   ['traintype_411',['TrainType',['../protocol_8h.html#a25314e6330507cb9f78307b2bb8df79b',1,'TrainType:&#160;protocol.h'],['../protocol_8h.html#a454055bf589b206a808b78a94aae9bef',1,'TrainType:&#160;protocol.h']]],
   ['troubleshooting_3a_20module_20eolib_20not_20found_412',['Troubleshooting: module &apos;eolib&apos; not found',['../getting_started_lua.html#gsl_troubleshoot',1,'']]],
-  ['type_413',['type',['../structEmf.html#ae0cd9e7489374f9d85d6e7d7a1051330',1,'Emf::type'],['../structEifRecord.html#a8bf056257ca12a6672fe2a3a6d2cb747',1,'EifRecord::type'],['../structEnfRecord.html#a42b1498384a0567259e242ae898d9539',1,'EnfRecord::type'],['../structEsfRecord.html#a5e607c2d3a275858fb97206fc4eb4bf7',1,'EsfRecord::type']]]
+  ['type_413',['type',['../structEmf.html#ae0cd9e7489374f9d85d6e7d7a1051330',1,'Emf::type'],['../structEifRecord.html#a8bf056257ca12a6672fe2a3a6d2cb747',1,'EifRecord::type'],['../structEnfRecord.html#a42b1498384a0567259e242ae898d9539',1,'EnfRecord::type'],['../structEsfRecord.html#a5e607c2d3a275858fb97206fc4eb4bf7',1,'EsfRecord::type']]],
+  ['typescript_20projects_414',['Use in JavaScript / TypeScript projects',['../wasm.html#wasm_ts',1,'']]]
 ];
