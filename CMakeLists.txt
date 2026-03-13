@@ -74,7 +74,6 @@ add_library(eolib SHARED
     src/data.c
     src/encrypt.c
 	src/sequencer.c
-	src/time.c
 	src/rng.c
 	${EOLIB_PROTOCOL_C}
 )
@@ -214,23 +213,6 @@ set(EOLIB_RNG_TESTS
 )
 foreach(test_name IN LISTS EOLIB_RNG_TESTS)
 	add_test(NAME eolib_rng_tests.${test_name} COMMAND eolib_rng_tests ${test_name})
-endforeach()
-
-add_executable(eolib_time_tests
-	tests/time_tests.c
-	tests/test_utils.c
-)
-target_include_directories(eolib_time_tests PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}/tests
-)
-target_link_libraries(eolib_time_tests PRIVATE eolib)
-set(EOLIB_TIME_TESTS
-	eo_time_valid_range
-	eo_time_monotonic
-)
-foreach(test_name IN LISTS EOLIB_TIME_TESTS)
-	add_test(NAME eolib_time_tests.${test_name} COMMAND eolib_time_tests ${test_name})
 endforeach()
 
 set_source_files_properties(${EOLIB_PACKET_TESTS_C} PROPERTIES GENERATED TRUE)

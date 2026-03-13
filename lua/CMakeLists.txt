@@ -10,7 +10,6 @@ add_library(lua_eolib MODULE
 	src/lua_data.c
 	src/lua_encrypt.c
 	src/lua_rng.c
-	src/lua_time.c
 	src/lua_sequencer.c
 	${EOLIB_LUA_PROTOCOL_C}
 )

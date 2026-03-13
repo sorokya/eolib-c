@@ -465,31 +465,15 @@
         ══════════════════════════════════════════════════ -->
           <article role="tabpanel" id="tab-rng" class="tab-panel">
             <fieldset>
-              <legend>Time (Borland-compatible seed)</legend>
-              <p style="margin-bottom:6px">
-                Returns a 32-bit value computed from local system time using the
-                same algorithm as the Borland runtime. The result is
-                timezone-dependent (≈ time(NULL) + timezone_offset + 18000),
-                which is why a custom implementation is needed to reproduce the
-                original client's RNG seeds.
-              </p>
-              <div class="field-row">
-                <button onclick="doTime()">Get eo_time()</button>
-              </div>
-              <p class="result-label">Result</p>
-              <div class="result" id="rng-time-result">—</div>
-            </fieldset>
-
-            <fieldset>
               <legend>Seed RNG (srand)</legend>
               <p style="margin-bottom:6px">
                 Seed the RNG. Use the same seed to reproduce a deterministic sequence.
-                Seeding with <code>eo_time()</code> replicates the original client behaviour.
+                The original EO client seeded with <code>(uint32_t)time(NULL)</code> on startup.
               </p>
               <div class="field-row">
                 <label for="rng-seed">Seed</label>
                 <input id="rng-seed" type="number" min="0" style="width:120px" value="0" />
-                <button onclick="doSeedFromTime()" style="margin-left:4px">Use eo_time()</button>
+                <button onclick="doSeedFromTime()" style="margin-left:4px">Use current time</button>
                 <button onclick="doSrand()" style="margin-left:8px">Seed RNG</button>
               </div>
               <p class="result-label">Status</p>
@@ -618,7 +602,6 @@
       api.srand = M.cwrap('wasm_srand', null, ['number']);
       api.rand = M.cwrap('wasm_rand', 'number', []);
       api.rand_range = M.cwrap('wasm_rand_range', 'number', ['number', 'number']);
-      api.eo_time = M.cwrap('wasm_time', 'number', []);
       api.gen_challenge = M.cwrap('wasm_generate_server_verification_challenge', 'number', []);
 
       document.getElementById('loadingOverlay').classList.add('hidden');
@@ -933,15 +916,8 @@
     // ─────────────────────────────────────────────────────────────────────────────
     // RNG
     // ─────────────────────────────────────────────────────────────────────────────
-    function doTime() {
-      if (!M) return;
-      const t = api.eo_time() >>> 0;
-      setResult('rng-time-result', `${t}  (0x${t.toString(16).toUpperCase()})`);
-    }
-
     function doSeedFromTime() {
-      if (!M) return;
-      const t = api.eo_time() >>> 0;
+      const t = (Date.now() / 1000) >>> 0;
       document.getElementById('rng-seed').value = t;
     }
 

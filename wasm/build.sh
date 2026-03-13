@@ -54,8 +54,7 @@ EXPORTED_FUNCTIONS='[
   "_wasm_get_roundtrip_len",
   "_wasm_srand",
   "_wasm_rand",
-  "_wasm_rand_range",
-  "_wasm_time"
+  "_wasm_rand_range"
 ]'
 
 emcc \
@@ -63,7 +62,6 @@ emcc \
     "$REPO_ROOT/src/encrypt.c" \
     "$REPO_ROOT/src/sequencer.c" \
     "$REPO_ROOT/src/rng.c" \
-    "$REPO_ROOT/src/time.c" \
     "$REPO_ROOT/src/protocol.c" \
     "$SCRIPT_DIR/wasm_api.c" \
     "$SCRIPT_DIR/wasm_protocol_dispatch.c" \

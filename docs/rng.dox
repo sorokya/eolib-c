@@ -23,17 +23,14 @@
  *
  * @subsection rng_client_seed Reproducing the original client behaviour
  *
- * The original EO client seeded the RNG at startup using its own Borland-specific
- * `time()` call — a 32-bit value derived from **local system time** using the
- * Borland runtime algorithm (approximately `time(NULL) + local_timezone_offset + 18000`).
- * A plain `time(NULL)` call would give incorrect seeds on machines not running
- * at UTC.  To reproduce this behaviour exactly, seed the RNG with @ref eo_time :
+ * The original EO client seeded the RNG at startup using `(uint32_t)time(NULL)`.
+ * To replicate this:
  *
  * @code{.c}
- * #include "eolib/time.h"
+ * #include <time.h>
  * #include "eolib/rng.h"
  *
- * eo_srand(eo_time());   // mirrors the original client startup seed
+ * eo_srand((uint32_t)time(NULL));   // mirrors the original client startup seed
  * @endcode
  *
  * If you pass the same seed on two different runs you will get an **identical**
