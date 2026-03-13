@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">eolib
+   <div id="projectname">eolib<span id="projectnumber">&#160;0.4.0</span>
    </div>
    <div id="projectbrief">A core C library for writing applications related to Endless Online</div>
   </td>
@@ -114,18 +114,40 @@ Windows</h2>
 Getting the library</h1>
 <h2 class="doxsection"><a class="anchor" id="gs_prebuilt"></a>
 Option 1 — Pre-built release (recommended)</h2>
-<p>Download the release for your platform from the <a href="https://github.com/sorokya/eolib-c/releases">releases page</a>. Packages are named <span class="tt">eolib-{version}-{platform}.zip</span>.</p>
-<p>The archive unpacks to: </p><div class="fragment"><div class="line">eolib-{version}-{platform}/</div>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Platform  </th><th class="markdownTableHeadNone">Download  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Linux x86_64  </td><td class="markdownTableBodyNone"><a href="https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Linux.x64.zip">eolib-0.4.0-Linux.x64.zip</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Linux ARM64  </td><td class="markdownTableBodyNone"><a href="https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Linux.arm64.zip">eolib-0.4.0-Linux.arm64.zip</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">macOS Apple Silicon  </td><td class="markdownTableBodyNone"><a href="https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-macOS.arm64.zip">eolib-0.4.0-macOS.arm64.zip</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">macOS Intel  </td><td class="markdownTableBodyNone"><a href="https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-macOS.x64.zip">eolib-0.4.0-macOS.x64.zip</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Windows MSVC x64  </td><td class="markdownTableBodyNone"><a href="https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Windows.VS2022.x64.zip">eolib-0.4.0-Windows.VS2022.x64.zip</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Windows MSVC x86  </td><td class="markdownTableBodyNone"><a href="https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Windows.VS2022.x86.zip">eolib-0.4.0-Windows.VS2022.x86.zip</a>  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Windows MinGW x64  </td><td class="markdownTableBodyNone"><a href="https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Windows.MinGW.x64.zip">eolib-0.4.0-Windows.MinGW.x64.zip</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Windows MinGW x86  </td><td class="markdownTableBodyNone"><a href="https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Windows.MinGW.x86.zip">eolib-0.4.0-Windows.MinGW.x86.zip</a>  </td></tr>
+</table>
+<p>Each archive includes the C library <b>and</b> the Lua bindings: </p><div class="fragment"><div class="line">eolib-0.4.0-{platform}/</div>
 <div class="line">  include/</div>
 <div class="line">    eolib/</div>
 <div class="line">      eolib.h  ...</div>
 <div class="line">  lib/</div>
 <div class="line">    cmake/eolib/          (CMake find_package support)</div>
+<div class="line">    lua/5.4/eolib.so      (Lua C module)</div>
 <div class="line">    libeolib.so           (Linux)</div>
 <div class="line">    libeolib.dylib        (macOS)</div>
 <div class="line">    eolib.lib             (Windows MSVC <span class="keyword">import</span> library)</div>
 <div class="line">    libeolib.dll.a        (Windows MinGW <span class="keyword">import</span> library)</div>
-<div class="line">  LICENSE.txt</div>
+<div class="line">  share/</div>
+<div class="line">    doc/eolib_c/LICENSE.txt</div>
+<div class="line">    lua/5.4/eolib.d.lua   (LuaLS type definitions)</div>
 </div><!-- fragment --><p><b>Use directly from the extracted directory (no install needed):</b> </p><div class="fragment"><div class="line">list(APPEND CMAKE_PREFIX_PATH &quot;/path/to/eolib-{version}-{platform}&quot;)</div>
 <div class="line">find_package(eolib REQUIRED)</div>
 <div class="line">target_link_libraries(myapp PRIVATE eolib::eolib)</div>
