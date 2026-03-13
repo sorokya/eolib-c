@@ -1,5 +1,7 @@
 var NAVTREEINDEX26 =
 {
+"structPlayerRangeRequestClientPacket.html#a8f7a0dbf8f985d636621ed98bbb8edb8":[10,0,275,1],
+"structPlayersAcceptClientPacket.html":[10,0,276],
 "structPlayersAcceptClientPacket.html#a60e472f071d66da3571909046baa80de":[10,0,276,1],
 "structPlayersAcceptClientPacket.html#aa89640b576c1840724e76882d15712cc":[10,0,276,0],
 "structPlayersAgreeServerPacket.html":[10,0,277],
@@ -247,7 +249,5 @@ var NAVTREEINDEX26 =
 "structSitCloseServerPacket.html":[10,0,329],
 "structSitCloseServerPacket.html#a19299c153ee826432d4e42cdf83d7071":[10,0,329,0],
 "structSitCloseServerPacket.html#a63b9ca93cdf8cca474a97d640f9de7b6":[10,0,329,2],
-"structSitCloseServerPacket.html#abeddfe0cbc9ae6856036625bca689c26":[10,0,329,1],
-"structSitPlayerServerPacket.html":[10,0,330],
-"structSitPlayerServerPacket.html#a0be5e7b03d57863e3ff1e72abbd0249b":[10,0,330,1]
+"structSitCloseServerPacket.html#abeddfe0cbc9ae6856036625bca689c26":[10,0,329,1]
 };

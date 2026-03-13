@@ -1,5 +1,7 @@
 var NAVTREEINDEX27 =
 {
+"structSitPlayerServerPacket.html":[10,0,330],
+"structSitPlayerServerPacket.html#a0be5e7b03d57863e3ff1e72abbd0249b":[10,0,330,1],
 "structSitPlayerServerPacket.html#a19a4ab02aa7933476ebed9bbeb4ff14d":[10,0,330,0],
 "structSitPlayerServerPacket.html#a64243ae25613dcbfe9b69bdaf2fcf2eb":[10,0,330,3],
 "structSitPlayerServerPacket.html#a8d1ddd847e3ffa97e13203cd144df178":[10,0,330,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX27 =
 "structTalkRequestServerPacket.html#adfcd58c9d0e932c22c0f78dcd1a1243f":[10,0,381,1],
 "structTalkServerServerPacket.html":[10,0,382],
 "structTalkServerServerPacket.html#a2fca51d8ef56730b8d8c858d8839d1bb":[10,0,382,1],
-"structTalkServerServerPacket.html#afae90f9003f310c322004e1c1abf5c7a":[10,0,382,0],
-"structTalkSpecServerPacket.html":[10,0,383],
-"structTalkSpecServerPacket.html#ac288a05ee6df1baf9c57be9da170fb35":[10,0,383,1]
+"structTalkServerServerPacket.html#afae90f9003f310c322004e1c1abf5c7a":[10,0,382,0]
 };

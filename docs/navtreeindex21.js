@@ -1,5 +1,7 @@
 var NAVTREEINDEX21 =
 {
+"structCharacterBaseStatsWelcome.html#a66f4ae04272cc1ad75e5d4aef0741d0f":[10,0,52,4],
+"structCharacterBaseStatsWelcome.html#aa4df127bcc459616def25ec0c2846113":[10,0,52,0],
 "structCharacterBaseStatsWelcome.html#acba2a3b9507e3a160e0cc3b08a864ca7":[10,0,52,1],
 "structCharacterCreateClientPacket.html":[10,0,53],
 "structCharacterCreateClientPacket.html#a38d524bd067ea2bdeeccebc8b5cd5db0":[10,0,53,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX21 =
 "structDialogQuestEntry.html#afecd5dded9a80b80e0f605cc16c8cf7f":[10,0,95,2],
 "structDoorCloseServerPacket.html":[10,0,96],
 "structDoorCloseServerPacket.html#aae07a6c4c8f2393bb4a5e965c8d1561f":[10,0,96,0],
-"structDoorCloseServerPacket.html#acbe576c72e0c35d2965727df0418b6db":[10,0,96,1],
-"structDoorOpenClientPacket.html":[10,0,97],
-"structDoorOpenClientPacket.html#a4b3fddedb0c1f8717ee068cdc006575a":[10,0,97,0]
+"structDoorCloseServerPacket.html#acbe576c72e0c35d2965727df0418b6db":[10,0,96,1]
 };

@@ -37,7 +37,9 @@ var searchData=
   ['fill_5ftile_34',['fill_tile',['../structEmf.html#ae926d272e3f5c2be6be03582c87256fd',1,'Emf']]],
   ['fire_35',['fire',['../structCharacterElementalStats.html#a4bdf6efbf21157a9e6bbdb067c3d07b0',1,'CharacterElementalStats']]],
   ['fire_5fresistance_36',['fire_resistance',['../structEifRecord.html#a265be808ae1729bec7c2713ec576e0d9',1,'EifRecord']]],
-  ['free_37',['free',['../structEoSerializeVTable.html#aaf21c9191603ecd2cf70bff9e33bdecf',1,'EoSerializeVTable::free'],['../getting_started.html#gs_memory_structs',1,'Protocol structs — init, then free']]],
-  ['full_5fname_38',['full_name',['../structAccountCreateClientPacket.html#ac7c4a2b50af00b6bb93d4069808fcb2e',1,'AccountCreateClientPacket']]],
-  ['functions_39',['Dispatch Functions',['../protocol_interface.html#pi_dispatch',1,'']]]
+  ['found_37',['Troubleshooting: module &apos;eolib&apos; not found',['../getting_started_lua.html#gsl_troubleshoot',1,'']]],
+  ['free_38',['free',['../structEoSerializeVTable.html#aaf21c9191603ecd2cf70bff9e33bdecf',1,'EoSerializeVTable::free'],['../getting_started.html#gs_memory_structs',1,'Protocol structs — init, then free']]],
+  ['from_20source_39',['from source',['../getting_started_lua.html#gsl_install',1,'Option 2 — Build and install from source'],['../getting_started.html#gs_source',1,'Option 2 — Build from source']]],
+  ['full_5fname_40',['full_name',['../structAccountCreateClientPacket.html#ac7c4a2b50af00b6bb93d4069808fcb2e',1,'AccountCreateClientPacket']]],
+  ['functions_41',['Dispatch Functions',['../protocol_interface.html#pi_dispatch',1,'']]]
 ];

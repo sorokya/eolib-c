@@ -1,5 +1,7 @@
 var NAVTREEINDEX25 =
 {
+"structMapSign.html#ab89c12c906b764b59d1c2c1c74894798":[10,0,221,2],
+"structMapSign.html#acec54659845d0029835f7cffa4415ff9":[10,0,221,0],
 "structMapTileSpecRow.html":[10,0,222],
 "structMapTileSpecRow.html#a40110ecc386c2b28b7a89186108b894d":[10,0,222,0],
 "structMapTileSpecRow.html#ab9ac23b3be4bbe97383c4ce3fdc83ebc":[10,0,222,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX25 =
 "structPlayerEffect.html#ad148a4da5d20330c6964d66b02e7117a":[10,0,274,1],
 "structPlayerRangeRequestClientPacket.html":[10,0,275],
 "structPlayerRangeRequestClientPacket.html#a2a2283e0a524c5e553a69ba2a2ba0b7d":[10,0,275,0],
-"structPlayerRangeRequestClientPacket.html#a4baa4a9a8fa4716ba88822095059a076":[10,0,275,2],
-"structPlayerRangeRequestClientPacket.html#a8f7a0dbf8f985d636621ed98bbb8edb8":[10,0,275,1],
-"structPlayersAcceptClientPacket.html":[10,0,276]
+"structPlayerRangeRequestClientPacket.html#a4baa4a9a8fa4716ba88822095059a076":[10,0,275,2]
 };

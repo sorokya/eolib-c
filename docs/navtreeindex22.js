@@ -1,5 +1,7 @@
 var NAVTREEINDEX22 =
 {
+"structDoorOpenClientPacket.html":[10,0,97],
+"structDoorOpenClientPacket.html#a4b3fddedb0c1f8717ee068cdc006575a":[10,0,97,0],
 "structDoorOpenClientPacket.html#a5aa03e55d2cb7fba083627c070ee6d2a":[10,0,97,1],
 "structDoorOpenServerPacket.html":[10,0,98],
 "structDoorOpenServerPacket.html#a9fd075b3c046ba974cc42e55c4387232":[10,0,98,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX22 =
 "structEquipmentPaperdoll.html#a1499981a074b77d583561eab06bc17e8":[10,0,128,10],
 "structEquipmentPaperdoll.html#a4d988574f59bfa5b80507f128159e718":[10,0,128,7],
 "structEquipmentPaperdoll.html#a51145c5d01302aedf093981158060c59":[10,0,128,11],
-"structEquipmentPaperdoll.html#a76eae460d04209a9cf17d02a85b8bca4":[10,0,128,0],
-"structEquipmentPaperdoll.html#a93b6ae5a39238884749ac2548a5f82df":[10,0,128,9],
-"structEquipmentPaperdoll.html#aa80ebac615824ce0288a1b1c5d1a1ea5":[10,0,128,6]
+"structEquipmentPaperdoll.html#a76eae460d04209a9cf17d02a85b8bca4":[10,0,128,0]
 };

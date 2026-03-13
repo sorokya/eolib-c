@@ -32,9 +32,9 @@ var NAVTREE =
         [ "macOS", "getting_started.html#gs_macos", null ],
         [ "Windows", "getting_started.html#gs_windows", null ]
       ] ],
-      [ "Downloading a Release", "getting_started.html#gs_download", [
-        [ "Using CMake (preferred)", "getting_started.html#gs_cmake", null ],
-        [ "Manual compilation", "getting_started.html#gs_manual", null ]
+      [ "Getting the library", "getting_started.html#gs_download", [
+        [ "Option 1 — Pre-built release (recommended)", "getting_started.html#gs_prebuilt", null ],
+        [ "Option 2 — Build from source", "getting_started.html#gs_source", null ]
       ] ],
       [ "Example 1 — Packet Inspector", "getting_started.html#gs_example1", null ],
       [ "Example 2 — EIF Pub File Reader", "getting_started.html#gs_example2", null ],
@@ -46,14 +46,17 @@ var NAVTREE =
       [ "Next Steps", "getting_started.html#gs_next", null ]
     ] ],
     [ "Getting Started (Lua)", "getting_started_lua.html", [
-      [ "Prerequisites &amp; Development Environment", "getting_started_lua.html#gsl_prereqs", [
+      [ "Prerequisites", "getting_started_lua.html#gsl_prereqs", [
         [ "Linux (Ubuntu / Debian)", "getting_started_lua.html#gsl_linux", null ],
         [ "macOS", "getting_started_lua.html#gsl_macos", null ],
         [ "Windows", "getting_started_lua.html#gsl_windows", null ]
       ] ],
-      [ "Downloading a Release", "getting_started_lua.html#gsl_download", [
-        [ "Installing the module", "getting_started_lua.html#gsl_install", null ],
-        [ "IDE support", "getting_started_lua.html#gsl_ide", null ]
+      [ "Getting the bindings", "getting_started_lua.html#gsl_download", [
+        [ "Option 1 — Pre-built drop-in (recommended)", "getting_started_lua.html#gsl_dropin", null ],
+        [ "Option 2 — Build and install from source", "getting_started_lua.html#gsl_install", [
+          [ "Troubleshooting: module 'eolib' not found", "getting_started_lua.html#gsl_troubleshoot", null ]
+        ] ],
+        [ "IDE support (lua-language-server)", "getting_started_lua.html#gsl_ide", null ]
       ] ],
       [ "Example 1 — Packet Inspector", "getting_started_lua.html#gsl_example1", null ],
       [ "Example 2 — EIF Pub File Reader", "getting_started_lua.html#gsl_example2", null ],
@@ -99,34 +102,34 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"globals_func_w.html",
-"protocol_8c.html#a0e610f41d1b48eed1f3335699e887ddc",
-"protocol_8c.html#a23681f6922fe791f8ded92d971c5b67e",
-"protocol_8c.html#a3712b7b7ca5527241dc537e74fce1405",
-"protocol_8c.html#a4ac29ec886d90fb8c73a7c3b704225f6",
-"protocol_8c.html#a5f3e0c962fafd060b94a672057e2f5f7",
-"protocol_8c.html#a6ff4d6803e0eddc531e8220ae3448d03",
-"protocol_8c.html#a8258b34ecb02b2752eab42eaa03d9357",
-"protocol_8c.html#a95587bc2c74dadedf143351670c1ab42",
-"protocol_8c.html#aa90789dc36e6d1e4fee664b75770e23f",
-"protocol_8c.html#abce24998aaf0159902d5a0b46d42dbb7",
-"protocol_8c.html#ad0d0275e2edadc8ff1f18a4f84e50667",
-"protocol_8c.html#ae4427cedbf72d7f338547c759085ef18",
-"protocol_8c.html#afb39ece459e5140aecc9280e21647c2c",
-"protocol_8h.html#a143fc83de7804c4f507336b2231d5d36",
-"protocol_8h.html#a42f1d7b7d21b206d2f8dd68b20491c80a3a87ecb7f07d5047f2bc7f2a8f82ec80",
-"protocol_8h.html#a6c1a73004119c7d5b624621bf065948c",
-"protocol_8h.html#aa4e0e74afed9d3978ef466f835408507",
-"protocol_8h.html#ad81c8baee568612192844a3b4bbb5cf0",
-"structAdminInteractListServerPacket.html#a2f8b26e46696542b5616670992a62a56",
-"structCharacterBaseStatsWelcome.html#acba2a3b9507e3a160e0cc3b08a864ca7",
-"structDoorOpenClientPacket.html#a5aa03e55d2cb7fba083627c070ee6d2a",
-"structEquipmentPaperdoll.html#ab3dd78b92cb466b618b8297572de5bb1",
-"structInitInitServerPacket.html#ad859103cad6e649145a9de888934eb46",
-"structMapTileSpecRow.html",
-"structPlayersAcceptClientPacket.html#a60e472f071d66da3571909046baa80de",
-"structSitPlayerServerPacket.html#a19a4ab02aa7933476ebed9bbeb4ff14d",
-"structTalkSpecServerPacket.html#adf2ebdb29b03a0b7cd6ed62a069765f5"
+"globals_func_u.html",
+"protocol_8c.html#a0e58dbfae3768ca3db799bac11017ab4",
+"protocol_8c.html#a236548c7c1f643128b57300c53957ec0",
+"protocol_8c.html#a36ff236bc5e9ed6e0fb620b3411ab43e",
+"protocol_8c.html#a4aa257ee38f83488ab775d965c34eb4f",
+"protocol_8c.html#a5f16f3b78112c6e9c08011666670bc68",
+"protocol_8c.html#a6fbcc13c9af06b700d9aafef1319011f",
+"protocol_8c.html#a82215a371622d32e1c7c1cfdab391675",
+"protocol_8c.html#a95492d61a2a580a7cf0bcde1af416e8e",
+"protocol_8c.html#aa8d098fcedfecee1c0d999086999dbf8",
+"protocol_8c.html#abcd46585080901da1de50d7322aa8d93",
+"protocol_8c.html#ad0b87ed6136daf71c35b956a6dcff0c3",
+"protocol_8c.html#ae4375b33d002812a43e6435689b3ece0",
+"protocol_8c.html#afb0ae8b8280f35673689352c375c95d1",
+"protocol_8h.html#a142561f81038805cfc8786db4316b8b4",
+"protocol_8h.html#a42f1d7b7d21b206d2f8dd68b20491c80",
+"protocol_8h.html#a6b2feb855143e68470fc16141b77c3fd",
+"protocol_8h.html#aa3fd9a9b720fca3f21f5ab868a561e02",
+"protocol_8h.html#ad7da27bd8ffe5746919104f6345496c1",
+"structAdminInteractAgreeServerPacket.html#a3b402eea887e5b954b14495a7176de60",
+"structCharacterBaseStatsWelcome.html#a66f4ae04272cc1ad75e5d4aef0741d0f",
+"structDoorOpenClientPacket.html",
+"structEquipmentPaperdoll.html#a93b6ae5a39238884749ac2548a5f82df",
+"structInitInitServerPacket.html#ac5f070e404b21f6168c11d6612a4dc84",
+"structMapSign.html#ab89c12c906b764b59d1c2c1c74894798",
+"structPlayerRangeRequestClientPacket.html#a8f7a0dbf8f985d636621ed98bbb8edb8",
+"structSitPlayerServerPacket.html",
+"structTalkSpecServerPacket.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

@@ -1,5 +1,7 @@
 var NAVTREEINDEX28 =
 {
+"structTalkSpecServerPacket.html":[10,0,383],
+"structTalkSpecServerPacket.html#ac288a05ee6df1baf9c57be9da170fb35":[10,0,383,1],
 "structTalkSpecServerPacket.html#adf2ebdb29b03a0b7cd6ed62a069765f5":[10,0,383,0],
 "structTalkTellClientPacket.html":[10,0,384],
 "structTalkTellClientPacket.html#a8f4e68a52bca6e4e08778b5abd47fca1":[10,0,384,0],

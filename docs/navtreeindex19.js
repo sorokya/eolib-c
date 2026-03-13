@@ -1,5 +1,7 @@
 var NAVTREEINDEX19 =
 {
+"protocol_8h.html#ad7da27bd8ffe5746919104f6345496c1":[11,0,1,0,3,1073],
+"protocol_8h.html#ad80ef55309fdd3fe02c1222438127b7c":[11,0,1,0,3,1066],
 "protocol_8h.html#ad81c8baee568612192844a3b4bbb5cf0":[11,0,1,0,3,894],
 "protocol_8h.html#ad8364474a4cb20211d2710a798da3180":[11,0,1,0,3,1258],
 "protocol_8h.html#ad8fa06de86914dee0fc945c0ba05fbe8":[11,0,1,0,3,831],
@@ -247,7 +249,5 @@ var NAVTREEINDEX19 =
 "structAccountRequestClientPacket.html#a7c4f120d94a598aa6e52d53621a693b6":[10,0,3,1],
 "structAccountRequestClientPacket.html#a9b53fafd12286dc84e9d51493f1d2421":[10,0,3,0],
 "structAdminInteractAgreeServerPacket.html":[10,0,4],
-"structAdminInteractAgreeServerPacket.html#a3ae2066ad27a3b9dbebf2f45113896e3":[10,0,4,0],
-"structAdminInteractAgreeServerPacket.html#a3b402eea887e5b954b14495a7176de60":[10,0,4,1],
-"structAdminInteractListServerPacket.html":[10,0,5]
+"structAdminInteractAgreeServerPacket.html#a3ae2066ad27a3b9dbebf2f45113896e3":[10,0,4,0]
 };

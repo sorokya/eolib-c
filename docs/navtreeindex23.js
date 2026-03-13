@@ -1,5 +1,7 @@
 var NAVTREEINDEX23 =
 {
+"structEquipmentPaperdoll.html#a93b6ae5a39238884749ac2548a5f82df":[10,0,128,9],
+"structEquipmentPaperdoll.html#aa80ebac615824ce0288a1b1c5d1a1ea5":[10,0,128,6],
 "structEquipmentPaperdoll.html#ab3dd78b92cb466b618b8297572de5bb1":[10,0,128,1],
 "structEquipmentPaperdoll.html#ac73955c9d1f2c86b36c3d3aa2635911d":[10,0,128,3],
 "structEquipmentPaperdoll.html#ac7e33710b311b99cf9090f99aaaa8e54":[10,0,128,12],
@@ -247,7 +249,5 @@ var NAVTREEINDEX23 =
 "structInitInitServerPacket.html#ab03cb6e1ecf57ff8baf530369a68de70":[10,0,171,14],
 "structInitInitServerPacket.html#ab1f6b1796c40bdb3a13e6be7c9cd7fb1":[10,0,171,21],
 "structInitInitServerPacket.html#abd3e46131becc43697d0dbc7aaa67897":[10,0,171,25],
-"structInitInitServerPacket.html#ac1c0726e6d1875e12e1c96d30d36b3ae":[10,0,171,0],
-"structInitInitServerPacket.html#ac5f070e404b21f6168c11d6612a4dc84":[10,0,171,9],
-"structInitInitServerPacket.html#ad1bb9f3964b523b341fd62f5ffa3d0b9":[10,0,171,10]
+"structInitInitServerPacket.html#ac1c0726e6d1875e12e1c96d30d36b3ae":[10,0,171,0]
 };

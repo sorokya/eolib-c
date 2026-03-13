@@ -95,63 +95,47 @@ $(function(){initNavTree('getting_started_lua.html','',''); });
 <div class="textblock"><p>This guide walks you through setting up a Lua development environment, downloading the <b>eolib-c Lua bindings</b>, and writing two practical example scripts.</p>
 <p>The Lua bindings expose the same protocol types as the C library through a native C extension module (<span class="tt">eolib.so</span> / <span class="tt">eolib.dll</span>) that you <span class="tt">require</span> from Lua 5.4.</p>
 <h1 class="doxsection"><a class="anchor" id="gsl_prereqs"></a>
-Prerequisites &amp; Development Environment</h1>
-<p>You need <b>Lua 5.4</b> installed, plus a C toolchain in case you ever need to build from source. CMake 3.16+ is required for source builds.</p>
+Prerequisites</h1>
+<p>You only need <b>Lua 5.4</b> to use the pre-built bindings.</p>
 <h2 class="doxsection"><a class="anchor" id="gsl_linux"></a>
 Linux (Ubuntu / Debian)</h2>
-<div class="fragment"><div class="line">sudo apt-get update</div>
-<div class="line">sudo apt-get install gcc cmake build-essential lua5.4</div>
+<div class="fragment"><div class="line">sudo apt-get install lua5.4</div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gsl_macos"></a>
 macOS</h2>
-<div class="fragment"><div class="line">xcode-select --install</div>
-<div class="line">brew install cmake lua</div>
+<div class="fragment"><div class="line">brew install lua</div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gsl_windows"></a>
 Windows</h2>
-<p><b>MSVC (recommended):</b> Install <a href="https://visualstudio.microsoft.com/vs/community/">Visual Studio 2022 Community</a> with the <b>Desktop development with C++</b> workload. Download and install a Lua 5.4 binary for Windows from <a href="https://luabinaries.sourceforge.net/">https://luabinaries.sourceforge.net/</a> (or use <a href="https://luarocks.org/">LuaRocks</a> which bundles Lua).</p>
-<p><b>MinGW via MSYS2:</b> </p><div class="fragment"><div class="line">pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-lua</div>
-</div><!-- fragment --><hr  />
+<p>Download and install a Lua 5.4 binary from <a href="https://luabinaries.sourceforge.net/">https://luabinaries.sourceforge.net/</a> (or use <a href="https://luarocks.org/">LuaRocks</a> which bundles Lua).</p>
+<hr  />
 <h1 class="doxsection"><a class="anchor" id="gsl_download"></a>
-Downloading a Release</h1>
-<p>Pre-built Lua binding releases are available at: <a href="https://github.com/sorokya/eolib-c/releases">https://github.com/sorokya/eolib-c/releases</a></p>
-<p>Lua packages follow the naming convention <span class="tt">eolib-{version}-Lua-{platform}.zip</span> where <span class="tt">{platform}</span> is one of:</p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Platform  </th><th class="markdownTableHeadNone">Filename suffix  </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Linux 64-bit (x86_64)  </td><td class="markdownTableBodyNone"><span class="tt">Linux.x64</span>  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">Linux 64-bit (ARM)  </td><td class="markdownTableBodyNone"><span class="tt">Linux.arm64</span>  </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">macOS Apple Silicon  </td><td class="markdownTableBodyNone"><span class="tt">macOS.arm64</span>  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">macOS Intel  </td><td class="markdownTableBodyNone"><span class="tt">macOS.x64</span>  </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Windows MSVC 64-bit  </td><td class="markdownTableBodyNone"><span class="tt">Windows.VS2022.x64</span>  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">Windows MSVC 32-bit  </td><td class="markdownTableBodyNone"><span class="tt">Windows.VS2022.x86</span>  </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Windows MinGW 64-bit  </td><td class="markdownTableBodyNone"><span class="tt">Windows.MinGW.x64</span>  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">Windows MinGW 32-bit  </td><td class="markdownTableBodyNone"><span class="tt">Windows.MinGW.x86</span>  </td></tr>
-</table>
-<p>The archive contains: </p><div class="fragment"><div class="line">eolib.so         (Linux / macOS — the Lua C extension)</div>
-<div class="line">eolib.dll        (Windows — the Lua C extension)</div>
-<div class="line">libeolib.dll     (Windows only — the underlying C library; must be in PATH)</div>
-<div class="line">eolib.d.lua      (type-annotation stub <span class="keywordflow">for</span> IDE support, e.g. LuaLS / EmmyLua)</div>
+Getting the bindings</h1>
+<h2 class="doxsection"><a class="anchor" id="gsl_dropin"></a>
+Option 1 — Pre-built drop-in (recommended)</h2>
+<p>Download the Lua bindings release for your platform from the <a href="https://github.com/sorokya/eolib-c/releases">releases page</a>. Packages are named <span class="tt">eolib-{version}-Lua-{platform}.zip</span>.</p>
+<p>Extract the archive into your project directory. Lua searches <span class="tt">./</span> by default so <span class="tt">require("eolib")</span> will just work, and lua-language-server will pick up the type definitions automatically.</p>
+<p>Or copy them to a system prefix: </p><div class="fragment"><div class="line"># Linux / macOS</div>
+<div class="line">cp libeolib.* eolib.so /usr/local/lib/lua/5.4/</div>
+<div class="line">cp eolib.d.lua         /usr/local/share/lua/5.4/</div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gsl_install"></a>
-Installing the module</h2>
-<p>The simplest approach is to place <span class="tt">eolib.so</span> (or <span class="tt">eolib.dll</span> + <span class="tt">libeolib.dll</span> on Windows) in the same directory as your script, then run: </p><div class="fragment"><div class="line">lua5.4 my_script.lua</div>
-</div><!-- fragment --><p>Lua's default <span class="tt">package.cpath</span> includes <span class="tt">./?.so</span> on Linux/macOS and <span class="tt">.\?.dll</span> on Windows, so <span class="tt">require("eolib")</span> will find the module automatically.</p>
-<p>To install system-wide so any script can use it, copy the <span class="tt">.so</span>/<span class="tt">.dll</span> into one of the directories listed by: </p><div class="fragment"><div class="line">print(package.cpath)</div>
-</div><!-- fragment --><p>Or set <span class="tt">LUA_CPATH</span> in your shell environment to include the directory containing the module: </p><div class="fragment"><div class="line"># Linux / macOS</div>
-<div class="line">export LUA_CPATH=&quot;/path/to/eolib/?.so;;&quot;</div>
+Option 2 — Build and install from source</h2>
+<p>Building from source requires a C toolchain, <b>CMake 3.16+</b>, libxml2, and json-c.</p>
+<p>Linux (Ubuntu / Debian): </p><div class="fragment"><div class="line">sudo apt-get install gcc cmake build-essential libxml2-dev libjson-c-dev liblua5.4-dev lua5.4</div>
+</div><!-- fragment --><p>macOS: </p><div class="fragment"><div class="line">xcode-select --install &amp;&amp; brew install cmake libxml2 json-c lua</div>
+</div><!-- fragment --><p>Windows — MSVC: Install <a href="https://visualstudio.microsoft.com/vs/community/">Visual Studio 2022 Community</a> with the <b>Desktop development with C++</b> workload. libxml2 and json-c are handled automatically via the bundled vcpkg configuration.</p>
+<p>Windows — MinGW via MSYS2: </p><div class="fragment"><div class="line">pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-libxml2 mingw-w64-x86_64-json-c mingw-w64-x86_64-lua</div>
+</div><!-- fragment --><p>Then build and install: </p><div class="fragment"><div class="line">git clone --recurse-submodules https://github.com/sorokya/eolib-c.git</div>
+<div class="line">cd eolib-c</div>
 <div class="line"> </div>
-<div class="line"># Windows (PowerShell)</div>
-<div class="line">$env:LUA_CPATH = &quot;C:\eolib\?.dll;;&quot;</div>
-</div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>On Windows, <span class="tt">libeolib.dll</span> must also be reachable via the <span class="tt">PATH</span> environment variable, or placed alongside <span class="tt">eolib.dll</span> in the same directory.</dd></dl>
-<h2 class="doxsection"><a class="anchor" id="gsl_ide"></a>
-IDE support</h2>
-<p>The included <span class="tt">eolib.d.lua</span> file provides type annotations understood by <a href="https://github.com/LuaLS/lua-language-server">lua-language-server</a> and compatible IDEs (VS Code, Neovim, etc.). Place it anywhere your language server's <span class="tt">workspace.library</span> path covers, or add the directory to the server's <span class="tt">workspace.userThirdParty</span> setting.</p>
+<div class="line">cmake -S . -B build -DEOLIB_BUILD_LUA_BINDINGS=ON</div>
+<div class="line">cmake --build build</div>
+<div class="line">cmake --install build</div>
+</div><!-- fragment --><h3 class="doxsection"><a class="anchor" id="gsl_troubleshoot"></a>
+Troubleshooting: module 'eolib' not found</h3>
+<p>Some systems (e.g. macOS with Homebrew Lua) use a different prefix than <span class="tt">/usr/local</span>. Check where your Lua looks: </p><div class="fragment"><div class="line">lua -e &quot;print(package.cpath)&quot;</div>
+</div><!-- fragment --><p>Then copy files to the right path, or set <span class="tt">LUA_CPATH</span> manually: </p><div class="fragment"><div class="line">export LUA_CPATH=&quot;/usr/local/lib/lua/5.4/?.so;;&quot;</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gsl_ide"></a>
+IDE support (lua-language-server)</h2>
+<p><span class="tt">eolib.d.lua</span> provides full type annotations for <a href="https://github.com/LuaLS/lua-language-server">lua-language-server</a>. For the drop-in method, having it in your project root is enough. For a system install, luals typically picks it up from <span class="tt">share/lua/5.4/</span> automatically.</p>
 <hr  />
 <h1 class="doxsection"><a class="anchor" id="gsl_example1"></a>
 Example 1 — Packet Inspector</h1>

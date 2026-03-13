@@ -10,9 +10,13 @@ var searchData=
   ['onlineplayer_5finit_7',['OnlinePlayer_init',['../protocol_8h.html#aa37876bdd39c9cad7a7672cdf36df8e6',1,'OnlinePlayer_init(void):&#160;protocol.c'],['../protocol_8c.html#aa37876bdd39c9cad7a7672cdf36df8e6',1,'OnlinePlayer_init(void):&#160;protocol.c']]],
   ['onlineplayer_5fserialize_5ffn_8',['OnlinePlayer_serialize_fn',['../protocol_8c.html#a39c74642a568d9bbd95e6611c8f9a056',1,'protocol.c']]],
   ['onlineplayer_5fvtable_9',['OnlinePlayer_vtable',['../protocol_8c.html#a8cf5f28523f4bf35a65cb7c8316d9045',1,'protocol.c']]],
-  ['optional_20fields_10',['Optional Fields',['../optional_fields.html',1,'']]],
-  ['others_11',['others',['../structEffectTargetOtherServerPacket.html#ab42d619aa0ce9775b94250c36367bf1f',1,'EffectTargetOtherServerPacket']]],
-  ['others_5flength_12',['others_length',['../structEffectTargetOtherServerPacket.html#a765e4a383130133d810f81d0996c6de6',1,'EffectTargetOtherServerPacket']]],
-  ['out_5fof_5fdate_13',['out_of_date',['../structInitInitServerPacket.html#a44499e994c038195e4be2f9151e92fd9',1,'InitInitServerPacket']]],
-  ['owns_20a_20heap_20buffer_14',['EoWriter — owns a heap buffer',['../getting_started.html#gs_memory_writer',1,'']]]
+  ['option_201_20—_20pre_20built_20drop_20in_20recommended_10',['Option 1 — Pre-built drop-in (recommended)',['../getting_started_lua.html#gsl_dropin',1,'']]],
+  ['option_201_20—_20pre_20built_20release_20recommended_11',['Option 1 — Pre-built release (recommended)',['../getting_started.html#gs_prebuilt',1,'']]],
+  ['option_202_20—_20build_20and_20install_20from_20source_12',['Option 2 — Build and install from source',['../getting_started_lua.html#gsl_install',1,'']]],
+  ['option_202_20—_20build_20from_20source_13',['Option 2 — Build from source',['../getting_started.html#gs_source',1,'']]],
+  ['optional_20fields_14',['Optional Fields',['../optional_fields.html',1,'']]],
+  ['others_15',['others',['../structEffectTargetOtherServerPacket.html#ab42d619aa0ce9775b94250c36367bf1f',1,'EffectTargetOtherServerPacket']]],
+  ['others_5flength_16',['others_length',['../structEffectTargetOtherServerPacket.html#a765e4a383130133d810f81d0996c6de6',1,'EffectTargetOtherServerPacket']]],
+  ['out_5fof_5fdate_17',['out_of_date',['../structInitInitServerPacket.html#a44499e994c038195e4be2f9151e92fd9',1,'InitInitServerPacket']]],
+  ['owns_20a_20heap_20buffer_18',['EoWriter — owns a heap buffer',['../getting_started.html#gs_memory_writer',1,'']]]
 ];

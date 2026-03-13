@@ -1,5 +1,7 @@
 var NAVTREEINDEX20 =
 {
+"structAdminInteractAgreeServerPacket.html#a3b402eea887e5b954b14495a7176de60":[10,0,4,1],
+"structAdminInteractListServerPacket.html":[10,0,5],
 "structAdminInteractListServerPacket.html#a2f8b26e46696542b5616670992a62a56":[10,0,5,2],
 "structAdminInteractListServerPacket.html#a3175961a25b4ed5d017916348307dcb7":[10,0,5,3],
 "structAdminInteractListServerPacket.html#a6dd2b9cbd294a9790d068c091cdc5fc6":[10,0,5,6],
@@ -247,7 +249,5 @@ var NAVTREEINDEX20 =
 "structCharacterBaseStatsWelcome.html#a258db54fce56114a51d3d74ea892ea77":[10,0,52,3],
 "structCharacterBaseStatsWelcome.html#a2b73284b4f73324b394de62edf64abaf":[10,0,52,5],
 "structCharacterBaseStatsWelcome.html#a44a02f0cad28924dcfb0204d2b96a79b":[10,0,52,6],
-"structCharacterBaseStatsWelcome.html#a480081cc5473f676c0f724597d466791":[10,0,52,2],
-"structCharacterBaseStatsWelcome.html#a66f4ae04272cc1ad75e5d4aef0741d0f":[10,0,52,4],
-"structCharacterBaseStatsWelcome.html#aa4df127bcc459616def25ec0c2846113":[10,0,52,0]
+"structCharacterBaseStatsWelcome.html#a480081cc5473f676c0f724597d466791":[10,0,52,2]
 };

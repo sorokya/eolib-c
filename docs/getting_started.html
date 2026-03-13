@@ -95,14 +95,14 @@ $(function(){initNavTree('getting_started.html','',''); });
 <div class="textblock"><p>This guide walks you through setting up a development environment, downloading a pre-built release of <b>eolib-c</b>, and building two practical example programs.</p>
 <h1 class="doxsection"><a class="anchor" id="gs_prereqs"></a>
 Prerequisites &amp; Development Environment</h1>
-<p>eolib-c requires a C11-capable compiler and <b>CMake 3.16 or newer</b>.</p>
+<p>To use the pre-built releases you only need a C11-capable compiler to build your own application. To build eolib-c from source you also need <b>CMake 3.16+</b>, libxml2, and json-c (see <a class="el" href="#gs_source" title="Option 2 — Build from source">Option 2 — Build from source</a> below).</p>
 <h2 class="doxsection"><a class="anchor" id="gs_linux"></a>
 Linux (Ubuntu / Debian)</h2>
 <div class="fragment"><div class="line">sudo apt-get update</div>
 <div class="line">sudo apt-get install gcc cmake build-essential</div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gs_macos"></a>
 macOS</h2>
-<p>Install Xcode command line tools, then CMake via Homebrew: </p><div class="fragment"><div class="line">xcode-select --install</div>
+<div class="fragment"><div class="line">xcode-select --install</div>
 <div class="line">brew install cmake</div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gs_windows"></a>
 Windows</h2>
@@ -111,74 +111,51 @@ Windows</h2>
 <p><b>MinGW via MSYS2:</b> Install <a href="https://www.msys2.org/">MSYS2</a>, then in an MSYS2 MinGW terminal run: </p><div class="fragment"><div class="line">pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake</div>
 </div><!-- fragment --><hr  />
 <h1 class="doxsection"><a class="anchor" id="gs_download"></a>
-Downloading a Release</h1>
-<p>Pre-built releases are available at: <a href="https://github.com/sorokya/eolib-c/releases">https://github.com/sorokya/eolib-c/releases</a></p>
-<p>Packages follow the naming convention <span class="tt">eolib-{version}-{platform}.zip</span> where <span class="tt">{platform}</span> is one of:</p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Platform  </th><th class="markdownTableHeadNone">Filename suffix  </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Linux 64-bit (x86_64)  </td><td class="markdownTableBodyNone"><span class="tt">Linux.x64</span>  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">Linux 64-bit (ARM)  </td><td class="markdownTableBodyNone"><span class="tt">Linux.arm64</span>  </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">macOS Apple Silicon  </td><td class="markdownTableBodyNone"><span class="tt">macOS.arm64</span>  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">macOS Intel  </td><td class="markdownTableBodyNone"><span class="tt">macOS.x64</span>  </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Windows MSVC 64-bit  </td><td class="markdownTableBodyNone"><span class="tt">Windows.VS2022.x64</span>  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">Windows MSVC 32-bit  </td><td class="markdownTableBodyNone"><span class="tt">Windows.VS2022.x86</span>  </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Windows MinGW 64-bit  </td><td class="markdownTableBodyNone"><span class="tt">Windows.MinGW.x64</span>  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">Windows MinGW 32-bit  </td><td class="markdownTableBodyNone"><span class="tt">Windows.MinGW.x86</span>  </td></tr>
-</table>
-<p><b>Extracting the archive:</b> </p><div class="fragment"><div class="line"># Linux / macOS</div>
-<div class="line">unzip eolib-1.0.0-Linux.x64.zip -d eolib</div>
-<div class="line"> </div>
-<div class="line"># Windows (PowerShell)</div>
-<div class="line">Expand-Archive eolib-1.0.0-Windows.VS2022.x64.zip -DestinationPath eolib</div>
-</div><!-- fragment --><p>The archive unpacks to a layout compatible with CMake's <span class="tt">find_package</span>: </p><div class="fragment"><div class="line">eolib/</div>
+Getting the library</h1>
+<h2 class="doxsection"><a class="anchor" id="gs_prebuilt"></a>
+Option 1 — Pre-built release (recommended)</h2>
+<p>Download the release for your platform from the <a href="https://github.com/sorokya/eolib-c/releases">releases page</a>. Packages are named <span class="tt">eolib-{version}-{platform}.zip</span>.</p>
+<p>The archive unpacks to: </p><div class="fragment"><div class="line">eolib-{version}-{platform}/</div>
 <div class="line">  include/</div>
 <div class="line">    eolib/</div>
-<div class="line">      eolib.h</div>
-<div class="line">      ...</div>
+<div class="line">      eolib.h  ...</div>
 <div class="line">  lib/</div>
-<div class="line">    eolib.lib          (Windows MSVC <span class="keyword">import</span> library)</div>
-<div class="line">    libeolib.dll.a     (Windows MinGW <span class="keyword">import</span> library)</div>
-<div class="line">    libeolib.so        (Linux shared library)</div>
-<div class="line">    libeolib.dylib     (macOS shared library)</div>
-<div class="line">  cmake/</div>
-<div class="line">    eolibConfig.cmake</div>
-<div class="line">    ...</div>
-</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gs_cmake"></a>
-Using CMake (preferred)</h2>
-<p>In your <span class="tt">CMakeLists.txt</span>: </p><div class="fragment"><div class="line">cmake_minimum_required(VERSION 3.16)</div>
-<div class="line">project(myapp C)</div>
-<div class="line"> </div>
-<div class="line"># Point CMake to the extracted package (or install it system-wide).</div>
-<div class="line">list(APPEND CMAKE_PREFIX_PATH &quot;/path/to/eolib&quot;)</div>
-<div class="line"> </div>
+<div class="line">    cmake/eolib/          (CMake find_package support)</div>
+<div class="line">    libeolib.so           (Linux)</div>
+<div class="line">    libeolib.dylib        (macOS)</div>
+<div class="line">    eolib.lib             (Windows MSVC <span class="keyword">import</span> library)</div>
+<div class="line">    libeolib.dll.a        (Windows MinGW <span class="keyword">import</span> library)</div>
+<div class="line">  LICENSE.txt</div>
+</div><!-- fragment --><p><b>Use directly from the extracted directory (no install needed):</b> </p><div class="fragment"><div class="line">list(APPEND CMAKE_PREFIX_PATH &quot;/path/to/eolib-{version}-{platform}&quot;)</div>
 <div class="line">find_package(eolib REQUIRED)</div>
-<div class="line"> </div>
-<div class="line">add_executable(myapp main.c)</div>
 <div class="line">target_link_libraries(myapp PRIVATE eolib::eolib)</div>
-</div><!-- fragment --><p>Build: </p><div class="fragment"><div class="line">cmake -B build -S .</div>
-<div class="line">cmake --build build</div>
-</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gs_manual"></a>
-Manual compilation</h2>
-<p>If you prefer to compile without CMake, pass the include and library paths directly to the compiler.</p>
-<p><b>Linux / macOS (GCC or Clang):</b> </p><div class="fragment"><div class="line">gcc main.c -I/path/to/eolib/include \</div>
+</div><!-- fragment --><p><b>Or copy to a system prefix:</b> </p><div class="fragment"><div class="line">  # Linux / macOS</div>
+<div class="line">  cp -r eolib-{version}-{platform}/include/* /usr/local/include/</div>
+<div class="line">* cp -r eolib-{version}-{platform}/lib/*     /usr/local/lib/</div>
+<div class="line">* </div>
+</div><!-- fragment --><p>Then <span class="tt">find_package(eolib REQUIRED)</span> will find it without any <span class="tt">CMAKE_PREFIX_PATH</span>.</p>
+<p><b>Manual compilation (without CMake):</b></p>
+<p>Linux / macOS: </p><div class="fragment"><div class="line">gcc main.c -I/path/to/eolib/include \</div>
 <div class="line">           -L/path/to/eolib/lib -leolib \</div>
 <div class="line">           -Wl,-rpath,/path/to/eolib/lib \</div>
 <div class="line">           -o myapp</div>
-</div><!-- fragment --><p><b>Windows — MSVC (Developer Command Prompt):</b> </p><div class="fragment"><div class="line">cl main.c /I C:\eolib\include ^</div>
+</div><!-- fragment --><p>Windows — MSVC: </p><div class="fragment"><div class="line">cl main.c /I C:\eolib\include ^</div>
 <div class="line">          /link C:\eolib\lib\eolib.lib ^</div>
 <div class="line">          /out:myapp.exe</div>
-</div><!-- fragment --><p><b>Windows — MinGW:</b> </p><div class="fragment"><div class="line">gcc main.c -I/c/eolib/include \</div>
-<div class="line">           -L/c/eolib/lib -leolib \</div>
-<div class="line">           -o myapp.exe</div>
+</div><!-- fragment --><p>Windows — MinGW: </p><div class="fragment"><div class="line">gcc main.c -I/c/eolib/include -L/c/eolib/lib -leolib -o myapp.exe</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gs_source"></a>
+Option 2 — Build from source</h2>
+<p>Requires CMake 3.16+, libxml2, and json-c in addition to the compiler above.</p>
+<p>Linux (Ubuntu / Debian): </p><div class="fragment"><div class="line">sudo apt-get install libxml2-dev libjson-c-dev</div>
+</div><!-- fragment --><p>macOS: </p><div class="fragment"><div class="line">brew install libxml2 json-c</div>
+</div><!-- fragment --><p>Windows — MSVC: libxml2 and json-c are handled automatically via the bundled vcpkg configuration.</p>
+<p>Windows — MinGW via MSYS2: </p><div class="fragment"><div class="line">pacman -S mingw-w64-x86_64-libxml2 mingw-w64-x86_64-json-c</div>
+</div><!-- fragment --><p>Then clone and build: </p><div class="fragment"><div class="line">git clone --recurse-submodules https://github.com/sorokya/eolib-c.git</div>
+<div class="line">cd eolib-c</div>
+<div class="line"> </div>
+<div class="line">cmake -S . -B build -DCMAKE_BUILD_TYPE=Release</div>
+<div class="line">cmake --build build</div>
+<div class="line">cmake --install build</div>
 </div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>On Linux, if the library is not installed in a standard system path, set <span class="tt">LD_LIBRARY_PATH</span> (or <span class="tt">DYLD_LIBRARY_PATH</span> on macOS) before running your application, or use a <span class="tt">-Wl,-rpath</span> flag as shown above.</dd></dl>
 <hr  />
 <h1 class="doxsection"><a class="anchor" id="gs_example1"></a>
