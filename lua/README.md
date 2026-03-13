@@ -3,42 +3,82 @@
 Native C extension module exposing the full eolib API to Lua 5.1, 5.2, 5.3, 5.4,
 and LuaJIT.
 
-## Building
+## Installation & setup
 
-The Lua bindings are built as part of the main eolib CMake project when the
-`EOLIB_BUILD_LUA_BINDINGS=ON` option is enabled. Lua development headers must
-be installed first.
+### Pre-built releases (recommended)
 
-macOS (Homebrew):
+Download the Lua bindings release for your platform from the
+[releases page](https://github.com/sorokya/eolib-c/releases).
+Packages are named `eolib-{version}-Lua-{platform}.zip`.
+
+**Option 1 — Drop-in (quickest):** Extract the archive into your project
+directory. Lua searches `./` by default so `require("eolib")` will just work.
+
+**Option 2 — Copy to a system prefix:**
 
 ```sh
-brew install lua
+# Linux / macOS
+cp libeolib.* eolib.so /usr/local/lib/lua/5.4/
+cp eolib.d.lua         /usr/local/share/lua/5.4/
 ```
 
-Debian/Ubuntu:
+### Building from source
+
+Requires a C toolchain, CMake 3.16+, libxml2, json-c, and Lua headers.
+
+macOS:
 
 ```sh
-sudo apt-get install -y liblua5.4-dev
+xcode-select --install && brew install cmake libxml2 json-c lua
 ```
 
-Then build:
+Linux (Ubuntu / Debian):
 
 ```sh
+sudo apt-get install gcc cmake build-essential libxml2-dev libjson-c-dev liblua5.4-dev lua5.4
+```
+
+Windows — MSVC: Install [Visual Studio 2022 Community](https://visualstudio.microsoft.com/vs/community/)
+with the **Desktop development with C++** workload. libxml2 and json-c are handled automatically via the bundled vcpkg configuration.
+
+Windows — MinGW via MSYS2:
+
+```sh
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-libxml2 mingw-w64-x86_64-json-c mingw-w64-x86_64-lua
+```
+
+Then clone and build:
+
+```sh
+git clone --recurse-submodules https://github.com/sorokya/eolib-c.git
+cd eolib-c
+
 cmake -S . -B build -DEOLIB_BUILD_LUA_BINDINGS=ON
-cmake --build build --target lua_eolib
-```
-
-This produces `build/lua/eolib.so` (or `eolib.dll` on Windows).
-
-## Installation
-
-```sh
+cmake --build build
 cmake --install build
 ```
 
-The shared library (`eolib.so` / `eolib.dll`) is installed to
-`${CMAKE_INSTALL_LIBDIR}`. Add its parent directory to `LUA_CPATH` so Lua can find
-it.
+### Troubleshooting: `module 'eolib' not found`
+
+Some systems (e.g. macOS with Homebrew Lua) use a different prefix than
+`/usr/local`. Check where your Lua looks:
+
+```sh
+lua -e "print(package.cpath)"
+```
+
+Then copy files there, or set `LUA_CPATH` manually:
+
+```sh
+export LUA_CPATH="/usr/local/lib/lua/5.4/?.so;;"
+```
+
+### IDE support (lua-language-server)
+
+`eolib.d.lua` provides full type annotations for
+[lua-language-server](https://github.com/LuaLS/lua-language-server). For the
+drop-in method, having it in your project root is enough. For a system install,
+luals typically picks it up from `share/lua/5.4/` automatically.
 
 ## Quick start
 
@@ -242,27 +282,6 @@ LUA_CPATH="./build/lua/?.so" lua lua/tests/test_encrypt.lua
 LUA_CPATH="./build/lua/?.so" lua lua/tests/test_sequencer.lua
 LUA_CPATH="./build/lua/?.so" lua lua/tests/test_protocol.lua
 ```
-
-## IDE support (lua-language-server)
-
-A LuaCATS annotation file `lua/eolib.d.lua` is generated alongside the source
-code. It provides full type information — classes, fields, enums, and function
-signatures — for every type in the library.
-
-Add it to your project's `.luarc.json`:
-
-```json
-{
-  "workspace.library": ["/path/to/eolib-c/lua/eolib.d.lua"]
-}
-```
-
-Or download `eolib.d.lua` from the [GitHub release](https://github.com/sorokya/eolib-c/releases) and drop it anywhere in your workspace library path.
-
-Once configured, editors using [lua-language-server](https://github.com/LuaLS/lua-language-server) (VS Code, Neovim, etc.) will show:
-- Autocompletion for all packet types, enums, structs, and module functions
-- Inline type hints and parameter docs
-- Type-error highlighting
 
 ## Error handling
 

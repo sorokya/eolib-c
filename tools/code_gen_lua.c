@@ -7,16 +7,16 @@
 #include <ctype.h>
 
 static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enums,
-    size_t ec, StructDef *structs, size_t sc,
-    const char *idx_var, const char *out_expr, const char *out_access, int *depth);
+                                    size_t ec, StructDef *structs, size_t sc,
+                                    const char *idx_var, const char *out_expr, const char *out_access, int *depth);
 
 static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enums,
-    size_t ec, StructDef *structs, size_t sc,
-    const char *t_var, const char *val_expr, const char *val_access, int *depth);
+                                    size_t ec, StructDef *structs, size_t sc,
+                                    const char *t_var, const char *val_expr, const char *val_access, int *depth);
 
 static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enums,
-    size_t ec, StructDef *structs, size_t sc,
-    const char *idx_var, const char *out_expr, const char *out_access, int *depth)
+                                    size_t ec, StructDef *structs, size_t sc,
+                                    const char *idx_var, const char *out_expr, const char *out_access, int *depth)
 {
     for (size_t i = 0; i < elements->elements_count; ++i)
     {
@@ -38,53 +38,53 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
                 if (field->optional)
                 {
                     fprintf(f,
-                        "    if (!lua_isnil(L, -1)) { %s%s%s = (bool*)malloc(sizeof(bool));"
-                        " if (%s%s%s) *%s%s%s = lua_toboolean(L, -1) ? true : false; }\n",
-                        out_expr, out_access, snake_name,
-                        out_expr, out_access, snake_name,
-                        out_expr, out_access, snake_name);
+                            "    if (!lua_isnil(L, -1)) { %s%s%s = (bool*)malloc(sizeof(bool));"
+                            " if (%s%s%s) *%s%s%s = lua_toboolean(L, -1) ? true : false; }\n",
+                            out_expr, out_access, snake_name,
+                            out_expr, out_access, snake_name,
+                            out_expr, out_access, snake_name);
                 }
                 else
                 {
                     fprintf(f, "    %s%s%s = lua_toboolean(L, -1) ? true : false;\n",
-                        out_expr, out_access, snake_name);
+                            out_expr, out_access, snake_name);
                 }
             }
             else if (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0)
             {
                 fprintf(f,
-                    "    { const char *__s = lua_tostring(L, -1); if (__s) { size_t __n = strlen(__s);"
-                    " %s%s%s = (char*)malloc(__n+1); if (%s%s%s) memcpy(%s%s%s, __s, __n+1); } }\n",
-                    out_expr, out_access, snake_name,
-                    out_expr, out_access, snake_name,
-                    out_expr, out_access, snake_name);
+                        "    { const char *__s = lua_tostring(L, -1); if (__s) { size_t __n = strlen(__s);"
+                        " %s%s%s = (char*)malloc(__n+1); if (%s%s%s) memcpy(%s%s%s, __s, __n+1); } }\n",
+                        out_expr, out_access, snake_name,
+                        out_expr, out_access, snake_name,
+                        out_expr, out_access, snake_name);
             }
             else if (strcmp(type_name, "blob") == 0)
             {
                 fprintf(f,
-                    "    { size_t __blen; const char *__bd = lua_tolstring(L, -1, &__blen);"
-                    " if (__bd) { %s%s%s = (uint8_t*)malloc(__blen); if (%s%s%s)"
-                    " { memcpy(%s%s%s, __bd, __blen); %s%s%s_length = __blen; } } }\n",
-                    out_expr, out_access, snake_name,
-                    out_expr, out_access, snake_name,
-                    out_expr, out_access, snake_name,
-                    out_expr, out_access, snake_name);
+                        "    { size_t __blen; const char *__bd = lua_tolstring(L, -1, &__blen);"
+                        " if (__bd) { %s%s%s = (uint8_t*)malloc(__blen); if (%s%s%s)"
+                        " { memcpy(%s%s%s, __bd, __blen); %s%s%s_length = __blen; } } }\n",
+                        out_expr, out_access, snake_name,
+                        out_expr, out_access, snake_name,
+                        out_expr, out_access, snake_name,
+                        out_expr, out_access, snake_name);
             }
             else if (enum_exists(enums, ec, type_name))
             {
                 if (field->optional)
                 {
                     fprintf(f,
-                        "    if (!lua_isnil(L, -1)) { %s%s%s = (%s*)malloc(sizeof(%s));"
-                        " if (%s%s%s) *%s%s%s = (%s)lua_tointeger(L, -1); }\n",
-                        out_expr, out_access, snake_name, type_name, type_name,
-                        out_expr, out_access, snake_name,
-                        out_expr, out_access, snake_name, type_name);
+                            "    if (!lua_isnil(L, -1)) { %s%s%s = (%s*)malloc(sizeof(%s));"
+                            " if (%s%s%s) *%s%s%s = (%s)lua_tointeger(L, -1); }\n",
+                            out_expr, out_access, snake_name, type_name, type_name,
+                            out_expr, out_access, snake_name,
+                            out_expr, out_access, snake_name, type_name);
                 }
                 else
                 {
                     fprintf(f, "    %s%s%s = (%s)lua_tointeger(L, -1);\n",
-                        out_expr, out_access, snake_name, type_name);
+                            out_expr, out_access, snake_name, type_name);
                 }
             }
             else if (struct_exists(structs, sc, type_name))
@@ -94,18 +94,18 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
                     if (field->optional)
                     {
                         fprintf(f,
-                            "    if (!lua_isnil(L, -1) && lua_istable(L, -1)) {"
-                            " %s%s%s = (%s*)calloc(1, sizeof(%s));"
-                            " if (%s%s%s) lua_table_to_%s(L, lua_gettop(L), %s%s%s); }\n",
-                            out_expr, out_access, snake_name, type_name, type_name,
-                            out_expr, out_access, snake_name, type_name,
-                            out_expr, out_access, snake_name);
+                                "    if (!lua_isnil(L, -1) && lua_istable(L, -1)) {"
+                                " %s%s%s = (%s*)calloc(1, sizeof(%s));"
+                                " if (%s%s%s) lua_table_to_%s(L, lua_gettop(L), %s%s%s); }\n",
+                                out_expr, out_access, snake_name, type_name, type_name,
+                                out_expr, out_access, snake_name, type_name,
+                                out_expr, out_access, snake_name);
                     }
                     else
                     {
                         fprintf(f,
-                            "    if (lua_istable(L, -1)) lua_table_to_%s(L, lua_gettop(L), &%s%s%s);\n",
-                            type_name, out_expr, out_access, snake_name);
+                                "    if (lua_istable(L, -1)) lua_table_to_%s(L, lua_gettop(L), &%s%s%s);\n",
+                                type_name, out_expr, out_access, snake_name);
                     }
                 }
             }
@@ -115,16 +115,16 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
                 if (field->optional)
                 {
                     fprintf(f,
-                        "    if (!lua_isnil(L, -1)) { %s%s%s = (%s*)malloc(sizeof(%s));"
-                        " if (%s%s%s) *%s%s%s = (%s)lua_tointeger(L, -1); }\n",
-                        out_expr, out_access, snake_name, c_type, c_type,
-                        out_expr, out_access, snake_name,
-                        out_expr, out_access, snake_name, c_type);
+                            "    if (!lua_isnil(L, -1)) { %s%s%s = (%s*)malloc(sizeof(%s));"
+                            " if (%s%s%s) *%s%s%s = (%s)lua_tointeger(L, -1); }\n",
+                            out_expr, out_access, snake_name, c_type, c_type,
+                            out_expr, out_access, snake_name,
+                            out_expr, out_access, snake_name, c_type);
                 }
                 else
                 {
                     fprintf(f, "    %s%s%s = (%s)lua_tointeger(L, -1);\n",
-                        out_expr, out_access, snake_name, c_type);
+                            out_expr, out_access, snake_name, c_type);
                 }
             }
 
@@ -163,54 +163,54 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
 
             fprintf(f, "    lua_getfield(L, %s, \"%s\");\n", idx_var, arr_name);
             fprintf(f,
-                "    if (lua_istable(L, -1)) { int __eolib_arr_%d = lua_gettop(L);"
-                " int __eolib_n_%d = (int)lua_rawlen(L, __eolib_arr_%d);\n",
-                d, d, d);
+                    "    if (lua_istable(L, -1)) { int __eolib_arr_%d = lua_gettop(L);"
+                    " int __eolib_n_%d = (int)lua_rawlen(L, __eolib_arr_%d);\n",
+                    d, d, d);
 
             if (is_static)
             {
                 fprintf(f,
-                    "    int __eolib_lim_%d = %s; if (__eolib_n_%d > __eolib_lim_%d)"
-                    " __eolib_n_%d = __eolib_lim_%d;\n",
-                    d, array->length, d, d, d, d);
+                        "    int __eolib_lim_%d = %s; if (__eolib_n_%d > __eolib_lim_%d)"
+                        " __eolib_n_%d = __eolib_lim_%d;\n",
+                        d, array->length, d, d, d, d);
             }
             else
             {
                 fprintf(f,
-                    "    %s%s%s_length = (size_t)__eolib_n_%d;"
-                    " %s%s%s = __eolib_n_%d > 0 ? (%s*)calloc((size_t)__eolib_n_%d, sizeof(%s)) : NULL;\n",
-                    out_expr, out_access, arr_name, d,
-                    out_expr, out_access, arr_name, d,
-                    c_type, d, c_type);
+                        "    %s%s%s_length = (size_t)__eolib_n_%d;"
+                        " %s%s%s = __eolib_n_%d > 0 ? (%s*)calloc((size_t)__eolib_n_%d, sizeof(%s)) : NULL;\n",
+                        out_expr, out_access, arr_name, d,
+                        out_expr, out_access, arr_name, d,
+                        c_type, d, c_type);
             }
 
             fprintf(f,
-                "    for (__eolib_i = 1; __eolib_i <= __eolib_n_%d; __eolib_i++) {"
-                " lua_rawgeti(L, __eolib_arr_%d, __eolib_i);\n",
-                d, d);
+                    "    for (__eolib_i = 1; __eolib_i <= __eolib_n_%d; __eolib_i++) {"
+                    " lua_rawgeti(L, __eolib_arr_%d, __eolib_i);\n",
+                    d, d);
 
             if (is_string_t)
             {
                 if (is_static)
                 {
                     fprintf(f,
-                        "    { const char *__s = lua_tostring(L, -1); if (__s) { size_t __n = strlen(__s);"
-                        " %s%s%s[__eolib_i - 1] = (char*)malloc(__n+1);"
-                        " if (%s%s%s[__eolib_i - 1]) memcpy(%s%s%s[__eolib_i - 1], __s, __n+1); } }\n",
-                        out_expr, out_access, arr_name,
-                        out_expr, out_access, arr_name,
-                        out_expr, out_access, arr_name);
+                            "    { const char *__s = lua_tostring(L, -1); if (__s) { size_t __n = strlen(__s);"
+                            " %s%s%s[__eolib_i - 1] = (char*)malloc(__n+1);"
+                            " if (%s%s%s[__eolib_i - 1]) memcpy(%s%s%s[__eolib_i - 1], __s, __n+1); } }\n",
+                            out_expr, out_access, arr_name,
+                            out_expr, out_access, arr_name,
+                            out_expr, out_access, arr_name);
                 }
                 else
                 {
                     fprintf(f,
-                        "    if (%s%s%s) { const char *__s = lua_tostring(L, -1); if (__s) {"
-                        " size_t __n = strlen(__s); %s%s%s[__eolib_i - 1] = (char*)malloc(__n+1);"
-                        " if (%s%s%s[__eolib_i - 1]) memcpy(%s%s%s[__eolib_i - 1], __s, __n+1); } }\n",
-                        out_expr, out_access, arr_name,
-                        out_expr, out_access, arr_name,
-                        out_expr, out_access, arr_name,
-                        out_expr, out_access, arr_name);
+                            "    if (%s%s%s) { const char *__s = lua_tostring(L, -1); if (__s) {"
+                            " size_t __n = strlen(__s); %s%s%s[__eolib_i - 1] = (char*)malloc(__n+1);"
+                            " if (%s%s%s[__eolib_i - 1]) memcpy(%s%s%s[__eolib_i - 1], __s, __n+1); } }\n",
+                            out_expr, out_access, arr_name,
+                            out_expr, out_access, arr_name,
+                            out_expr, out_access, arr_name,
+                            out_expr, out_access, arr_name);
                 }
             }
             else if (strcmp(type_name, "bool") == 0)
@@ -218,15 +218,15 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
                 if (is_static)
                 {
                     fprintf(f,
-                        "    %s%s%s[__eolib_i - 1] = lua_toboolean(L, -1) ? true : false;\n",
-                        out_expr, out_access, arr_name);
+                            "    %s%s%s[__eolib_i - 1] = lua_toboolean(L, -1) ? true : false;\n",
+                            out_expr, out_access, arr_name);
                 }
                 else
                 {
                     fprintf(f,
-                        "    if (%s%s%s) %s%s%s[__eolib_i - 1] = lua_toboolean(L, -1) ? true : false;\n",
-                        out_expr, out_access, arr_name,
-                        out_expr, out_access, arr_name);
+                            "    if (%s%s%s) %s%s%s[__eolib_i - 1] = lua_toboolean(L, -1) ? true : false;\n",
+                            out_expr, out_access, arr_name,
+                            out_expr, out_access, arr_name);
                 }
             }
             else if (is_struct_t)
@@ -236,15 +236,15 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
                     if (is_static)
                     {
                         fprintf(f,
-                            "    if (lua_istable(L, -1)) lua_table_to_%s(L, lua_gettop(L), &%s%s%s[__eolib_i - 1]);\n",
-                            type_name, out_expr, out_access, arr_name);
+                                "    if (lua_istable(L, -1)) lua_table_to_%s(L, lua_gettop(L), &%s%s%s[__eolib_i - 1]);\n",
+                                type_name, out_expr, out_access, arr_name);
                     }
                     else
                     {
                         fprintf(f,
-                            "    if (%s%s%s && lua_istable(L, -1)) lua_table_to_%s(L, lua_gettop(L), &%s%s%s[__eolib_i - 1]);\n",
-                            out_expr, out_access, arr_name, type_name,
-                            out_expr, out_access, arr_name);
+                                "    if (%s%s%s && lua_istable(L, -1)) lua_table_to_%s(L, lua_gettop(L), &%s%s%s[__eolib_i - 1]);\n",
+                                out_expr, out_access, arr_name, type_name,
+                                out_expr, out_access, arr_name);
                     }
                 }
             }
@@ -253,15 +253,15 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
                 if (is_static)
                 {
                     fprintf(f,
-                        "    %s%s%s[__eolib_i - 1] = (%s)lua_tointeger(L, -1);\n",
-                        out_expr, out_access, arr_name, type_name);
+                            "    %s%s%s[__eolib_i - 1] = (%s)lua_tointeger(L, -1);\n",
+                            out_expr, out_access, arr_name, type_name);
                 }
                 else
                 {
                     fprintf(f,
-                        "    if (%s%s%s) %s%s%s[__eolib_i - 1] = (%s)lua_tointeger(L, -1);\n",
-                        out_expr, out_access, arr_name,
-                        out_expr, out_access, arr_name, type_name);
+                            "    if (%s%s%s) %s%s%s[__eolib_i - 1] = (%s)lua_tointeger(L, -1);\n",
+                            out_expr, out_access, arr_name,
+                            out_expr, out_access, arr_name, type_name);
                 }
             }
             else
@@ -269,15 +269,15 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
                 if (is_static)
                 {
                     fprintf(f,
-                        "    %s%s%s[__eolib_i - 1] = (%s)lua_tointeger(L, -1);\n",
-                        out_expr, out_access, arr_name, c_type);
+                            "    %s%s%s[__eolib_i - 1] = (%s)lua_tointeger(L, -1);\n",
+                            out_expr, out_access, arr_name, c_type);
                 }
                 else
                 {
                     fprintf(f,
-                        "    if (%s%s%s) %s%s%s[__eolib_i - 1] = (%s)lua_tointeger(L, -1);\n",
-                        out_expr, out_access, arr_name,
-                        out_expr, out_access, arr_name, c_type);
+                            "    if (%s%s%s) %s%s%s[__eolib_i - 1] = (%s)lua_tointeger(L, -1);\n",
+                            out_expr, out_access, arr_name,
+                            out_expr, out_access, arr_name, c_type);
                 }
             }
 
@@ -305,12 +305,12 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
 
             fprintf(f, "    lua_getfield(L, %s, \"%s_data\");\n", idx_var, field_name);
             fprintf(f,
-                "    if (lua_istable(L, -1)) { int %s = lua_gettop(L);"
-                " %s%s%s_data = calloc(1, sizeof(*%s%s%s_data)); if (%s%s%s_data) {\n",
-                di_var,
-                out_expr, out_access, field_name,
-                out_expr, out_access, field_name,
-                out_expr, out_access, field_name);
+                    "    if (lua_istable(L, -1)) { int %s = lua_gettop(L);"
+                    " %s%s%s_data = calloc(1, sizeof(*%s%s%s_data)); if (%s%s%s_data) {\n",
+                    di_var,
+                    out_expr, out_access, field_name,
+                    out_expr, out_access, field_name,
+                    out_expr, out_access, field_name);
             write_switch_pragma_push(f);
             fprintf(f, "    switch (%s%s%s) {\n", out_expr, out_access, field_name);
 
@@ -349,9 +349,9 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
 
                 char new_out_expr[1024];
                 snprintf(new_out_expr, sizeof(new_out_expr), "%s%s%s_data->%s",
-                    out_expr, out_access, field_name, case_field);
+                         out_expr, out_access, field_name, case_field);
                 write_lua_to_c_elements(f, &case_def->elements, enums, ec, structs, sc,
-                    di_var, new_out_expr, ".", depth);
+                                        di_var, new_out_expr, ".", depth);
 
                 fprintf(f, "    break; }\n");
                 free(case_const);
@@ -371,14 +371,14 @@ static void write_lua_to_c_elements(FILE *f, ElementList *elements, EnumDef *enu
         else if (element->kind == ELEMENT_CHUNKED)
         {
             write_lua_to_c_elements(f, &element->as.chunked, enums, ec, structs, sc,
-                idx_var, out_expr, out_access, depth);
+                                    idx_var, out_expr, out_access, depth);
         }
     }
 }
 
 static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enums,
-    size_t ec, StructDef *structs, size_t sc,
-    const char *t_var, const char *val_expr, const char *val_access, int *depth)
+                                    size_t ec, StructDef *structs, size_t sc,
+                                    const char *t_var, const char *val_expr, const char *val_access, int *depth)
 {
     for (size_t i = 0; i < elements->elements_count; ++i)
     {
@@ -398,52 +398,52 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
                 if (field->optional)
                 {
                     fprintf(f,
-                        "    if (%s%s%s) lua_pushboolean(L, *%s%s%s ? 1 : 0);"
-                        " else lua_pushnil(L); lua_setfield(L, %s, \"%s\");\n",
-                        val_expr, val_access, snake_name,
-                        val_expr, val_access, snake_name,
-                        t_var, snake_name);
+                            "    if (%s%s%s) lua_pushboolean(L, *%s%s%s ? 1 : 0);"
+                            " else lua_pushnil(L); lua_setfield(L, %s, \"%s\");\n",
+                            val_expr, val_access, snake_name,
+                            val_expr, val_access, snake_name,
+                            t_var, snake_name);
                 }
                 else
                 {
                     fprintf(f,
-                        "    lua_pushboolean(L, %s%s%s ? 1 : 0); lua_setfield(L, %s, \"%s\");\n",
-                        val_expr, val_access, snake_name, t_var, snake_name);
+                            "    lua_pushboolean(L, %s%s%s ? 1 : 0); lua_setfield(L, %s, \"%s\");\n",
+                            val_expr, val_access, snake_name, t_var, snake_name);
                 }
             }
             else if (strcmp(type_name, "string") == 0 || strcmp(type_name, "encoded_string") == 0)
             {
                 fprintf(f,
-                    "    lua_pushstring(L, %s%s%s ? %s%s%s : \"\"); lua_setfield(L, %s, \"%s\");\n",
-                    val_expr, val_access, snake_name,
-                    val_expr, val_access, snake_name,
-                    t_var, snake_name);
+                        "    lua_pushstring(L, %s%s%s ? %s%s%s : \"\"); lua_setfield(L, %s, \"%s\");\n",
+                        val_expr, val_access, snake_name,
+                        val_expr, val_access, snake_name,
+                        t_var, snake_name);
             }
             else if (strcmp(type_name, "blob") == 0)
             {
                 fprintf(f,
-                    "    lua_pushlstring(L, (const char*)%s%s%s, %s%s%s_length);"
-                    " lua_setfield(L, %s, \"%s\");\n",
-                    val_expr, val_access, snake_name,
-                    val_expr, val_access, snake_name,
-                    t_var, snake_name);
+                        "    lua_pushlstring(L, (const char*)%s%s%s, %s%s%s_length);"
+                        " lua_setfield(L, %s, \"%s\");\n",
+                        val_expr, val_access, snake_name,
+                        val_expr, val_access, snake_name,
+                        t_var, snake_name);
             }
             else if (enum_exists(enums, ec, type_name))
             {
                 if (field->optional)
                 {
                     fprintf(f,
-                        "    if (%s%s%s) lua_pushinteger(L, (lua_Integer)*%s%s%s);"
-                        " else lua_pushnil(L); lua_setfield(L, %s, \"%s\");\n",
-                        val_expr, val_access, snake_name,
-                        val_expr, val_access, snake_name,
-                        t_var, snake_name);
+                            "    if (%s%s%s) lua_pushinteger(L, (lua_Integer)*%s%s%s);"
+                            " else lua_pushnil(L); lua_setfield(L, %s, \"%s\");\n",
+                            val_expr, val_access, snake_name,
+                            val_expr, val_access, snake_name,
+                            t_var, snake_name);
                 }
                 else
                 {
                     fprintf(f,
-                        "    lua_pushinteger(L, (lua_Integer)%s%s%s); lua_setfield(L, %s, \"%s\");\n",
-                        val_expr, val_access, snake_name, t_var, snake_name);
+                            "    lua_pushinteger(L, (lua_Integer)%s%s%s); lua_setfield(L, %s, \"%s\");\n",
+                            val_expr, val_access, snake_name, t_var, snake_name);
                 }
             }
             else if (struct_exists(structs, sc, type_name))
@@ -453,17 +453,17 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
                     if (field->optional)
                     {
                         fprintf(f,
-                            "    if (%s%s%s) { %s_to_lua_table(L, %s%s%s); }"
-                            " else { lua_pushnil(L); } lua_setfield(L, %s, \"%s\");\n",
-                            val_expr, val_access, snake_name,
-                            type_name, val_expr, val_access, snake_name,
-                            t_var, snake_name);
+                                "    if (%s%s%s) { %s_to_lua_table(L, %s%s%s); }"
+                                " else { lua_pushnil(L); } lua_setfield(L, %s, \"%s\");\n",
+                                val_expr, val_access, snake_name,
+                                type_name, val_expr, val_access, snake_name,
+                                t_var, snake_name);
                     }
                     else
                     {
                         fprintf(f,
-                            "    %s_to_lua_table(L, &%s%s%s); lua_setfield(L, %s, \"%s\");\n",
-                            type_name, val_expr, val_access, snake_name, t_var, snake_name);
+                                "    %s_to_lua_table(L, &%s%s%s); lua_setfield(L, %s, \"%s\");\n",
+                                type_name, val_expr, val_access, snake_name, t_var, snake_name);
                     }
                 }
             }
@@ -472,17 +472,17 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
                 if (field->optional)
                 {
                     fprintf(f,
-                        "    if (%s%s%s) lua_pushinteger(L, (lua_Integer)*%s%s%s);"
-                        " else lua_pushnil(L); lua_setfield(L, %s, \"%s\");\n",
-                        val_expr, val_access, snake_name,
-                        val_expr, val_access, snake_name,
-                        t_var, snake_name);
+                            "    if (%s%s%s) lua_pushinteger(L, (lua_Integer)*%s%s%s);"
+                            " else lua_pushnil(L); lua_setfield(L, %s, \"%s\");\n",
+                            val_expr, val_access, snake_name,
+                            val_expr, val_access, snake_name,
+                            t_var, snake_name);
                 }
                 else
                 {
                     fprintf(f,
-                        "    lua_pushinteger(L, (lua_Integer)%s%s%s); lua_setfield(L, %s, \"%s\");\n",
-                        val_expr, val_access, snake_name, t_var, snake_name);
+                            "    lua_pushinteger(L, (lua_Integer)%s%s%s); lua_setfield(L, %s, \"%s\");\n",
+                            val_expr, val_access, snake_name, t_var, snake_name);
                 }
             }
 
@@ -513,36 +513,36 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
             if (is_static)
             {
                 fprintf(f,
-                    "    for (int __eolib_ai_%d = 0; __eolib_ai_%d < %s; __eolib_ai_%d++) {\n",
-                    d, d, array->length, d);
+                        "    for (int __eolib_ai_%d = 0; __eolib_ai_%d < %s; __eolib_ai_%d++) {\n",
+                        d, d, array->length, d);
             }
             else
             {
                 fprintf(f,
-                    "    for (size_t __eolib_ai_%d = 0; __eolib_ai_%d < %s%s%s_length; __eolib_ai_%d++) {\n",
-                    d, d, val_expr, val_access, arr_name, d);
+                        "    for (size_t __eolib_ai_%d = 0; __eolib_ai_%d < %s%s%s_length; __eolib_ai_%d++) {\n",
+                        d, d, val_expr, val_access, arr_name, d);
             }
 
             if (is_string_t)
             {
                 fprintf(f,
-                    "    lua_pushstring(L, %s%s%s[__eolib_ai_%d] ? %s%s%s[__eolib_ai_%d] : \"\");\n",
-                    val_expr, val_access, arr_name, d,
-                    val_expr, val_access, arr_name, d);
+                        "    lua_pushstring(L, %s%s%s[__eolib_ai_%d] ? %s%s%s[__eolib_ai_%d] : \"\");\n",
+                        val_expr, val_access, arr_name, d,
+                        val_expr, val_access, arr_name, d);
             }
             else if (strcmp(type_name, "bool") == 0)
             {
                 fprintf(f,
-                    "    lua_pushboolean(L, %s%s%s[__eolib_ai_%d] ? 1 : 0);\n",
-                    val_expr, val_access, arr_name, d);
+                        "    lua_pushboolean(L, %s%s%s[__eolib_ai_%d] ? 1 : 0);\n",
+                        val_expr, val_access, arr_name, d);
             }
             else if (is_struct_t)
             {
                 if (struct_has_storage(structs, sc, type_name))
                 {
                     fprintf(f,
-                        "    %s_to_lua_table(L, &%s%s%s[__eolib_ai_%d]);\n",
-                        type_name, val_expr, val_access, arr_name, d);
+                            "    %s_to_lua_table(L, &%s%s%s[__eolib_ai_%d]);\n",
+                            type_name, val_expr, val_access, arr_name, d);
                 }
                 else
                 {
@@ -552,8 +552,8 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
             else
             {
                 fprintf(f,
-                    "    lua_pushinteger(L, (lua_Integer)%s%s%s[__eolib_ai_%d]);\n",
-                    val_expr, val_access, arr_name, d);
+                        "    lua_pushinteger(L, (lua_Integer)%s%s%s[__eolib_ai_%d]);\n",
+                        val_expr, val_access, arr_name, d);
             }
 
             fprintf(f, "    lua_rawseti(L, __eolib_arrt_%d, (int)__eolib_ai_%d + 1); }\n", d, d);
@@ -578,8 +578,8 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
             snprintf(dt_var, sizeof(dt_var), "__eolib_dt_%d", d);
 
             fprintf(f,
-                "    if (%s%s%s_data) { lua_newtable(L); int %s = lua_gettop(L);\n",
-                val_expr, val_access, field_name, dt_var);
+                    "    if (%s%s%s_data) { lua_newtable(L); int %s = lua_gettop(L);\n",
+                    val_expr, val_access, field_name, dt_var);
             write_switch_pragma_push(f);
             fprintf(f, "    switch (%s%s%s) {\n", val_expr, val_access, field_name);
 
@@ -618,9 +618,9 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
 
                 char new_val_expr[1024];
                 snprintf(new_val_expr, sizeof(new_val_expr), "%s%s%s_data->%s",
-                    val_expr, val_access, field_name, case_field);
+                         val_expr, val_access, field_name, case_field);
                 write_c_to_lua_elements(f, &case_def->elements, enums, ec, structs, sc,
-                    dt_var, new_val_expr, ".", depth);
+                                        dt_var, new_val_expr, ".", depth);
 
                 fprintf(f, "    break; }\n");
                 free(case_const);
@@ -632,9 +632,9 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
             fprintf(f, "    }\n");
             write_switch_pragma_pop(f);
             fprintf(f,
-                "    lua_setfield(L, %s, \"%s_data\"); }"
-                " else { lua_pushnil(L); lua_setfield(L, %s, \"%s_data\"); }\n",
-                t_var, field_name, t_var, field_name);
+                    "    lua_setfield(L, %s, \"%s_data\"); }"
+                    " else { lua_pushnil(L); lua_setfield(L, %s, \"%s_data\"); }\n",
+                    t_var, field_name, t_var, field_name);
 
             free(field_name);
             free(field_type);
@@ -642,7 +642,7 @@ static void write_c_to_lua_elements(FILE *f, ElementList *elements, EnumDef *enu
         else if (element->kind == ELEMENT_CHUNKED)
         {
             write_c_to_lua_elements(f, &element->as.chunked, enums, ec, structs, sc,
-                t_var, val_expr, val_access, depth);
+                                    t_var, val_expr, val_access, depth);
         }
     }
 }
@@ -655,13 +655,13 @@ static void write_lua_enum_registration(FILE *f, EnumDef *def)
     {
         EnumValue *val = &def->values[i];
         fprintf(f, "    lua_pushinteger(L, %d); lua_setfield(L, -2, \"%s\");\n",
-            val->value, val->name);
+                val->value, val->name);
     }
     fprintf(f, "    lua_setfield(L, module_idx, \"%s\");\n}\n\n", def->name);
 }
 
 static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elements,
-    EnumDef *enums, size_t ec, StructDef *structs, size_t sc)
+                                    EnumDef *enums, size_t ec, StructDef *structs, size_t sc)
 {
     int has_storage = element_list_has_storage(elements);
     int has_heap = element_list_has_heap(elements, enums, ec, structs, sc);
@@ -669,7 +669,7 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
     if (has_storage)
     {
         fprintf(f, "static void lua_table_to_%s(lua_State *L, int idx, %s *out)\n{\n",
-            name, name);
+                name, name);
         fprintf(f, "    (void)L; (void)out;\n");
         fprintf(f, "    int __eolib_i; (void)__eolib_i;\n");
         int depth = 0;
@@ -696,8 +696,8 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         fprintf(f, "    EoResult __r = eo_serialize((const EoSerialize *)&__val, &__writer);\n");
         fprintf(f, "    eo_free((EoSerialize *)&__val);\n");
         fprintf(f,
-            "    if (__r != EO_SUCCESS) { eo_writer_free(&__writer);"
-            " return luaL_error(L, \"serialize failed: %%s\", eo_result_string(__r)); }\n");
+                "    if (__r != EO_SUCCESS) { eo_writer_free(&__writer);"
+                " return luaL_error(L, \"serialize failed: %%s\", eo_result_string(__r)); }\n");
         fprintf(f, "    lua_pushlstring(L, (const char *)__writer.data, __writer.length);\n");
         fprintf(f, "    eo_writer_free(&__writer);\n");
         fprintf(f, "    return 1;\n}\n\n");
@@ -709,8 +709,8 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         fprintf(f, "    %s __val = %s_init();\n", name, name);
         fprintf(f, "    EoResult __r = eo_deserialize((EoSerialize *)&__val, &__reader);\n");
         fprintf(f,
-            "    if (__r != EO_SUCCESS) { return luaL_error(L, \"deserialize failed: %%s\","
-            " eo_result_string(__r)); }\n");
+                "    if (__r != EO_SUCCESS) { return luaL_error(L, \"deserialize failed: %%s\","
+                " eo_result_string(__r)); }\n");
         fprintf(f, "    %s_to_lua_table(L, &__val);\n", name);
         fprintf(f, "    eolib_setmetatable(L, \"eolib.%s\");\n", name);
         fprintf(f, "    eo_free((EoSerialize *)&__val);\n");
@@ -719,33 +719,33 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         fprintf(f, "static int lua_%s_write(lua_State *L)\n{\n", name);
         fprintf(f, "    luaL_checktype(L, 1, LUA_TTABLE);\n");
         fprintf(f,
-            "    LuaEoWriter *__uw = (LuaEoWriter *)luaL_checkudata(L, 2, EOLIB_WRITER_MT);\n");
+                "    LuaEoWriter *__uw = (LuaEoWriter *)luaL_checkudata(L, 2, EOLIB_WRITER_MT);\n");
         fprintf(f, "    %s __val = %s_init();\n", name, name);
         fprintf(f, "    lua_table_to_%s(L, 1, &__val);\n", name);
         fprintf(f, "    EoResult __r = eo_serialize((const EoSerialize *)&__val, &__uw->writer);\n");
         fprintf(f, "    eo_free((EoSerialize *)&__val);\n");
         fprintf(f,
-            "    if (__r != EO_SUCCESS) { return luaL_error(L, \"write failed: %%s\","
-            " eo_result_string(__r)); }\n");
+                "    if (__r != EO_SUCCESS) { return luaL_error(L, \"write failed: %%s\","
+                " eo_result_string(__r)); }\n");
         fprintf(f, "    return 0;\n}\n\n");
 
         fprintf(f, "static void lua_register_%s(lua_State *L, int module_idx)\n{\n", name);
         fprintf(f, "    luaL_newmetatable(L, \"eolib.%s\");\n", name);
         fprintf(f, "    lua_newtable(L);\n");
         fprintf(f,
-            "    lua_pushcfunction(L, lua_%s_serialize); lua_setfield(L, -2, \"serialize\");\n",
-            name);
+                "    lua_pushcfunction(L, lua_%s_serialize); lua_setfield(L, -2, \"serialize\");\n",
+                name);
         fprintf(f,
-            "    lua_pushcfunction(L, lua_%s_write); lua_setfield(L, -2, \"write\");\n",
-            name);
+                "    lua_pushcfunction(L, lua_%s_write); lua_setfield(L, -2, \"write\");\n",
+                name);
         fprintf(f, "    lua_setfield(L, -2, \"__index\");\n");
         fprintf(f, "    lua_pop(L, 1);\n\n");
         fprintf(f, "    lua_newtable(L);\n");
         fprintf(f,
-            "    lua_pushcfunction(L, lua_%s_new); lua_setfield(L, -2, \"new\");\n", name);
+                "    lua_pushcfunction(L, lua_%s_new); lua_setfield(L, -2, \"new\");\n", name);
         fprintf(f,
-            "    lua_pushcfunction(L, lua_%s_deserialize); lua_setfield(L, -2, \"deserialize\");\n",
-            name);
+                "    lua_pushcfunction(L, lua_%s_deserialize); lua_setfield(L, -2, \"deserialize\");\n",
+                name);
         fprintf(f, "    lua_setfield(L, module_idx, \"%s\");\n}\n\n", name);
     }
     else
@@ -756,8 +756,8 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         fprintf(f, "    EoWriter __writer = eo_writer_init_with_capacity(eo_get_size((const EoSerialize *)&__val));\n");
         fprintf(f, "    EoResult __r = eo_serialize((const EoSerialize *)&__val, &__writer);\n");
         fprintf(f,
-            "    if (__r != EO_SUCCESS) { eo_writer_free(&__writer);"
-            " return luaL_error(L, \"serialize failed: %%s\", eo_result_string(__r)); }\n");
+                "    if (__r != EO_SUCCESS) { eo_writer_free(&__writer);"
+                " return luaL_error(L, \"serialize failed: %%s\", eo_result_string(__r)); }\n");
         fprintf(f, "    lua_pushlstring(L, (const char *)__writer.data, __writer.length);\n");
         fprintf(f, "    eo_writer_free(&__writer);\n");
         fprintf(f, "    return 1;\n}\n\n");
@@ -769,19 +769,19 @@ static void write_lua_type_bindings(FILE *f, const char *name, ElementList *elem
         fprintf(f, "    %s __val = %s_init();\n", name, name);
         fprintf(f, "    EoResult __r = eo_deserialize((EoSerialize *)&__val, &__reader);\n");
         fprintf(f,
-            "    if (__r != EO_SUCCESS) { return luaL_error(L, \"deserialize failed: %%s\","
-            " eo_result_string(__r)); }\n");
+                "    if (__r != EO_SUCCESS) { return luaL_error(L, \"deserialize failed: %%s\","
+                " eo_result_string(__r)); }\n");
         fprintf(f, "    lua_pushboolean(L, 1);\n");
         fprintf(f, "    return 1;\n}\n\n");
 
         fprintf(f, "static void lua_register_%s(lua_State *L, int module_idx)\n{\n", name);
         fprintf(f, "    lua_newtable(L);\n");
         fprintf(f,
-            "    lua_pushcfunction(L, lua_%s_serialize); lua_setfield(L, -2, \"serialize\");\n",
-            name);
+                "    lua_pushcfunction(L, lua_%s_serialize); lua_setfield(L, -2, \"serialize\");\n",
+                name);
         fprintf(f,
-            "    lua_pushcfunction(L, lua_%s_deserialize); lua_setfield(L, -2, \"deserialize\");\n",
-            name);
+                "    lua_pushcfunction(L, lua_%s_deserialize); lua_setfield(L, -2, \"deserialize\");\n",
+                name);
         fprintf(f, "    lua_setfield(L, module_idx, \"%s\");\n}\n\n", name);
     }
 }
@@ -839,11 +839,11 @@ void write_lua_files(ProtocolDef *protocols, size_t protocol_count)
             if (element_list_has_storage(&protocol->structs[i].elements))
             {
                 fprintf(source,
-                    "static void lua_table_to_%s(lua_State *L, int idx, %s *out);\n",
-                    sname, sname);
+                        "static void lua_table_to_%s(lua_State *L, int idx, %s *out);\n",
+                        sname, sname);
                 fprintf(source,
-                    "static void %s_to_lua_table(lua_State *L, const %s *val);\n",
-                    sname, sname);
+                        "static void %s_to_lua_table(lua_State *L, const %s *val);\n",
+                        sname, sname);
             }
             string_list_push(&written_fwd, sname);
         }
@@ -862,17 +862,17 @@ void write_lua_files(ProtocolDef *protocols, size_t protocol_count)
         {
             char name_buffer[256];
             snprintf(name_buffer, sizeof(name_buffer), "%s%s%sPacket",
-                protocol->packets[i].family, protocol->packets[i].action, source_suffix);
+                     protocol->packets[i].family, protocol->packets[i].action, source_suffix);
             if (string_list_contains(&written_fwd, name_buffer))
                 continue;
             if (element_list_has_storage(&protocol->packets[i].elements))
             {
                 fprintf(source,
-                    "static void lua_table_to_%s(lua_State *L, int idx, %s *out);\n",
-                    name_buffer, name_buffer);
+                        "static void lua_table_to_%s(lua_State *L, int idx, %s *out);\n",
+                        name_buffer, name_buffer);
                 fprintf(source,
-                    "static void %s_to_lua_table(lua_State *L, const %s *val);\n",
-                    name_buffer, name_buffer);
+                        "static void %s_to_lua_table(lua_State *L, const %s *val);\n",
+                        name_buffer, name_buffer);
             }
             string_list_push(&written_fwd, name_buffer);
         }
@@ -901,8 +901,8 @@ void write_lua_files(ProtocolDef *protocols, size_t protocol_count)
             if (string_list_contains(&written_structs, protocol->structs[i].name))
                 continue;
             write_lua_type_bindings(source, protocol->structs[i].name,
-                &protocol->structs[i].elements,
-                all_enums, all_enums_count, all_structs, all_structs_count);
+                                    &protocol->structs[i].elements,
+                                    all_enums, all_enums_count, all_structs, all_structs_count);
             string_list_push(&written_structs, protocol->structs[i].name);
         }
     }
@@ -921,12 +921,12 @@ void write_lua_files(ProtocolDef *protocols, size_t protocol_count)
         {
             char name_buffer[256];
             snprintf(name_buffer, sizeof(name_buffer), "%s%s%sPacket",
-                protocol->packets[i].family, protocol->packets[i].action, source_suffix);
+                     protocol->packets[i].family, protocol->packets[i].action, source_suffix);
             if (string_list_contains(&written_packets, name_buffer))
                 continue;
             write_lua_type_bindings(source, name_buffer,
-                &protocol->packets[i].elements,
-                all_enums, all_enums_count, all_structs, all_structs_count);
+                                    &protocol->packets[i].elements,
+                                    all_enums, all_enums_count, all_structs, all_structs_count);
             string_list_push(&written_packets, name_buffer);
         }
     }
@@ -951,31 +951,37 @@ void write_lua_files(ProtocolDef *protocols, size_t protocol_count)
 }
 
 static const char *lua_cats_type(const char *data_type,
-    EnumDef *enums, size_t enums_count,
-    StructDef *structs, size_t structs_count)
+                                 EnumDef *enums, size_t enums_count,
+                                 StructDef *structs, size_t structs_count)
 {
-    if (!data_type) return "any";
-    if (strcmp(data_type, "byte")   == 0 ||
-        strcmp(data_type, "char")   == 0 ||
-        strcmp(data_type, "short")  == 0 ||
-        strcmp(data_type, "three")  == 0 ||
-        strcmp(data_type, "int")    == 0) return "integer";
-    if (strcmp(data_type, "string")               == 0 ||
-        strcmp(data_type, "encoded_string")       == 0 ||
-        strcmp(data_type, "fixed_string")         == 0 ||
+    if (!data_type)
+        return "any";
+    if (strcmp(data_type, "byte") == 0 ||
+        strcmp(data_type, "char") == 0 ||
+        strcmp(data_type, "short") == 0 ||
+        strcmp(data_type, "three") == 0 ||
+        strcmp(data_type, "int") == 0)
+        return "integer";
+    if (strcmp(data_type, "string") == 0 ||
+        strcmp(data_type, "encoded_string") == 0 ||
+        strcmp(data_type, "fixed_string") == 0 ||
         strcmp(data_type, "fixed_encoded_string") == 0 ||
-        strcmp(data_type, "blob")                 == 0) return "string";
-    if (strcmp(data_type, "bool") == 0) return "boolean";
+        strcmp(data_type, "blob") == 0)
+        return "string";
+    if (strcmp(data_type, "bool") == 0)
+        return "boolean";
     for (size_t i = 0; i < enums_count; ++i)
-        if (strcmp(enums[i].name, data_type) == 0) return data_type;
+        if (strcmp(enums[i].name, data_type) == 0)
+            return data_type;
     for (size_t i = 0; i < structs_count; ++i)
-        if (strcmp(structs[i].name, data_type) == 0) return data_type;
+        if (strcmp(structs[i].name, data_type) == 0)
+            return data_type;
     return "any";
 }
 
 static void write_cats_elements(FILE *f, ElementList *elements,
-    EnumDef *enums, size_t enums_count,
-    StructDef *structs, size_t structs_count)
+                                EnumDef *enums, size_t enums_count,
+                                StructDef *structs, size_t structs_count)
 {
     for (size_t i = 0; i < elements->elements_count; ++i)
     {
@@ -983,17 +989,21 @@ static void write_cats_elements(FILE *f, ElementList *elements,
         if (el->kind == ELEMENT_FIELD)
         {
             FieldDef *fd = &el->as.field;
-            if (!fd->name) continue;
+            if (!fd->name)
+                continue;
             const char *t = lua_cats_type(fd->data_type, enums, enums_count, structs, structs_count);
-            if (fd->comment) write_lua_doc_comment(f, fd->comment);
+            if (fd->comment)
+                write_lua_doc_comment(f, fd->comment);
             fprintf(f, "---@field %s %s%s\n", fd->name, t, fd->optional ? "?" : "");
         }
         else if (el->kind == ELEMENT_ARRAY)
         {
             ArrayDef *ad = &el->as.array;
-            if (!ad->name) continue;
+            if (!ad->name)
+                continue;
             const char *t = lua_cats_type(ad->data_type, enums, enums_count, structs, structs_count);
-            if (ad->comment) write_lua_doc_comment(f, ad->comment);
+            if (ad->comment)
+                write_lua_doc_comment(f, ad->comment);
             fprintf(f, "---@field %s %s[]%s\n", ad->name, t, ad->optional ? "?" : "");
         }
         else if (el->kind == ELEMENT_SWITCH)
@@ -1004,7 +1014,7 @@ static void write_cats_elements(FILE *f, ElementList *elements,
         else if (el->kind == ELEMENT_CHUNKED)
         {
             write_cats_elements(f, &el->as.chunked,
-                enums, enums_count, structs, structs_count);
+                                enums, enums_count, structs, structs_count);
         }
     }
 }
@@ -1020,199 +1030,185 @@ void write_lua_annotations(ProtocolDef *protocols, size_t protocol_count)
 
     ensure_dir("lua");
     FILE *f = fopen("lua/eolib.d.lua", "w");
-    if (!f) { fprintf(stderr, "Failed to open lua/eolib.d.lua\n"); return; }
+    if (!f)
+    {
+        fprintf(stderr, "Failed to open lua/eolib.d.lua\n");
+        return;
+    }
 
     fprintf(f,
-        "-- eolib.d.lua\n"
-        "-- LuaCATS type definitions for the eolib Lua module.\n"
-        "-- Generated by tools/code_gen.c — do not edit directly.\n"
-        "--\n"
-        "-- Usage with lua-language-server:\n"
-        "--   Add to your .luarc.json:\n"
-        "--     { \"workspace.library\": [\"/path/to/eolib.d.lua\"] }\n"
-        "\n"
-        "---@meta\n"
-        "\n"
-    );
+            "-- eolib.d.lua\n"
+            "-- LuaCATS type definitions for the eolib Lua module.\n"
+            "-- Generated by tools/code_gen.c — do not edit directly.\n"
+            "\n"
+            "---@meta eolib\n"
+            "\n"
+            "local eolib = {}\n"
+            "\n");
 
     fprintf(f,
-        "---@class EoWriter\n"
-        "local EoWriter = {}\n"
-        "\n"
-        "---@return EoWriter\n"
-        "function EoWriter.new() end\n"
-        "\n"
-        "---@param value integer\n"
-        "function EoWriter:add_byte(value) end\n"
-        "---@param value integer\n"
-        "function EoWriter:add_char(value) end\n"
-        "---@param value integer\n"
-        "function EoWriter:add_short(value) end\n"
-        "---@param value integer\n"
-        "function EoWriter:add_three(value) end\n"
-        "---@param value integer\n"
-        "function EoWriter:add_int(value) end\n"
-        "---@param value string\n"
-        "function EoWriter:add_string(value) end\n"
-        "---@param value string\n"
-        "function EoWriter:add_encoded_string(value) end\n"
-        "---@param value string\n"
-        "---@param length integer\n"
-        "---@param padded boolean\n"
-        "function EoWriter:add_fixed_string(value, length, padded) end\n"
-        "---@param value string\n"
-        "---@param length integer\n"
-        "---@param padded boolean\n"
-        "function EoWriter:add_fixed_encoded_string(value, length, padded) end\n"
-        "---@param bytes string\n"
-        "function EoWriter:add_bytes(bytes) end\n"
-        "---@return string\n"
-        "function EoWriter:to_bytes() end\n"
-        "---@return integer\n"
-        "function EoWriter:get_length() end\n"
-        "---@param enabled boolean\n"
-        "function EoWriter:set_string_sanitization_mode(enabled) end\n"
-        "---@return boolean\n"
-        "function EoWriter:get_string_sanitization_mode() end\n"
-        "\n"
-    );
+            "---@class EoWriter\n"
+            "eolib.EoWriter = {}\n"
+            "\n"
+            "---@return EoWriter\n"
+            "function eolib.EoWriter.new() end\n"
+            "\n"
+            "---@param value integer\n"
+            "function eolib.EoWriter:add_byte(value) end\n"
+            "---@param value integer\n"
+            "function eolib.EoWriter:add_char(value) end\n"
+            "---@param value integer\n"
+            "function eolib.EoWriter:add_short(value) end\n"
+            "---@param value integer\n"
+            "function eolib.EoWriter:add_three(value) end\n"
+            "---@param value integer\n"
+            "function eolib.EoWriter:add_int(value) end\n"
+            "---@param value string\n"
+            "function eolib.EoWriter:add_string(value) end\n"
+            "---@param value string\n"
+            "function eolib.EoWriter:add_encoded_string(value) end\n"
+            "---@param value string\n"
+            "---@param length integer\n"
+            "---@param padded boolean\n"
+            "function eolib.EoWriter:add_fixed_string(value, length, padded) end\n"
+            "---@param value string\n"
+            "---@param length integer\n"
+            "---@param padded boolean\n"
+            "function eolib.EoWriter:add_fixed_encoded_string(value, length, padded) end\n"
+            "---@param bytes string\n"
+            "function eolib.EoWriter:add_bytes(bytes) end\n"
+            "---@return string\n"
+            "function eolib.EoWriter:to_bytes() end\n"
+            "---@return integer\n"
+            "function eolib.EoWriter:get_length() end\n"
+            "---@param enabled boolean\n"
+            "function eolib.EoWriter:set_string_sanitization_mode(enabled) end\n"
+            "---@return boolean\n"
+            "function eolib.EoWriter:get_string_sanitization_mode() end\n"
+            "\n");
 
     fprintf(f,
-        "---@class EoReader\n"
-        "local EoReader = {}\n"
-        "\n"
-        "---@param bytes string\n"
-        "---@return EoReader\n"
-        "function EoReader.new(bytes) end\n"
-        "\n"
-        "---@return integer\n"
-        "function EoReader:get_byte() end\n"
-        "---@return integer\n"
-        "function EoReader:get_char() end\n"
-        "---@return integer\n"
-        "function EoReader:get_short() end\n"
-        "---@return integer\n"
-        "function EoReader:get_three() end\n"
-        "---@return integer\n"
-        "function EoReader:get_int() end\n"
-        "---@return string\n"
-        "function EoReader:get_string() end\n"
-        "---@return string\n"
-        "function EoReader:get_encoded_string() end\n"
-        "---@param length integer\n"
-        "---@return string\n"
-        "function EoReader:get_fixed_string(length) end\n"
-        "---@param length integer\n"
-        "---@return string\n"
-        "function EoReader:get_fixed_encoded_string(length) end\n"
-        "---@param count integer\n"
-        "---@return string\n"
-        "function EoReader:get_bytes(count) end\n"
-        "---@return integer\n"
-        "function EoReader:remaining() end\n"
-        "---@param enabled boolean\n"
-        "function EoReader:set_chunked_reading_mode(enabled) end\n"
-        "---@return boolean\n"
-        "function EoReader:get_chunked_reading_mode() end\n"
-        "function EoReader:next_chunk() end\n"
-        "\n"
-    );
+            "---@class EoReader\n"
+            "eolib.EoReader = {}\n"
+            "\n"
+            "---@param bytes string\n"
+            "---@return EoReader\n"
+            "function eolib.EoReader.new(bytes) end\n"
+            "\n"
+            "---@return integer\n"
+            "function eolib.EoReader:get_byte() end\n"
+            "---@return integer\n"
+            "function eolib.EoReader:get_char() end\n"
+            "---@return integer\n"
+            "function eolib.EoReader:get_short() end\n"
+            "---@return integer\n"
+            "function eolib.EoReader:get_three() end\n"
+            "---@return integer\n"
+            "function eolib.EoReader:get_int() end\n"
+            "---@return string\n"
+            "function eolib.EoReader:get_string() end\n"
+            "---@return string\n"
+            "function eolib.EoReader:get_encoded_string() end\n"
+            "---@param length integer\n"
+            "---@return string\n"
+            "function eolib.EoReader:get_fixed_string(length) end\n"
+            "---@param length integer\n"
+            "---@return string\n"
+            "function eolib.EoReader:get_fixed_encoded_string(length) end\n"
+            "---@param count integer\n"
+            "---@return string\n"
+            "function eolib.EoReader:get_bytes(count) end\n"
+            "---@return integer\n"
+            "function eolib.EoReader:remaining() end\n"
+            "---@param enabled boolean\n"
+            "function eolib.EoReader:set_chunked_reading_mode(enabled) end\n"
+            "---@return boolean\n"
+            "function eolib.EoReader:get_chunked_reading_mode() end\n"
+            "function eolib.EoReader:next_chunk() end\n"
+            "\n");
 
     fprintf(f,
-        "---@class EoSequencer\n"
-        "local EoSequencer = {}\n"
-        "\n"
-        "---@param start integer\n"
-        "---@return EoSequencer\n"
-        "function EoSequencer.new(start) end\n"
-        "\n"
-        "---@return integer\n"
-        "function EoSequencer:next() end\n"
-        "\n"
-    );
+            "---@class EoSequencer\n"
+            "eolib.EoSequencer = {}\n"
+            "\n"
+            "---@param start integer\n"
+            "---@return EoSequencer\n"
+            "function eolib.EoSequencer.new(start) end\n"
+            "\n"
+            "---@return integer\n"
+            "function eolib.EoSequencer:next() end\n"
+            "\n");
 
     fprintf(f,
-        "---@class eolib\n"
-        "---@field EoWriter EoWriter\n"
-        "---@field EoReader EoReader\n"
-        "---@field EoSequencer EoSequencer\n"
-        "---@field CHAR_MAX integer\n"
-        "---@field SHORT_MAX integer\n"
-        "---@field THREE_MAX integer\n"
-        "---@field INT_MAX integer\n"
-        "---@field NUMBER_PADDING integer\n"
-        "---@field BREAK_BYTE integer\n"
-        "local eolib = {}\n"
-        "\n"
-        "---@param challenge integer\n"
-        "---@return integer\n"
-        "function eolib.server_verification_hash(challenge) end\n"
-        "\n"
-        "---@param bytes string\n"
-        "---@param swap_multiple integer\n"
-        "---@return string\n"
-        "function eolib.encrypt_packet(bytes, swap_multiple) end\n"
-        "\n"
-        "---@param bytes string\n"
-        "---@param swap_multiple integer\n"
-        "---@return string\n"
-        "function eolib.decrypt_packet(bytes, swap_multiple) end\n"
-        "\n"
-        "---@return integer\n"
-        "function eolib.generate_swap_multiple() end\n"
-        "\n"
-        "---@param bytes string\n"
-        "---@param multiple integer\n"
-        "---@return string\n"
-        "function eolib.swap_multiples(bytes, multiple) end\n"
-        "\n"
-        "---@return integer\n"
-        "function eolib.generate_sequence_start() end\n"
-        "\n"
-        "---@param s1 integer\n"
-        "---@param s2 integer\n"
-        "---@return integer\n"
-        "function eolib.sequence_start_from_init(s1, s2) end\n"
-        "\n"
-        "---@param s1 integer\n"
-        "---@param s2 integer\n"
-        "---@return integer\n"
-        "function eolib.sequence_start_from_ping(s1, s2) end\n"
-        "\n"
-        "---@param start integer\n"
-        "---@return integer, integer\n"
-        "function eolib.sequence_init_bytes(start) end\n"
-        "\n"
-        "---@param start integer\n"
-        "---@return integer, integer\n"
-        "function eolib.sequence_ping_bytes(start) end\n"
-        "\n"
-        "---@param value integer\n"
-        "---@return string\n"
-        "function eolib.encode_number(value) end\n"
-        "\n"
-        "---@param bytes string\n"
-        "---@return integer\n"
-        "function eolib.decode_number(bytes) end\n"
-        "\n"
-        "---@param s string\n"
-        "---@return string\n"
-        "function eolib.encode_string(s) end\n"
-        "\n"
-        "---@param s string\n"
-        "---@return string\n"
-        "function eolib.decode_string(s) end\n"
-        "\n"
-        "---@param s string\n"
-        "---@return string\n"
-        "function eolib.string_to_windows_1252(s) end\n"
-        "\n"
-    );
+            "---@param challenge integer\n"
+            "---@return integer\n"
+            "function eolib.server_verification_hash(challenge) end\n"
+            "\n"
+            "---@param bytes string\n"
+            "---@param swap_multiple integer\n"
+            "---@return string\n"
+            "function eolib.encrypt_packet(bytes, swap_multiple) end\n"
+            "\n"
+            "---@param bytes string\n"
+            "---@param swap_multiple integer\n"
+            "---@return string\n"
+            "function eolib.decrypt_packet(bytes, swap_multiple) end\n"
+            "\n"
+            "---@return integer\n"
+            "function eolib.generate_swap_multiple() end\n"
+            "\n"
+            "---@param bytes string\n"
+            "---@param multiple integer\n"
+            "---@return string\n"
+            "function eolib.swap_multiples(bytes, multiple) end\n"
+            "\n"
+            "---@return integer\n"
+            "function eolib.generate_sequence_start() end\n"
+            "\n"
+            "---@param s1 integer\n"
+            "---@param s2 integer\n"
+            "---@return integer\n"
+            "function eolib.sequence_start_from_init(s1, s2) end\n"
+            "\n"
+            "---@param s1 integer\n"
+            "---@param s2 integer\n"
+            "---@return integer\n"
+            "function eolib.sequence_start_from_ping(s1, s2) end\n"
+            "\n"
+            "---@param start integer\n"
+            "---@return integer, integer\n"
+            "function eolib.sequence_init_bytes(start) end\n"
+            "\n"
+            "---@param start integer\n"
+            "---@return integer, integer\n"
+            "function eolib.sequence_ping_bytes(start) end\n"
+            "\n"
+            "---@param value integer\n"
+            "---@return string\n"
+            "function eolib.encode_number(value) end\n"
+            "\n"
+            "---@param bytes string\n"
+            "---@return integer\n"
+            "function eolib.decode_number(bytes) end\n"
+            "\n"
+            "---@param s string\n"
+            "---@return string\n"
+            "function eolib.encode_string(s) end\n"
+            "\n"
+            "---@param s string\n"
+            "---@return string\n"
+            "function eolib.decode_string(s) end\n"
+            "\n"
+            "---@param s string\n"
+            "---@return string\n"
+            "function eolib.string_to_windows_1252(s) end\n"
+            "\n");
 
     for (size_t i = 0; i < all_enums_count; ++i)
     {
         EnumDef *e = &all_enums[i];
-        if (e->comment) write_lua_doc_comment(f, e->comment);
+        if (e->comment)
+            write_lua_doc_comment(f, e->comment);
         fprintf(f, "---@enum %s\n", e->name);
         fprintf(f, "eolib.%s = {\n", e->name);
         for (size_t v = 0; v < e->values_count; ++v)
@@ -1220,13 +1216,8 @@ void write_lua_annotations(ProtocolDef *protocols, size_t protocol_count)
             EnumValue *ev = &e->values[v];
             if (ev->comment)
             {
-                char *c = xstrdup(ev->comment);
-                char *s = c; while (*s && isspace((unsigned char)*s)) s++;
-                char *end = s + strlen(s);
-                while (end > s && isspace((unsigned char)*(end-1))) end--;
-                *end = '\0';
-                fprintf(f, "    %s = %d, -- %s\n", ev->name, ev->value, s);
-                free(c);
+                write_lua_doc_comment(f, ev->comment);
+                fprintf(f, "    %s = %d,\n", ev->name, ev->value);
             }
             else
                 fprintf(f, "    %s = %d,\n", ev->name, ev->value);
@@ -1244,24 +1235,23 @@ void write_lua_annotations(ProtocolDef *protocols, size_t protocol_count)
                 write_lua_doc_comment(f, s->comment);
             fprintf(f, "---@class %s\n", s->name);
             write_cats_elements(f, &s->elements,
-                all_enums, all_enums_count,
-                all_structs, all_structs_count);
-            fprintf(f, "local %s = {}\n", s->name);
+                                all_enums, all_enums_count,
+                                all_structs, all_structs_count);
+            fprintf(f, "eolib.%s = {}\n", s->name);
             fprintf(f, "\n");
             fprintf(f, "---@return %s\n", s->name);
-            fprintf(f, "function %s.new() end\n", s->name);
+            fprintf(f, "function eolib.%s.new() end\n", s->name);
             fprintf(f, "\n");
             fprintf(f, "---@return string\n");
-            fprintf(f, "function %s:serialize() end\n", s->name);
+            fprintf(f, "function eolib.%s:serialize() end\n", s->name);
             fprintf(f, "\n");
             fprintf(f, "---@param writer EoWriter\n");
-            fprintf(f, "function %s:write(writer) end\n", s->name);
+            fprintf(f, "function eolib.%s:write(writer) end\n", s->name);
             fprintf(f, "\n");
             fprintf(f, "---@param bytes string\n");
             fprintf(f, "---@return %s\n", s->name);
-            fprintf(f, "function %s.deserialize(bytes) end\n", s->name);
+            fprintf(f, "function eolib.%s.deserialize(bytes) end\n", s->name);
             fprintf(f, "\n");
-            fprintf(f, "eolib.%s = %s\n\n", s->name, s->name);
         }
     }
 
@@ -1275,36 +1265,40 @@ void write_lua_annotations(ProtocolDef *protocols, size_t protocol_count)
             PacketDef *pkt = &proto->packets[i];
             char name_buf[256];
             snprintf(name_buf, sizeof(name_buf), "%s%s%sPacket",
-                pkt->family, pkt->action, is_server ? "Server" : "Client");
+                     pkt->family, pkt->action, is_server ? "Server" : "Client");
 
             int skip = 0;
             for (size_t w = 0; w < written_packets.count; ++w)
-                if (strcmp(written_packets.items[w], name_buf) == 0) { skip = 1; break; }
-            if (skip) continue;
+                if (strcmp(written_packets.items[w], name_buf) == 0)
+                {
+                    skip = 1;
+                    break;
+                }
+            if (skip)
+                continue;
             string_list_push(&written_packets, name_buf);
 
             if (pkt->comment)
                 write_lua_doc_comment(f, pkt->comment);
             fprintf(f, "---@class %s\n", name_buf);
             write_cats_elements(f, &pkt->elements,
-                all_enums, all_enums_count,
-                all_structs, all_structs_count);
-            fprintf(f, "local %s = {}\n", name_buf);
+                                all_enums, all_enums_count,
+                                all_structs, all_structs_count);
+            fprintf(f, "eolib.%s = {}\n", name_buf);
             fprintf(f, "\n");
             fprintf(f, "---@return %s\n", name_buf);
-            fprintf(f, "function %s.new() end\n", name_buf);
+            fprintf(f, "function eolib.%s.new() end\n", name_buf);
             fprintf(f, "\n");
             fprintf(f, "---@return string\n");
-            fprintf(f, "function %s:serialize() end\n", name_buf);
+            fprintf(f, "function eolib.%s:serialize() end\n", name_buf);
             fprintf(f, "\n");
             fprintf(f, "---@param writer EoWriter\n");
-            fprintf(f, "function %s:write(writer) end\n", name_buf);
+            fprintf(f, "function eolib.%s:write(writer) end\n", name_buf);
             fprintf(f, "\n");
             fprintf(f, "---@param bytes string\n");
             fprintf(f, "---@return %s\n", name_buf);
-            fprintf(f, "function %s.deserialize(bytes) end\n", name_buf);
+            fprintf(f, "function eolib.%s.deserialize(bytes) end\n", name_buf);
             fprintf(f, "\n");
-            fprintf(f, "eolib.%s = %s\n\n", name_buf, name_buf);
         }
     }
 

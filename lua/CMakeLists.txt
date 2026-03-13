@@ -18,10 +18,9 @@ set_target_properties(lua_eolib PROPERTIES
 	PREFIX ""
 )
 
+# Lua on macOS expects .so, not the default .dylib for MODULE libraries.
 if(APPLE)
 	set_target_properties(lua_eolib PROPERTIES SUFFIX ".so")
-elseif(WIN32)
-	set_target_properties(lua_eolib PROPERTIES SUFFIX ".dll")
 endif()
 
 target_include_directories(lua_eolib PRIVATE
@@ -34,46 +33,75 @@ target_link_libraries(lua_eolib PRIVATE eolib ${LUA_LIBRARIES})
 
 add_dependencies(lua_eolib generate_protocol)
 
-# On Windows, copy libeolib.dll next to eolib.dll so the loader can find it
-# without any PATH manipulation.
-if(WIN32)
-	add_custom_command(TARGET lua_eolib POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			$<TARGET_FILE:eolib>
-			$<TARGET_FILE_DIR:lua_eolib>
-		COMMENT "Copying eolib DLL for Lua tests"
+# Copy libeolib next to eolib.so in the build tree so tests can load it.
+add_custom_command(TARGET lua_eolib POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:eolib>
+		$<TARGET_FILE_DIR:lua_eolib>
+	COMMENT "Copying eolib shared library for Lua tests"
+)
+
+# Resolve libeolib relative to eolib.so at runtime so the drop-in bundle works:
+#   Linux:  $ORIGIN         - side-by-side
+#           $ORIGIN/../..   - system install (lib/lua/5.x/ -> lib/)
+#   macOS:  @loader_path      - side-by-side
+#           @loader_path/../.. - system install
+if(APPLE)
+	set_target_properties(lua_eolib PROPERTIES
+		INSTALL_RPATH "@loader_path;@loader_path/../.."
+		BUILD_WITH_INSTALL_RPATH FALSE
+	)
+elseif(UNIX)
+	set_target_properties(lua_eolib PROPERTIES
+		INSTALL_RPATH "$ORIGIN;$ORIGIN/../.."
+		BUILD_WITH_INSTALL_RPATH FALSE
 	)
 endif()
 
+if(LUA_VERSION_STRING)
+	string(REGEX MATCH "^[0-9]+\\.[0-9]+" LUA_VERSION_MAJOR_MINOR "${LUA_VERSION_STRING}")
+	set(_lua_cmod "${CMAKE_INSTALL_LIBDIR}/lua/${LUA_VERSION_MAJOR_MINOR}")
+	set(_lua_lmod "${CMAKE_INSTALL_DATADIR}/lua/${LUA_VERSION_MAJOR_MINOR}")
+else()
+	set(_lua_cmod "${CMAKE_INSTALL_LIBDIR}/lua")
+	set(_lua_lmod "${CMAKE_INSTALL_DATADIR}/lua")
+endif()
+
 install(TARGETS lua_eolib
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	LIBRARY DESTINATION ${_lua_cmod}
+	RUNTIME DESTINATION ${_lua_cmod}
 )
 
+install(FILES "${CMAKE_SOURCE_DIR}/lua/eolib.d.lua"
+	DESTINATION ${_lua_lmod}
+)
+
+# On Windows, libeolib.dll must be alongside eolib.dll (no rpath on Windows).
+if(WIN32)
+	install(FILES "$<TARGET_FILE:eolib>"
+		DESTINATION ${_lua_cmod}
+	)
+endif()
+
+# Standalone portable bundle (e.g. for CPack or local drop-in use)
 install(TARGETS lua_eolib
 	LIBRARY DESTINATION . COMPONENT lua_bindings EXCLUDE_FROM_ALL
 	RUNTIME DESTINATION . COMPONENT lua_bindings EXCLUDE_FROM_ALL
 )
 
-install(FILES "${CMAKE_SOURCE_DIR}/lua/eolib.d.lua"
+install(FILES
+		"${CMAKE_SOURCE_DIR}/lua/eolib.d.lua"
+		"${CMAKE_SOURCE_DIR}/LICENSE.txt"
 	DESTINATION .
 	COMPONENT lua_bindings
 	EXCLUDE_FROM_ALL
 )
 
-install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.txt"
+install(FILES "$<TARGET_FILE:eolib>"
 	DESTINATION .
 	COMPONENT lua_bindings
 	EXCLUDE_FROM_ALL
 )
-
-if(WIN32)
-	install(FILES "$<TARGET_FILE:eolib>"
-		DESTINATION .
-		COMPONENT lua_bindings
-		EXCLUDE_FROM_ALL
-	)
-endif()
 
 find_program(LUA_INTERPRETER NAMES lua lua5.4 lua5.3 lua5.2 lua5.1 luajit)
 

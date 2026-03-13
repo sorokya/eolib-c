@@ -35,14 +35,45 @@ Utilities:
 - Data encryption
 - Packet sequencer
 
-## Requirements
+## Installation
+
+### Pre-built releases (recommended)
+
+Download the pre-built release for your platform from the
+[releases page](https://github.com/sorokya/eolib-c/releases).
+Packages are named `eolib-{version}-{platform}.zip`.
+
+**Option 1 — Use directly from the extracted directory (no install needed):**
+
+```cmake
+list(APPEND CMAKE_PREFIX_PATH "/path/to/eolib-{version}-{platform}")
+find_package(eolib REQUIRED)
+target_link_libraries(myapp PRIVATE eolib::eolib)
+```
+
+**Option 2 — Copy files to a system prefix manually:**
+
+```bash
+# Linux / macOS — copy into /usr/local (or any prefix you prefer)
+cp -r eolib-{version}-{platform}/include/* /usr/local/include/
+cp -r eolib-{version}-{platform}/lib/*     /usr/local/lib/
+```
+
+Then `find_package(eolib REQUIRED)` will find it automatically.
+
+See the [Getting Started](https://sorokya.github.io/eolib-c/getting_started.html)
+guide for manual (non-CMake) linking instructions.
+
+### Building from source
+
+#### Requirements
 
 - CMake 3.16+
 - C compiler
 - libxml2
 - json-c
 
-### Install dependencies
+#### Install dependencies
 
 macOS (Homebrew):
 
@@ -53,34 +84,34 @@ brew install libxml2 json-c
 Ubuntu/Debian:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y libxml2-dev libjson-c-dev ninja-build
+sudo apt-get install -y libxml2-dev libjson-c-dev
 ```
 
-Windows (MSVC):
-
-- Use vcpkg with the provided manifest (`vcpkg.json`). CMake will pick it up if you configure with the toolchain file.
+Windows (MSVC): libxml2 and json-c are handled automatically via the bundled vcpkg configuration.
 
 Windows (MinGW / MSYS2):
 
 ```bash
-pacman -S --needed mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-libxml2 mingw-w64-x86_64-json-c
+pacman -S --needed mingw-w64-x86_64-libxml2 mingw-w64-x86_64-json-c
 ```
 
-## Build
+#### Build
 
 ```bash
+git clone --recurse-submodules https://github.com/sorokya/eolib-c.git
+cd eolib-c
+
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-## Run tests
+#### Run tests
 
 ```bash
 ctest --test-dir build
 ```
 
-## Install
+#### Install
 
 ```bash
 cmake --install build
@@ -88,17 +119,22 @@ cmake --install build
 
 ## Lua bindings
 
-Native Lua 5.1+/LuaJIT bindings are available as an optional build target. See
-[lua/README.md](lua/README.md) for the full API reference.
+Native Lua 5.1+/LuaJIT bindings are available. See
+[lua/README.md](lua/README.md) for full setup and API reference.
 
-### Requirements
+### Pre-built (recommended)
 
-Lua development headers (pick one):
+Download `eolib-{version}-Lua-{platform}.zip` from the
+[releases page](https://github.com/sorokya/eolib-c/releases) and extract it
+into your project directory. `require("eolib")` will just work.
+
+### Building from source
+
+Requires Lua development headers in addition to the dependencies above:
 
 - macOS: `brew install lua`
-- Debian/Ubuntu: `sudo apt-get install -y liblua5.4-dev`
-
-### Build
+- Ubuntu/Debian: `sudo apt-get install -y liblua5.4-dev lua5.4`
+- MinGW/MSYS2: `pacman -S mingw-w64-x86_64-lua`
 
 ```bash
 cmake -S . -B build -DEOLIB_BUILD_LUA_BINDINGS=ON
@@ -112,13 +148,6 @@ This produces `build/lua/eolib.so` (or `.dll` on Windows).
 ```bash
 cmake --build build --target lua-test
 ```
-
-### IDE support
-
-A `lua/eolib.d.lua` LuaCATS annotation file is generated with the build,
-providing full intellisense (autocomplete, type hints, inline docs) for
-[lua-language-server](https://github.com/LuaLS/lua-language-server). See
-[lua/README.md](lua/README.md) for setup instructions.
 
 ## Protocol Types
 

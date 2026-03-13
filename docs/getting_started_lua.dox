@@ -9,101 +9,97 @@
  * native C extension module (`eolib.so` / `eolib.dll`) that you `require` from
  * Lua 5.4.
  *
- * @section gsl_prereqs Prerequisites & Development Environment
+ * @section gsl_prereqs Prerequisites
  *
- * You need **Lua 5.4** installed, plus a C toolchain in case you ever need to
- * build from source. CMake 3.16+ is required for source builds.
+ * You only need **Lua 5.4** to use the pre-built bindings.
  *
  * @subsection gsl_linux Linux (Ubuntu / Debian)
  * @code{.sh}
- * sudo apt-get update
- * sudo apt-get install gcc cmake build-essential lua5.4
+ * sudo apt-get install lua5.4
  * @endcode
  *
  * @subsection gsl_macos macOS
  * @code{.sh}
- * xcode-select --install
- * brew install cmake lua
+ * brew install lua
  * @endcode
  *
  * @subsection gsl_windows Windows
- * **MSVC (recommended):** Install [Visual Studio 2022 Community](https://visualstudio.microsoft.com/vs/community/)
- * with the **Desktop development with C++** workload.  Download and install a
- * Lua 5.4 binary for Windows from https://luabinaries.sourceforge.net/ (or use
- * [LuaRocks](https://luarocks.org/) which bundles Lua).
- *
- * **MinGW via MSYS2:**
- * @code{.sh}
- * pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-lua
- * @endcode
+ * Download and install a Lua 5.4 binary from https://luabinaries.sourceforge.net/
+ * (or use [LuaRocks](https://luarocks.org/) which bundles Lua).
  *
  * ---
  *
- * @section gsl_download Downloading a Release
+ * @section gsl_download Getting the bindings
  *
- * Pre-built Lua binding releases are available at:
- * https://github.com/sorokya/eolib-c/releases
+ * @subsection gsl_dropin Option 1 — Pre-built drop-in (recommended)
  *
- * Lua packages follow the naming convention
- * `eolib-{version}-Lua-{platform}.zip` where `{platform}` is one of:
+ * Download the Lua bindings release for your platform from the
+ * [releases page](https://github.com/sorokya/eolib-c/releases).
+ * Packages are named `eolib-{version}-Lua-{platform}.zip`.
  *
- * | Platform | Filename suffix |
- * |----------|----------------|
- * | Linux 64-bit (x86_64) | `Linux.x64` |
- * | Linux 64-bit (ARM) | `Linux.arm64` |
- * | macOS Apple Silicon | `macOS.arm64` |
- * | macOS Intel | `macOS.x64` |
- * | Windows MSVC 64-bit | `Windows.VS2022.x64` |
- * | Windows MSVC 32-bit | `Windows.VS2022.x86` |
- * | Windows MinGW 64-bit | `Windows.MinGW.x64` |
- * | Windows MinGW 32-bit | `Windows.MinGW.x86` |
+ * Extract the archive into your project directory. Lua searches `./` by default so
+ * `require("eolib")` will just work, and lua-language-server will pick up the
+ * type definitions automatically.
  *
- * The archive contains:
- * @code
- * eolib.so         (Linux / macOS — the Lua C extension)
- * eolib.dll        (Windows — the Lua C extension)
- * libeolib.dll     (Windows only — the underlying C library; must be in PATH)
- * eolib.d.lua      (type-annotation stub for IDE support, e.g. LuaLS / EmmyLua)
- * @endcode
- *
- * @subsection gsl_install Installing the module
- *
- * The simplest approach is to place `eolib.so` (or `eolib.dll` + `libeolib.dll`
- * on Windows) in the same directory as your script, then run:
- * @code{.sh}
- * lua5.4 my_script.lua
- * @endcode
- *
- * Lua's default `package.cpath` includes `./?.so` on Linux/macOS and
- * `.\?.dll` on Windows, so `require("eolib")` will find the module
- * automatically.
- *
- * To install system-wide so any script can use it, copy the `.so`/`.dll` into
- * one of the directories listed by:
- * @code{.lua}
- * print(package.cpath)
- * @endcode
- *
- * Or set `LUA_CPATH` in your shell environment to include the directory
- * containing the module:
+ * Or copy them to a system prefix:
  * @code{.sh}
  * # Linux / macOS
- * export LUA_CPATH="/path/to/eolib/?.so;;"
- *
- * # Windows (PowerShell)
- * $env:LUA_CPATH = "C:\eolib\?.dll;;"
+ * cp libeolib.* eolib.so /usr/local/lib/lua/5.4/
+ * cp eolib.d.lua         /usr/local/share/lua/5.4/
  * @endcode
  *
- * @note On Windows, `libeolib.dll` must also be reachable via the `PATH`
- * environment variable, or placed alongside `eolib.dll` in the same directory.
+ * @subsection gsl_install Option 2 — Build and install from source
  *
- * @subsection gsl_ide IDE support
+ * Building from source requires a C toolchain, **CMake 3.16+**, libxml2, and json-c.
  *
- * The included `eolib.d.lua` file provides type annotations understood by
- * [lua-language-server](https://github.com/LuaLS/lua-language-server) and
- * compatible IDEs (VS Code, Neovim, etc.). Place it anywhere your language
- * server's `workspace.library` path covers, or add the directory to the
- * server's `workspace.userThirdParty` setting.
+ * Linux (Ubuntu / Debian):
+ * @code{.sh}
+ * sudo apt-get install gcc cmake build-essential libxml2-dev libjson-c-dev liblua5.4-dev lua5.4
+ * @endcode
+ *
+ * macOS:
+ * @code{.sh}
+ * xcode-select --install && brew install cmake libxml2 json-c lua
+ * @endcode
+ *
+ * Windows — MSVC: Install [Visual Studio 2022 Community](https://visualstudio.microsoft.com/vs/community/)
+ * with the **Desktop development with C++** workload. libxml2 and json-c are
+ * handled automatically via the bundled vcpkg configuration.
+ *
+ * Windows — MinGW via MSYS2:
+ * @code{.sh}
+ * pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-libxml2 mingw-w64-x86_64-json-c mingw-w64-x86_64-lua
+ * @endcode
+ *
+ * Then build and install:
+ * @code{.sh}
+ * git clone --recurse-submodules https://github.com/sorokya/eolib-c.git
+ * cd eolib-c
+ *
+ * cmake -S . -B build -DEOLIB_BUILD_LUA_BINDINGS=ON
+ * cmake --build build
+ * cmake --install build
+ * @endcode
+ *
+ * @subsubsection gsl_troubleshoot Troubleshooting: module 'eolib' not found
+ *
+ * Some systems (e.g. macOS with Homebrew Lua) use a different prefix than
+ * `/usr/local`. Check where your Lua looks:
+ * @code{.sh}
+ * lua -e "print(package.cpath)"
+ * @endcode
+ *
+ * Then copy files to the right path, or set `LUA_CPATH` manually:
+ * @code{.sh}
+ * export LUA_CPATH="/usr/local/lib/lua/5.4/?.so;;"
+ * @endcode
+ *
+ * @subsection gsl_ide IDE support (lua-language-server)
+ *
+ * `eolib.d.lua` provides full type annotations for
+ * [lua-language-server](https://github.com/LuaLS/lua-language-server). For the
+ * drop-in method, having it in your project root is enough. For a system
+ * install, luals typically picks it up from `share/lua/5.4/` automatically.
  *
  * ---
  *

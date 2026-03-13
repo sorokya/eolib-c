@@ -7,7 +7,9 @@
  *
  * @section gs_prereqs Prerequisites & Development Environment
  *
- * eolib-c requires a C11-capable compiler and **CMake 3.16 or newer**.
+ * To use the pre-built releases you only need a C11-capable compiler to build
+ * your own application. To build eolib-c from source you also need
+ * **CMake 3.16+**, libxml2, and json-c (see @ref gs_source below).
  *
  * @subsection gs_linux Linux (Ubuntu / Debian)
  * @code{.sh}
@@ -16,7 +18,6 @@
  * @endcode
  *
  * @subsection gs_macos macOS
- * Install Xcode command line tools, then CMake via Homebrew:
  * @code{.sh}
  * xcode-select --install
  * brew install cmake
@@ -37,79 +38,48 @@
  *
  * ---
  *
- * @section gs_download Downloading a Release
+ * @section gs_download Getting the library
  *
- * Pre-built releases are available at:
- * https://github.com/sorokya/eolib-c/releases
+ * @subsection gs_prebuilt Option 1 — Pre-built release (recommended)
  *
- * Packages follow the naming convention `eolib-{version}-{platform}.zip`
- * where `{platform}` is one of:
+ * Download the release for your platform from the
+ * [releases page](https://github.com/sorokya/eolib-c/releases).
+ * Packages are named `eolib-{version}-{platform}.zip`.
  *
- * | Platform | Filename suffix |
- * |----------|----------------|
- * | Linux 64-bit (x86_64) | `Linux.x64` |
- * | Linux 64-bit (ARM) | `Linux.arm64` |
- * | macOS Apple Silicon | `macOS.arm64` |
- * | macOS Intel | `macOS.x64` |
- * | Windows MSVC 64-bit | `Windows.VS2022.x64` |
- * | Windows MSVC 32-bit | `Windows.VS2022.x86` |
- * | Windows MinGW 64-bit | `Windows.MinGW.x64` |
- * | Windows MinGW 32-bit | `Windows.MinGW.x86` |
- *
- * **Extracting the archive:**
- * @code{.sh}
- * # Linux / macOS
- * unzip eolib-1.0.0-Linux.x64.zip -d eolib
- *
- * # Windows (PowerShell)
- * Expand-Archive eolib-1.0.0-Windows.VS2022.x64.zip -DestinationPath eolib
- * @endcode
- *
- * The archive unpacks to a layout compatible with CMake's `find_package`:
+ * The archive unpacks to:
  * @code
- * eolib/
+ * eolib-{version}-{platform}/
  *   include/
  *     eolib/
- *       eolib.h
- *       ...
+ *       eolib.h  ...
  *   lib/
- *     eolib.lib          (Windows MSVC import library)
- *     libeolib.dll.a     (Windows MinGW import library)
- *     libeolib.so        (Linux shared library)
- *     libeolib.dylib     (macOS shared library)
- *   cmake/
- *     eolibConfig.cmake
- *     ...
+ *     cmake/eolib/          (CMake find_package support)
+ *     libeolib.so           (Linux)
+ *     libeolib.dylib        (macOS)
+ *     eolib.lib             (Windows MSVC import library)
+ *     libeolib.dll.a        (Windows MinGW import library)
+ *   LICENSE.txt
  * @endcode
  *
- * @subsection gs_cmake Using CMake (preferred)
- *
- * In your `CMakeLists.txt`:
+ * **Use directly from the extracted directory (no install needed):**
  * @code{.cmake}
- * cmake_minimum_required(VERSION 3.16)
- * project(myapp C)
- *
- * # Point CMake to the extracted package (or install it system-wide).
- * list(APPEND CMAKE_PREFIX_PATH "/path/to/eolib")
- *
+ * list(APPEND CMAKE_PREFIX_PATH "/path/to/eolib-{version}-{platform}")
  * find_package(eolib REQUIRED)
- *
- * add_executable(myapp main.c)
  * target_link_libraries(myapp PRIVATE eolib::eolib)
  * @endcode
  *
- * Build:
+ * **Or copy to a system prefix:**
  * @code{.sh}
- * cmake -B build -S .
- * cmake --build build
+ * # Linux / macOS
+ * cp -r eolib-{version}-{platform}/include/* /usr/local/include/
+ * cp -r eolib-{version}-{platform}/lib/*     /usr/local/lib/
  * @endcode
  *
- * @subsection gs_manual Manual compilation
+ * Then `find_package(eolib REQUIRED)` will find it without any `CMAKE_PREFIX_PATH`.
  *
- * If you prefer to compile without CMake, pass the include and library paths
- * directly to the compiler.
+ * **Manual compilation (without CMake):**
  *
- * **Linux / macOS (GCC or Clang):**
+ * Linux / macOS:
  * @code{.sh}
  * gcc main.c -I/path/to/eolib/include \
  *            -L/path/to/eolib/lib -leolib \
@@ -117,18 +87,48 @@
  *            -o myapp
  * @endcode
  *
- * **Windows — MSVC (Developer Command Prompt):**
+ * Windows — MSVC:
  * @code{.bat}
  * cl main.c /I C:\eolib\include ^
  *           /link C:\eolib\lib\eolib.lib ^
  *           /out:myapp.exe
  * @endcode
  *
- * **Windows — MinGW:**
+ * Windows — MinGW:
  * @code{.sh}
- * gcc main.c -I/c/eolib/include \
- *            -L/c/eolib/lib -leolib \
- *            -o myapp.exe
+ * gcc main.c -I/c/eolib/include -L/c/eolib/lib -leolib -o myapp.exe
+ * @endcode
+ *
+ * @subsection gs_source Option 2 — Build from source
+ *
+ * Requires CMake 3.16+, libxml2, and json-c in addition to the compiler above.
+ *
+ * Linux (Ubuntu / Debian):
+ * @code{.sh}
+ * sudo apt-get install libxml2-dev libjson-c-dev
+ * @endcode
+ *
+ * macOS:
+ * @code{.sh}
+ * brew install libxml2 json-c
+ * @endcode
+ *
+ * Windows — MSVC: libxml2 and json-c are handled automatically via the bundled
+ * vcpkg configuration.
+ *
+ * Windows — MinGW via MSYS2:
+ * @code{.sh}
+ * pacman -S mingw-w64-x86_64-libxml2 mingw-w64-x86_64-json-c
+ * @endcode
+ *
+ * Then clone and build:
+ * @code{.sh}
+ * git clone --recurse-submodules https://github.com/sorokya/eolib-c.git
+ * cd eolib-c
+ *
+ * cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+ * cmake --build build
+ * cmake --install build
  * @endcode
  *
  * @note On Linux, if the library is not installed in a standard system path,
