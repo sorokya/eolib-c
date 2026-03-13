@@ -4,11 +4,7 @@ uint32_t eo_time()
 {
     time_t now = time(NULL);
     struct tm local;
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-    localtime_s(&local, &now);
-#else
     localtime_r(&now, &local);
-#endif
 
     // tm_year is years since 1900 (standard C), used directly in the Borland formula
     int year = local.tm_year;
