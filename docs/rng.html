@@ -104,14 +104,12 @@ Seeding</h1>
 </div><!-- fragment --><p>Internally, the seed is scrambled with the multiplier <b>22695477</b> before initialising <span class="tt"><a class="el" href="rng_8c.html#ae3b5da0c8b288f1d2cbd6c553b02120d">current_seed</a></span>, and <span class="tt"><a class="el" href="rng_8c.html#a7baeb70ad11720524276a2e9332cf951">state_high</a></span> is reset to zero.</p>
 <h2 class="doxsection"><a class="anchor" id="rng_client_seed"></a>
 Reproducing the original client behaviour</h2>
-<p>The original EO client seeded the RNG at startup using its own Borland-specific <span class="tt">time()</span> call — a 32-bit value derived from <b>local system time</b> using the Borland runtime algorithm (approximately <span class="tt">time(NULL) + local_timezone_offset + 18000</span>). A plain <span class="tt">time(NULL)</span> call would give incorrect seeds on machines not running at UTC. To reproduce this behaviour exactly, seed the RNG with <a class="el" href="time_8h.html#a1ecf775990df8b3066d6ba37bb998d80" title="eo_time">eo_time</a> :</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="time_8h.html">eolib/time.h</a>&quot;</span></div>
+<p>The original EO client seeded the RNG at startup using <span class="tt">(uint32_t)time(NULL)</span>. To replicate this:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;time.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;<a class="code" href="rng_8h.html">eolib/rng.h</a>&quot;</span></div>
 <div class="line"> </div>
-<div class="line"><a class="code hl_function" href="rng_8h.html#a869e79f0a1f90b40d54a06e9fffd9d8a">eo_srand</a>(<a class="code hl_function" href="time_8h.html#a1ecf775990df8b3066d6ba37bb998d80">eo_time</a>());   <span class="comment">// mirrors the original client startup seed</span></div>
+<div class="line"><a class="code hl_function" href="rng_8h.html#a869e79f0a1f90b40d54a06e9fffd9d8a">eo_srand</a>((uint32_t)time(NULL));   <span class="comment">// mirrors the original client startup seed</span></div>
 <div class="ttc" id="arng_8h_html"><div class="ttname"><a href="rng_8h.html">rng.h</a></div></div>
-<div class="ttc" id="atime_8h_html"><div class="ttname"><a href="time_8h.html">time.h</a></div></div>
-<div class="ttc" id="atime_8h_html_a1ecf775990df8b3066d6ba37bb998d80"><div class="ttname"><a href="time_8h.html#a1ecf775990df8b3066d6ba37bb998d80">eo_time</a></div><div class="ttdeci">uint32_t eo_time()</div><div class="ttdef"><b>Definition</b> <a href="time_8c_source.html#l00003">time.c:3</a></div></div>
 </div><!-- fragment --><p>If you pass the same seed on two different runs you will get an <b>identical</b> sequence of random numbers, which is useful for deterministic replay or testing.</p>
 <h1 class="doxsection"><a class="anchor" id="rng_algorithm"></a>
 Algorithm</h1>

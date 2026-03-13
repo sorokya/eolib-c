@@ -71,13 +71,6 @@ var NAVTREE =
       [ "Algorithm", "rng.html#rng_algorithm", null ],
       [ "API", "rng.html#rng_api", null ]
     ] ],
-    [ "Time (Borland-compatible clock)", "time.html", [
-      [ "Overview", "time.html#time_overview", null ],
-      [ "Using eo_time() to seed the RNG", "time.html#time_seeding", null ],
-      [ "Algorithm", "time.html#time_algorithm", null ],
-      [ "Supported range", "time.html#time_range", null ],
-      [ "API", "time.html#time_api", null ]
-    ] ],
     [ "Error Handling", "error_handling.html", null ],
     [ "Reading Data", "reading_data.html", null ],
     [ "Writing Data", "writing_data.html", null ],

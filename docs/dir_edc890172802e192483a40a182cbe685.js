@@ -6,6 +6,5 @@ var dir_edc890172802e192483a40a182cbe685 =
     [ "protocol.h", "protocol_8h.html", "protocol_8h" ],
     [ "result.h", "result_8h.html", "result_8h" ],
     [ "rng.h", "rng_8h.html", "rng_8h" ],
-    [ "sequencer.h", "sequencer_8h.html", "sequencer_8h" ],
-    [ "time.h", "time_8h.html", "time_8h" ]
+    [ "sequencer.h", "sequencer_8h.html", "sequencer_8h" ]
 ];

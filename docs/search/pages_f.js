@@ -6,6 +6,6 @@ var searchData=
   ['option_202_20—_20build_20from_20source_3',['Option 2 — Build from source',['../getting_started.html#gs_source',1,'']]],
   ['optional_20fields_4',['Optional Fields',['../optional_fields.html',1,'']]],
   ['original_20client_20behaviour_5',['Reproducing the original client behaviour',['../rng.html#rng_client_seed',1,'']]],
-  ['overview_6',['Overview',['../rng.html#rng_overview',1,'Overview'],['../time.html#time_overview',1,'Overview']]],
+  ['overview_6',['Overview',['../rng.html#rng_overview',1,'']]],
   ['owns_20a_20heap_20buffer_7',['EoWriter — owns a heap buffer',['../getting_started.html#gs_memory_writer',1,'']]]
 ];

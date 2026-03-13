@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['usage_2edox_0',['usage.dox',['../usage_8dox.html',1,'']]]
+  ['wasm_2edox_0',['wasm.dox',['../wasm_8dox.html',1,'']]]
 ];
