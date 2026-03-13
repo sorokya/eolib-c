@@ -1,6 +1,5 @@
 var sequencer_8c =
 [
-    [ "csprng_uniform", "sequencer_8c.html#ade6a4c07c7c89dd70af9558497f6b160", null ],
     [ "eo_generate_sequence_start", "sequencer_8c.html#ad2efe779b26287745fa2d6c5a62d3b8d", null ],
     [ "eo_sequence_init_bytes", "sequencer_8c.html#aa679e5cb997c763b0f47488f506aaf4b", null ],
     [ "eo_sequence_ping_bytes", "sequencer_8c.html#a0a9061c4cb6e716df4d3df8435001559", null ],

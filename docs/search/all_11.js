@@ -15,8 +15,10 @@ var searchData=
   ['option_202_20—_20build_20and_20install_20from_20source_12',['Option 2 — Build and install from source',['../getting_started_lua.html#gsl_install',1,'']]],
   ['option_202_20—_20build_20from_20source_13',['Option 2 — Build from source',['../getting_started.html#gs_source',1,'']]],
   ['optional_20fields_14',['Optional Fields',['../optional_fields.html',1,'']]],
-  ['others_15',['others',['../structEffectTargetOtherServerPacket.html#ab42d619aa0ce9775b94250c36367bf1f',1,'EffectTargetOtherServerPacket']]],
-  ['others_5flength_16',['others_length',['../structEffectTargetOtherServerPacket.html#a765e4a383130133d810f81d0996c6de6',1,'EffectTargetOtherServerPacket']]],
-  ['out_5fof_5fdate_17',['out_of_date',['../structInitInitServerPacket.html#a44499e994c038195e4be2f9151e92fd9',1,'InitInitServerPacket']]],
-  ['owns_20a_20heap_20buffer_18',['EoWriter — owns a heap buffer',['../getting_started.html#gs_memory_writer',1,'']]]
+  ['original_20client_20behaviour_15',['Reproducing the original client behaviour',['../rng.html#rng_client_seed',1,'']]],
+  ['others_16',['others',['../structEffectTargetOtherServerPacket.html#ab42d619aa0ce9775b94250c36367bf1f',1,'EffectTargetOtherServerPacket']]],
+  ['others_5flength_17',['others_length',['../structEffectTargetOtherServerPacket.html#a765e4a383130133d810f81d0996c6de6',1,'EffectTargetOtherServerPacket']]],
+  ['out_5fof_5fdate_18',['out_of_date',['../structInitInitServerPacket.html#a44499e994c038195e4be2f9151e92fd9',1,'InitInitServerPacket']]],
+  ['overview_19',['Overview',['../rng.html#rng_overview',1,'Overview'],['../time.html#time_overview',1,'Overview']]],
+  ['owns_20a_20heap_20buffer_20',['EoWriter — owns a heap buffer',['../getting_started.html#gs_memory_writer',1,'']]]
 ];

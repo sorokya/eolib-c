@@ -137,6 +137,7 @@ var searchData=
   ['cure_5fcurse_134',['cure_curse',['../structItemReplyServerPacket.html#a414f41b9c9b1f26f8fee0c72c1acdeec',1,'ItemReplyServerPacket']]],
   ['current_135',['current',['../structWeight.html#a3cb0c6e2f4242fa0c642ffc1c12e7e38',1,'Weight']]],
   ['current_5fhome_5fid_136',['current_home_id',['../structCitizenOpenServerPacket.html#a6579600f189c00870258e291e77fde6b',1,'CitizenOpenServerPacket']]],
-  ['current_5fweight_137',['current_weight',['../structItemObtainServerPacket.html#a3428e1339eb6a8c0c60e47a4fc8dfc26',1,'ItemObtainServerPacket::current_weight'],['../structItemKickServerPacket.html#aa71564a0d79b8e638158d20e81194d2b',1,'ItemKickServerPacket::current_weight']]],
-  ['cursor_5fcoords_138',['cursor_coords',['../structSitRequestClientPacket.html#aab082e48c869e1b4f64e543be111b76d',1,'SitRequestClientPacket']]]
+  ['current_5fseed_137',['current_seed',['../rng_8c.html#ae3b5da0c8b288f1d2cbd6c553b02120d',1,'rng.c']]],
+  ['current_5fweight_138',['current_weight',['../structItemObtainServerPacket.html#a3428e1339eb6a8c0c60e47a4fc8dfc26',1,'ItemObtainServerPacket::current_weight'],['../structItemKickServerPacket.html#aa71564a0d79b8e638158d20e81194d2b',1,'ItemKickServerPacket::current_weight']]],
+  ['cursor_5fcoords_139',['cursor_coords',['../structSitRequestClientPacket.html#aab082e48c869e1b4f64e543be111b76d',1,'SitRequestClientPacket']]]
 ];

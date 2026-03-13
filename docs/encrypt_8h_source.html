@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">eolib<span id="projectnumber">&#160;0.4.0</span>
+   <div id="projectname">eolib<span id="projectnumber">&#160;0.5.0</span>
    </div>
    <div id="projectbrief">A core C library for writing applications related to Endless Online</div>
   </td>
@@ -98,23 +98,35 @@ $(function(){initNavTree('encrypt_8h_source.html','',''); });
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>int32_t <a class="code hl_function" href="encrypt_8h.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash</a>(int32_t challenge);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">void</span> <a class="code hl_function" href="encrypt_8h.html#a33c807c2fce3d01b65e0d14e15e27475">eo_swap_multiples</a>(uint8_t *data, <span class="keywordtype">size_t</span> length, uint8_t multiple);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>uint8_t <a class="code hl_function" href="encrypt_8h.html#a76efd02ded701c916b41743668708087">eo_generate_swap_multiple</a>();</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="rng_8h.html">eolib/rng.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span></div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="encrypt_8h.html#a1b3c63c8a564a3f868055ff83c87d66e">   17</a></span><span class="keyword">static</span> <span class="keyword">inline</span> int32_t <a class="code hl_function" href="encrypt_8h.html#a1b3c63c8a564a3f868055ff83c87d66e">eo_generate_server_verification_challenge</a>()</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="rng_8h.html#a40b5fc0d63f915521d1be57a9a31d670">eo_rand</a>() % (int32_t)1000000;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>int32_t <a class="code hl_function" href="encrypt_8h.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash</a>(int32_t challenge);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keywordtype">void</span> <a class="code hl_function" href="encrypt_8h.html#a645b4d5c8fb8c3a4791aff3a4f0aa77a">eo_encrypt_packet</a>(uint8_t *data, <span class="keywordtype">size_t</span> length, uint8_t swap_multiple);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keywordtype">void</span> <a class="code hl_function" href="encrypt_8h.html#a33c807c2fce3d01b65e0d14e15e27475">eo_swap_multiples</a>(uint8_t *data, <span class="keywordtype">size_t</span> length, uint8_t multiple);</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span></div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keywordtype">void</span> <a class="code hl_function" href="encrypt_8h.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet</a>(uint8_t *data, <span class="keywordtype">size_t</span> length, uint8_t swap_multiple);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aencrypt_8h_html_a33c807c2fce3d01b65e0d14e15e27475"><div class="ttname"><a href="encrypt_8h.html#a33c807c2fce3d01b65e0d14e15e27475">eo_swap_multiples</a></div><div class="ttdeci">void eo_swap_multiples(uint8_t *data, size_t length, uint8_t multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00042">encrypt.c:42</a></div></div>
-<div class="ttc" id="aencrypt_8h_html_a645b4d5c8fb8c3a4791aff3a4f0aa77a"><div class="ttname"><a href="encrypt_8h.html#a645b4d5c8fb8c3a4791aff3a4f0aa77a">eo_encrypt_packet</a></div><div class="ttdeci">void eo_encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00088">encrypt.c:88</a></div></div>
-<div class="ttc" id="aencrypt_8h_html_a76efd02ded701c916b41743668708087"><div class="ttname"><a href="encrypt_8h.html#a76efd02ded701c916b41743668708087">eo_generate_swap_multiple</a></div><div class="ttdeci">uint8_t eo_generate_swap_multiple()</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00083">encrypt.c:83</a></div></div>
-<div class="ttc" id="aencrypt_8h_html_aac3f12c644fb3fd97011a918a374249c"><div class="ttname"><a href="encrypt_8h.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet</a></div><div class="ttdeci">void eo_decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00144">encrypt.c:144</a></div></div>
-<div class="ttc" id="aencrypt_8h_html_ab94542c28d7d5334f261648c2a258954"><div class="ttname"><a href="encrypt_8h.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash</a></div><div class="ttdeci">int32_t eo_server_verification_hash(int32_t challenge)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00035">encrypt.c:35</a></div></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>uint8_t <a class="code hl_function" href="encrypt_8h.html#a76efd02ded701c916b41743668708087">eo_generate_swap_multiple</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keywordtype">void</span> <a class="code hl_function" href="encrypt_8h.html#a645b4d5c8fb8c3a4791aff3a4f0aa77a">eo_encrypt_packet</a>(uint8_t *data, <span class="keywordtype">size_t</span> length, uint8_t swap_multiple);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keywordtype">void</span> <a class="code hl_function" href="encrypt_8h.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet</a>(uint8_t *data, <span class="keywordtype">size_t</span> length, uint8_t swap_multiple);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aencrypt_8h_html_a1b3c63c8a564a3f868055ff83c87d66e"><div class="ttname"><a href="encrypt_8h.html#a1b3c63c8a564a3f868055ff83c87d66e">eo_generate_server_verification_challenge</a></div><div class="ttdeci">static int32_t eo_generate_server_verification_challenge()</div><div class="ttdef"><b>Definition</b> <a href="#l00017">encrypt.h:17</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_a33c807c2fce3d01b65e0d14e15e27475"><div class="ttname"><a href="encrypt_8h.html#a33c807c2fce3d01b65e0d14e15e27475">eo_swap_multiples</a></div><div class="ttdeci">void eo_swap_multiples(uint8_t *data, size_t length, uint8_t multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00012">encrypt.c:12</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_a645b4d5c8fb8c3a4791aff3a4f0aa77a"><div class="ttname"><a href="encrypt_8h.html#a645b4d5c8fb8c3a4791aff3a4f0aa77a">eo_encrypt_packet</a></div><div class="ttdeci">void eo_encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00058">encrypt.c:58</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_a76efd02ded701c916b41743668708087"><div class="ttname"><a href="encrypt_8h.html#a76efd02ded701c916b41743668708087">eo_generate_swap_multiple</a></div><div class="ttdeci">uint8_t eo_generate_swap_multiple()</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00053">encrypt.c:53</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_aac3f12c644fb3fd97011a918a374249c"><div class="ttname"><a href="encrypt_8h.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet</a></div><div class="ttdeci">void eo_decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00114">encrypt.c:114</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_ab94542c28d7d5334f261648c2a258954"><div class="ttname"><a href="encrypt_8h.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash</a></div><div class="ttdeci">int32_t eo_server_verification_hash(int32_t challenge)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00005">encrypt.c:5</a></div></div>
+<div class="ttc" id="arng_8h_html"><div class="ttname"><a href="rng_8h.html">rng.h</a></div></div>
+<div class="ttc" id="arng_8h_html_a40b5fc0d63f915521d1be57a9a31d670"><div class="ttname"><a href="rng_8h.html#a40b5fc0d63f915521d1be57a9a31d670">eo_rand</a></div><div class="ttdeci">uint32_t eo_rand()</div><div class="ttdef"><b>Definition</b> <a href="rng_8c_source.html#l00012">rng.c:12</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

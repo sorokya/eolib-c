@@ -151,5 +151,6 @@ var searchData=
   ['npcupdateposition_5fget_5fsize_5ffn_148',['NpcUpdatePosition_get_size_fn',['../protocol_8c.html#a870152f9c0b7a135ecdbe65c4f0bd671',1,'protocol.c']]],
   ['npcupdateposition_5finit_149',['NpcUpdatePosition_init',['../protocol_8h.html#afc82dc8da6c6c4bb9a5b155937efd215',1,'NpcUpdatePosition_init(void):&#160;protocol.c'],['../protocol_8c.html#afc82dc8da6c6c4bb9a5b155937efd215',1,'NpcUpdatePosition_init(void):&#160;protocol.c']]],
   ['npcupdateposition_5fserialize_5ffn_150',['NpcUpdatePosition_serialize_fn',['../protocol_8c.html#a7cc51c733c12ab7d6ec8670ca0d26c04',1,'protocol.c']]],
-  ['npcupdateposition_5fvtable_151',['NpcUpdatePosition_vtable',['../protocol_8c.html#a6ab3fadbe103b2c2ff24c9d798f1508c',1,'protocol.c']]]
+  ['npcupdateposition_5fvtable_151',['NpcUpdatePosition_vtable',['../protocol_8c.html#a6ab3fadbe103b2c2ff24c9d798f1508c',1,'protocol.c']]],
+  ['number_20generator_152',['RNG (Random Number Generator)',['../rng.html',1,'']]]
 ];

@@ -288,6 +288,5 @@ var searchData=
   ['coords_5fdeserialize_5ffn_285',['Coords_deserialize_fn',['../protocol_8c.html#a27da4efce242010db59ff3d5cc330c5b',1,'protocol.c']]],
   ['coords_5fget_5fsize_5ffn_286',['Coords_get_size_fn',['../protocol_8c.html#a2a9bbaab80cfae626214882604bdb738',1,'protocol.c']]],
   ['coords_5finit_287',['Coords_init',['../protocol_8h.html#ab499825814babc92309fda8148934063',1,'Coords_init(void):&#160;protocol.c'],['../protocol_8c.html#ab499825814babc92309fda8148934063',1,'Coords_init(void):&#160;protocol.c']]],
-  ['coords_5fserialize_5ffn_288',['Coords_serialize_fn',['../protocol_8c.html#aa9c06c317bf725f0c0ffd074574fd4a3',1,'protocol.c']]],
-  ['csprng_5funiform_289',['csprng_uniform',['../encrypt_8c.html#ade6a4c07c7c89dd70af9558497f6b160',1,'csprng_uniform(uint32_t upper_bound):&#160;encrypt.c'],['../sequencer_8c.html#ade6a4c07c7c89dd70af9558497f6b160',1,'csprng_uniform(uint32_t upper_bound):&#160;sequencer.c']]]
+  ['coords_5fserialize_5ffn_288',['Coords_serialize_fn',['../protocol_8c.html#aa9c06c317bf725f0c0ffd074574fd4a3',1,'protocol.c']]]
 ];

@@ -63,6 +63,21 @@ var NAVTREE =
       [ "Memory Safety", "getting_started_lua.html#gsl_memory", null ],
       [ "Next Steps", "getting_started_lua.html#gsl_next", null ]
     ] ],
+    [ "RNG (Random Number Generator)", "rng.html", [
+      [ "Overview", "rng.html#rng_overview", null ],
+      [ "Seeding", "rng.html#rng_seeding", [
+        [ "Reproducing the original client behaviour", "rng.html#rng_client_seed", null ]
+      ] ],
+      [ "Algorithm", "rng.html#rng_algorithm", null ],
+      [ "API", "rng.html#rng_api", null ]
+    ] ],
+    [ "Time (Borland-compatible clock)", "time.html", [
+      [ "Overview", "time.html#time_overview", null ],
+      [ "Using eo_time() to seed the RNG", "time.html#time_seeding", null ],
+      [ "Algorithm", "time.html#time_algorithm", null ],
+      [ "Supported range", "time.html#time_range", null ],
+      [ "API", "time.html#time_api", null ]
+    ] ],
     [ "Error Handling", "error_handling.html", null ],
     [ "Reading Data", "reading_data.html", null ],
     [ "Writing Data", "writing_data.html", null ],
@@ -124,15 +139,15 @@ var NAVTREEINDEX =
 "protocol_8h.html#a6b2feb855143e68470fc16141b77c3fd",
 "protocol_8h.html#aa3fd9a9b720fca3f21f5ab868a561e02",
 "protocol_8h.html#ad7da27bd8ffe5746919104f6345496c1",
-"structAdminInteractAgreeServerPacket.html#a3b402eea887e5b954b14495a7176de60",
-"structCharacterBaseStatsWelcome.html#a66f4ae04272cc1ad75e5d4aef0741d0f",
-"structDoorOpenClientPacket.html",
-"structEquipmentPaperdoll.html#a93b6ae5a39238884749ac2548a5f82df",
-"structInitInitServerPacket.html#ac5f070e404b21f6168c11d6612a4dc84",
-"structMapSign.html#ab89c12c906b764b59d1c2c1c74894798",
-"structPlayerRangeRequestClientPacket.html#a8f7a0dbf8f985d636621ed98bbb8edb8",
-"structSitPlayerServerPacket.html",
-"structTalkSpecServerPacket.html"
+"structAccountCreateClientPacket.html#ac791c42a3cea527bbae6521202679f78",
+"structCharItem.html",
+"structCoords.html#a16146bbbc7b8378f7a7b048297c3a0c0",
+"structEquipmentCharacterSelect.html#a53cb118459e8ffdf6bb029091a74a9fe",
+"structInitInitServerPacket.html#a346a8a0c3c6964c34bac2f2751af6cf9",
+"structMapItem.html#aa1f0009e6de8c1dfd58d01cf5358e70d",
+"structPartyRequestServerPacket.html#a3d04711c06d025fa8c0d6b1a0a199912",
+"structShopSoldItem.html#a76dd251e4337ba89077ac0f664439864",
+"structTalkReplyServerPacket.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

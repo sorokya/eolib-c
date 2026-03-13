@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">eolib<span id="projectnumber">&#160;0.4.0</span>
+   <div id="projectname">eolib<span id="projectnumber">&#160;0.5.0</span>
    </div>
    <div id="projectbrief">A core C library for writing applications related to Endless Online</div>
   </td>
@@ -108,15 +108,15 @@ $(function(){initNavTree('encryption.html','',''); });
 <div class="line"><span class="comment">// --- Receiving a packet ---</span></div>
 <div class="line">uint8_t multiple = payload[0];  <span class="comment">// negotiated during handshake</span></div>
 <div class="line"><a class="code hl_function" href="encrypt_8h.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet</a>(payload + 2, payload_length - 2, multiple);</div>
-<div class="ttc" id="aencrypt_8h_html_a645b4d5c8fb8c3a4791aff3a4f0aa77a"><div class="ttname"><a href="encrypt_8h.html#a645b4d5c8fb8c3a4791aff3a4f0aa77a">eo_encrypt_packet</a></div><div class="ttdeci">void eo_encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00088">encrypt.c:88</a></div></div>
-<div class="ttc" id="aencrypt_8h_html_a76efd02ded701c916b41743668708087"><div class="ttname"><a href="encrypt_8h.html#a76efd02ded701c916b41743668708087">eo_generate_swap_multiple</a></div><div class="ttdeci">uint8_t eo_generate_swap_multiple()</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00083">encrypt.c:83</a></div></div>
-<div class="ttc" id="aencrypt_8h_html_aac3f12c644fb3fd97011a918a374249c"><div class="ttname"><a href="encrypt_8h.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet</a></div><div class="ttdeci">void eo_decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00144">encrypt.c:144</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_a645b4d5c8fb8c3a4791aff3a4f0aa77a"><div class="ttname"><a href="encrypt_8h.html#a645b4d5c8fb8c3a4791aff3a4f0aa77a">eo_encrypt_packet</a></div><div class="ttdeci">void eo_encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00058">encrypt.c:58</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_a76efd02ded701c916b41743668708087"><div class="ttname"><a href="encrypt_8h.html#a76efd02ded701c916b41743668708087">eo_generate_swap_multiple</a></div><div class="ttdeci">uint8_t eo_generate_swap_multiple()</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00053">encrypt.c:53</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_aac3f12c644fb3fd97011a918a374249c"><div class="ttname"><a href="encrypt_8h.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet</a></div><div class="ttdeci">void eo_decrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00114">encrypt.c:114</a></div></div>
 </div><!-- fragment --><p><b>Server verification hash:</b></p>
 <p>During the connection handshake the client sends a challenge value to the server. The server must respond with the correct hash, which the client can verify using <a class="el" href="encrypt_8h.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash()</a>:</p>
 <div class="fragment"><div class="line">int32_t challenge = ...; <span class="comment">// chosen by the client and sent in the init packet</span></div>
 <div class="line">int32_t expected  = <a class="code hl_function" href="encrypt_8h.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash</a>(challenge);</div>
 <div class="line"><span class="comment">// Compare expected against the hash value received from the server.</span></div>
-<div class="ttc" id="aencrypt_8h_html_ab94542c28d7d5334f261648c2a258954"><div class="ttname"><a href="encrypt_8h.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash</a></div><div class="ttdeci">int32_t eo_server_verification_hash(int32_t challenge)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00035">encrypt.c:35</a></div></div>
+<div class="ttc" id="aencrypt_8h_html_ab94542c28d7d5334f261648c2a258954"><div class="ttname"><a href="encrypt_8h.html#ab94542c28d7d5334f261648c2a258954">eo_server_verification_hash</a></div><div class="ttdeci">int32_t eo_server_verification_hash(int32_t challenge)</div><div class="ttdef"><b>Definition</b> <a href="encrypt_8c_source.html#l00005">encrypt.c:5</a></div></div>
 </div><!-- fragment --><p>Packets whose first two bytes are both <span class="tt">0xFF</span> are never encrypted and are passed through unchanged by <a class="el" href="encrypt_8h.html#a645b4d5c8fb8c3a4791aff3a4f0aa77a">eo_encrypt_packet()</a> / <a class="el" href="encrypt_8h.html#aac3f12c644fb3fd97011a918a374249c">eo_decrypt_packet()</a>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

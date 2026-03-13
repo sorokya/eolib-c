@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">eolib<span id="projectnumber">&#160;0.4.0</span>
+   <div id="projectname">eolib<span id="projectnumber">&#160;0.5.0</span>
    </div>
    <div id="projectbrief">A core C library for writing applications related to Endless Online</div>
   </td>
@@ -99,20 +99,20 @@ $(function(){initNavTree('sequencing.html','',''); });
 <div class="line"> </div>
 <div class="line">int32_t start = <a class="code hl_function" href="sequencer_8h.html#aae233fa2f59f2ed3aa487646fe67cca7">eo_sequence_start_from_init</a>(seq1, seq2);</div>
 <div class="line"><a class="code hl_struct" href="structEoSequencer.html">EoSequencer</a> sequencer = <a class="code hl_function" href="sequencer_8h.html#aed8c83e1954f855b4011448c1dc2b909">eo_sequencer_init</a>(start);</div>
-<div class="ttc" id="asequencer_8h_html_aae233fa2f59f2ed3aa487646fe67cca7"><div class="ttname"><a href="sequencer_8h.html#aae233fa2f59f2ed3aa487646fe67cca7">eo_sequence_start_from_init</a></div><div class="ttdeci">int32_t eo_sequence_start_from_init(int32_t s1, int32_t s2)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00064">sequencer.c:64</a></div></div>
-<div class="ttc" id="asequencer_8h_html_aed8c83e1954f855b4011448c1dc2b909"><div class="ttname"><a href="sequencer_8h.html#aed8c83e1954f855b4011448c1dc2b909">eo_sequencer_init</a></div><div class="ttdeci">EoSequencer eo_sequencer_init(int32_t start)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00035">sequencer.c:35</a></div></div>
+<div class="ttc" id="asequencer_8h_html_aae233fa2f59f2ed3aa487646fe67cca7"><div class="ttname"><a href="sequencer_8h.html#aae233fa2f59f2ed3aa487646fe67cca7">eo_sequence_start_from_init</a></div><div class="ttdeci">int32_t eo_sequence_start_from_init(int32_t s1, int32_t s2)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00034">sequencer.c:34</a></div></div>
+<div class="ttc" id="asequencer_8h_html_aed8c83e1954f855b4011448c1dc2b909"><div class="ttname"><a href="sequencer_8h.html#aed8c83e1954f855b4011448c1dc2b909">eo_sequencer_init</a></div><div class="ttdeci">EoSequencer eo_sequencer_init(int32_t start)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00005">sequencer.c:5</a></div></div>
 <div class="ttc" id="astructEoSequencer_html"><div class="ttname"><a href="structEoSequencer.html">EoSequencer</a></div><div class="ttdef"><b>Definition</b> <a href="sequencer_8h_source.html#l00008">sequencer.h:9</a></div></div>
 </div><!-- fragment --><p><b>Re-synchronisation from a server ping packet:</b> </p><div class="fragment"><div class="line">int32_t seq1 = ...; <span class="comment">// from server ping</span></div>
 <div class="line">int32_t seq2 = ...; <span class="comment">// from server ping</span></div>
 <div class="line"> </div>
 <div class="line">int32_t start = <a class="code hl_function" href="sequencer_8h.html#a9add0d05f3f3e482c2cbd7e3c3a39c16">eo_sequence_start_from_ping</a>(seq1, seq2);</div>
 <div class="line">sequencer = <a class="code hl_function" href="sequencer_8h.html#aed8c83e1954f855b4011448c1dc2b909">eo_sequencer_init</a>(start);</div>
-<div class="ttc" id="asequencer_8h_html_a9add0d05f3f3e482c2cbd7e3c3a39c16"><div class="ttname"><a href="sequencer_8h.html#a9add0d05f3f3e482c2cbd7e3c3a39c16">eo_sequence_start_from_ping</a></div><div class="ttdeci">int32_t eo_sequence_start_from_ping(int32_t s1, int32_t s2)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00071">sequencer.c:71</a></div></div>
+<div class="ttc" id="asequencer_8h_html_a9add0d05f3f3e482c2cbd7e3c3a39c16"><div class="ttname"><a href="sequencer_8h.html#a9add0d05f3f3e482c2cbd7e3c3a39c16">eo_sequence_start_from_ping</a></div><div class="ttdeci">int32_t eo_sequence_start_from_ping(int32_t s1, int32_t s2)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00041">sequencer.c:41</a></div></div>
 </div><!-- fragment --><p><b>Stamping outgoing packets:</b> </p><div class="fragment"><div class="line">int32_t seq;</div>
 <div class="line"><a class="code hl_function" href="sequencer_8h.html#a0c49b387ace9ee423a933a31f6338ee9">eo_sequencer_next</a>(&amp;sequencer, &amp;seq);</div>
 <div class="line"><a class="code hl_function" href="data_8h.html#a898581216812b8bac270b53a24077ced">eo_writer_add_char</a>(&amp;writer, seq);  <span class="comment">// written into the packet header</span></div>
 <div class="ttc" id="adata_8h_html_a898581216812b8bac270b53a24077ced"><div class="ttname"><a href="data_8h.html#a898581216812b8bac270b53a24077ced">eo_writer_add_char</a></div><div class="ttdeci">EoResult eo_writer_add_char(EoWriter *writer, int32_t value)</div><div class="ttdef"><b>Definition</b> <a href="data_8c_source.html#l00437">data.c:437</a></div></div>
-<div class="ttc" id="asequencer_8h_html_a0c49b387ace9ee423a933a31f6338ee9"><div class="ttname"><a href="sequencer_8h.html#a0c49b387ace9ee423a933a31f6338ee9">eo_sequencer_next</a></div><div class="ttdeci">EoResult eo_sequencer_next(EoSequencer *sequencer, int32_t *out_value)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00043">sequencer.c:43</a></div></div>
+<div class="ttc" id="asequencer_8h_html_a0c49b387ace9ee423a933a31f6338ee9"><div class="ttname"><a href="sequencer_8h.html#a0c49b387ace9ee423a933a31f6338ee9">eo_sequencer_next</a></div><div class="ttdeci">EoResult eo_sequencer_next(EoSequencer *sequencer, int32_t *out_value)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00013">sequencer.c:13</a></div></div>
 </div><!-- fragment --><p><b>Server-side: generating and encoding a new start:</b> </p><div class="fragment"><div class="line">int32_t start = <a class="code hl_function" href="sequencer_8h.html#a8aab2c6b3885839599e29ee7fd22a9c0">eo_generate_sequence_start</a>();</div>
 <div class="line"> </div>
 <div class="line">uint8_t bytes[2];</div>
@@ -122,8 +122,8 @@ $(function(){initNavTree('sequencing.html','',''); });
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structEoSequencer.html">EoSequencer</a> sequencer = <a class="code hl_function" href="sequencer_8h.html#aed8c83e1954f855b4011448c1dc2b909">eo_sequencer_init</a>(start);</div>
 <div class="ttc" id="aresult_8h_html_a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367"><div class="ttname"><a href="result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52babfc12346be8e3dd7931c40fc846c7367">EO_SUCCESS</a></div><div class="ttdeci">@ EO_SUCCESS</div><div class="ttdef"><b>Definition</b> <a href="result_8h_source.html#l00014">result.h:14</a></div></div>
-<div class="ttc" id="asequencer_8h_html_a8aab2c6b3885839599e29ee7fd22a9c0"><div class="ttname"><a href="sequencer_8h.html#a8aab2c6b3885839599e29ee7fd22a9c0">eo_generate_sequence_start</a></div><div class="ttdeci">int32_t eo_generate_sequence_start(void)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00059">sequencer.c:59</a></div></div>
-<div class="ttc" id="asequencer_8h_html_aa679e5cb997c763b0f47488f506aaf4b"><div class="ttname"><a href="sequencer_8h.html#aa679e5cb997c763b0f47488f506aaf4b">eo_sequence_init_bytes</a></div><div class="ttdeci">EoResult eo_sequence_init_bytes(int32_t start, uint8_t *out_bytes)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00076">sequencer.c:76</a></div></div>
+<div class="ttc" id="asequencer_8h_html_a8aab2c6b3885839599e29ee7fd22a9c0"><div class="ttname"><a href="sequencer_8h.html#a8aab2c6b3885839599e29ee7fd22a9c0">eo_generate_sequence_start</a></div><div class="ttdeci">int32_t eo_generate_sequence_start(void)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00029">sequencer.c:29</a></div></div>
+<div class="ttc" id="asequencer_8h_html_aa679e5cb997c763b0f47488f506aaf4b"><div class="ttname"><a href="sequencer_8h.html#aa679e5cb997c763b0f47488f506aaf4b">eo_sequence_init_bytes</a></div><div class="ttdeci">EoResult eo_sequence_init_bytes(int32_t start, uint8_t *out_bytes)</div><div class="ttdef"><b>Definition</b> <a href="sequencer_8c_source.html#l00046">sequencer.c:46</a></div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
