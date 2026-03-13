@@ -117,6 +117,16 @@ ctest --test-dir build
 cmake --install build
 ```
 
+## WebAssembly (WASM)
+
+A WASM build exists solely to power the
+[interactive demo](https://sorokya.github.io/eolib-c/demo/). It is **not
+intended for use in real projects**.
+
+If you need eolib in a JavaScript/TypeScript project, use
+[eolib-ts](https://github.com/cirras/eolib-ts) instead — it is a proper
+TypeScript implementation of the same protocol.
+
 ## Lua bindings
 
 Native Lua 5.1+/LuaJIT bindings are available. See

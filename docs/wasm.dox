@@ -1,0 +1,17 @@
+/**
+ * @page wasm WebAssembly (WASM)
+ *
+ * A WebAssembly build of eolib-c exists solely to power the
+ * [interactive demo](https://sorokya.github.io/eolib-c/demo/).
+ *
+ * @warning The WASM build is **not intended for use in real projects**. It
+ * has a minimal hand-written JS API surface, no npm package, and no
+ * stability guarantees.
+ *
+ * @section wasm_ts Use in JavaScript / TypeScript projects
+ *
+ * If you need eolib in a JS/TS project, use
+ * [eolib-ts](https://github.com/cirras/eolib-ts) — a proper TypeScript
+ * implementation of the same EO protocol with full type safety, an npm
+ * package, and a stable API.
+ */
