@@ -37,6 +37,8 @@ FILES=(
   vcpkg.json
   docs/getting_started.dox
   docs/getting_started_lua.dox
+  .github/pages-index.html
+  wasm/index.html
 )
 
 for f in "${FILES[@]}"; do

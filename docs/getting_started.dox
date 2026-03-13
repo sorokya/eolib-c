@@ -44,18 +44,18 @@
  *
  * | Platform | Download |
  * |----------|----------|
- * | Linux x86_64 | [eolib-0.4.0-Linux.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Linux.x64.zip) |
- * | Linux ARM64 | [eolib-0.4.0-Linux.arm64.zip](https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Linux.arm64.zip) |
- * | macOS Apple Silicon | [eolib-0.4.0-macOS.arm64.zip](https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-macOS.arm64.zip) |
- * | macOS Intel | [eolib-0.4.0-macOS.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-macOS.x64.zip) |
- * | Windows MSVC x64 | [eolib-0.4.0-Windows.VS2022.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Windows.VS2022.x64.zip) |
- * | Windows MSVC x86 | [eolib-0.4.0-Windows.VS2022.x86.zip](https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Windows.VS2022.x86.zip) |
- * | Windows MinGW x64 | [eolib-0.4.0-Windows.MinGW.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Windows.MinGW.x64.zip) |
- * | Windows MinGW x86 | [eolib-0.4.0-Windows.MinGW.x86.zip](https://github.com/sorokya/eolib-c/releases/download/0.4.0/eolib-0.4.0-Windows.MinGW.x86.zip) |
+ * | Linux x86_64 | [eolib-0.5.0-Linux.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.5.0/eolib-0.5.0-Linux.x64.zip) |
+ * | Linux ARM64 | [eolib-0.5.0-Linux.arm64.zip](https://github.com/sorokya/eolib-c/releases/download/0.5.0/eolib-0.5.0-Linux.arm64.zip) |
+ * | macOS Apple Silicon | [eolib-0.5.0-macOS.arm64.zip](https://github.com/sorokya/eolib-c/releases/download/0.5.0/eolib-0.5.0-macOS.arm64.zip) |
+ * | macOS Intel | [eolib-0.5.0-macOS.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.5.0/eolib-0.5.0-macOS.x64.zip) |
+ * | Windows MSVC x64 | [eolib-0.5.0-Windows.VS2022.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.5.0/eolib-0.5.0-Windows.VS2022.x64.zip) |
+ * | Windows MSVC x86 | [eolib-0.5.0-Windows.VS2022.x86.zip](https://github.com/sorokya/eolib-c/releases/download/0.5.0/eolib-0.5.0-Windows.VS2022.x86.zip) |
+ * | Windows MinGW x64 | [eolib-0.5.0-Windows.MinGW.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.5.0/eolib-0.5.0-Windows.MinGW.x64.zip) |
+ * | Windows MinGW x86 | [eolib-0.5.0-Windows.MinGW.x86.zip](https://github.com/sorokya/eolib-c/releases/download/0.5.0/eolib-0.5.0-Windows.MinGW.x86.zip) |
  *
  * Each archive includes the C library **and** the Lua bindings:
  * @code
- * eolib-0.4.0-{platform}/
+ * eolib-0.5.0-{platform}/
  *   include/
  *     eolib/
  *       eolib.h  ...

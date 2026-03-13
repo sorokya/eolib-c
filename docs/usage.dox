@@ -17,6 +17,8 @@
  * - @ref optional_fields
  * - @ref encryption
  * - @ref sequencing
+ * - @ref rng
+ * - @ref time
  */
 
 /**
