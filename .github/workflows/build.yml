@@ -294,14 +294,6 @@ jobs:
       - name: Package
         run: cpack --config build/CPackConfig.cmake -C ${{ matrix.build_type }} -B build/package
 
-      - name: Package Lua
-        if: matrix.upload == true
-        shell: bash
-        run: |
-          VERSION=$(sed -n 's/.*set(EOLIB_VERSION "\([^"]*\)").*/\1/p' CMakeLists.txt)
-          cmake --install build --config ${{ matrix.build_type }} --component lua_bindings --prefix lua-stage
-          cd lua-stage && cmake -E tar cf "../build/package/eolib-Lua-${VERSION}-${{ matrix.package_platform }}.zip" --format=zip -- .
-
       - name: Upload Packages
         if: matrix.upload == true
         uses: actions/upload-artifact@v7

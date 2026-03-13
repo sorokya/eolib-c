@@ -7,9 +7,9 @@ and LuaJIT.
 
 ### Pre-built releases (recommended)
 
-Download the Lua bindings release for your platform from the
-[releases page](https://github.com/sorokya/eolib-c/releases).
-Packages are named `eolib-{version}-Lua-{platform}.zip`.
+Download `eolib-{version}-{platform}.zip` from the
+[releases page](https://github.com/sorokya/eolib-c/releases) — the main
+archive includes both the C library and the Lua bindings.
 
 **Option 1 — Drop-in (quickest):** Extract the archive into your project
 directory. Lua searches `./` by default so `require("eolib")` will just work.
@@ -18,8 +18,9 @@ directory. Lua searches `./` by default so `require("eolib")` will just work.
 
 ```sh
 # Linux / macOS
-cp libeolib.* eolib.so /usr/local/lib/lua/5.4/
-cp eolib.d.lua         /usr/local/share/lua/5.4/
+cp eolib-{version}-{platform}/lib/lua/5.4/eolib.so      /usr/local/lib/lua/5.4/
+cp eolib-{version}-{platform}/lib/libeolib.*             /usr/local/lib/
+cp eolib-{version}-{platform}/share/lua/5.4/eolib.d.lua /usr/local/share/lua/5.4/
 ```
 
 ### Building from source

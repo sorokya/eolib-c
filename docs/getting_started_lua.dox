@@ -33,19 +33,30 @@
  *
  * @subsection gsl_dropin Option 1 — Pre-built drop-in (recommended)
  *
- * Download the Lua bindings release for your platform from the
- * [releases page](https://github.com/sorokya/eolib-c/releases).
- * Packages are named `eolib-{version}-Lua-{platform}.zip`.
+ * The Lua bindings are included in the main eolib release archives. Download
+ * the one for your platform:
  *
- * Extract the archive into your project directory. Lua searches `./` by default so
- * `require("eolib")` will just work, and lua-language-server will pick up the
- * type definitions automatically.
+ * | Platform | Download |
+ * |----------|----------|
+ * | Linux x86_64 | [eolib-0.3.0-Linux.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Linux.x64.zip) |
+ * | Linux ARM64 | [eolib-0.3.0-Linux.arm64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Linux.arm64.zip) |
+ * | macOS Apple Silicon | [eolib-0.3.0-macOS.arm64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-macOS.arm64.zip) |
+ * | macOS Intel | [eolib-0.3.0-macOS.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-macOS.x64.zip) |
+ * | Windows MSVC x64 | [eolib-0.3.0-Windows.VS2022.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Windows.VS2022.x64.zip) |
+ * | Windows MSVC x86 | [eolib-0.3.0-Windows.VS2022.x86.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Windows.VS2022.x86.zip) |
+ * | Windows MinGW x64 | [eolib-0.3.0-Windows.MinGW.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Windows.MinGW.x64.zip) |
+ * | Windows MinGW x86 | [eolib-0.3.0-Windows.MinGW.x86.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Windows.MinGW.x86.zip) |
  *
- * Or copy them to a system prefix:
+ * **Drop-in (quickest):** Extract the archive into your project directory.
+ * Lua searches `./` by default so `require("eolib")` will just work, and
+ * lua-language-server will pick up the type definitions automatically.
+ *
+ * **Or copy to a system prefix:**
  * @code{.sh}
  * # Linux / macOS
- * cp libeolib.* eolib.so /usr/local/lib/lua/5.4/
- * cp eolib.d.lua         /usr/local/share/lua/5.4/
+ * cp eolib-0.3.0-{platform}/lib/lua/5.4/eolib.so      /usr/local/lib/lua/5.4/
+ * cp eolib-0.3.0-{platform}/lib/libeolib.*             /usr/local/lib/
+ * cp eolib-0.3.0-{platform}/share/lua/5.4/eolib.d.lua /usr/local/share/lua/5.4/
  * @endcode
  *
  * @subsection gsl_install Option 2 — Build and install from source

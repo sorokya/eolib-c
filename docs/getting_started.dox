@@ -42,23 +42,33 @@
  *
  * @subsection gs_prebuilt Option 1 — Pre-built release (recommended)
  *
- * Download the release for your platform from the
- * [releases page](https://github.com/sorokya/eolib-c/releases).
- * Packages are named `eolib-{version}-{platform}.zip`.
+ * | Platform | Download |
+ * |----------|----------|
+ * | Linux x86_64 | [eolib-0.3.0-Linux.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Linux.x64.zip) |
+ * | Linux ARM64 | [eolib-0.3.0-Linux.arm64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Linux.arm64.zip) |
+ * | macOS Apple Silicon | [eolib-0.3.0-macOS.arm64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-macOS.arm64.zip) |
+ * | macOS Intel | [eolib-0.3.0-macOS.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-macOS.x64.zip) |
+ * | Windows MSVC x64 | [eolib-0.3.0-Windows.VS2022.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Windows.VS2022.x64.zip) |
+ * | Windows MSVC x86 | [eolib-0.3.0-Windows.VS2022.x86.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Windows.VS2022.x86.zip) |
+ * | Windows MinGW x64 | [eolib-0.3.0-Windows.MinGW.x64.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Windows.MinGW.x64.zip) |
+ * | Windows MinGW x86 | [eolib-0.3.0-Windows.MinGW.x86.zip](https://github.com/sorokya/eolib-c/releases/download/0.3.0/eolib-0.3.0-Windows.MinGW.x86.zip) |
  *
- * The archive unpacks to:
+ * Each archive includes the C library **and** the Lua bindings:
  * @code
- * eolib-{version}-{platform}/
+ * eolib-0.3.0-{platform}/
  *   include/
  *     eolib/
  *       eolib.h  ...
  *   lib/
  *     cmake/eolib/          (CMake find_package support)
+ *     lua/5.4/eolib.so      (Lua C module)
  *     libeolib.so           (Linux)
  *     libeolib.dylib        (macOS)
  *     eolib.lib             (Windows MSVC import library)
  *     libeolib.dll.a        (Windows MinGW import library)
- *   LICENSE.txt
+ *   share/
+ *     doc/eolib_c/LICENSE.txt
+ *     lua/5.4/eolib.d.lua   (LuaLS type definitions)
  * @endcode
  *
  * **Use directly from the extracted directory (no install needed):**

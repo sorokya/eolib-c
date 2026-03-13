@@ -37,11 +37,12 @@ Utilities:
 
 ## Installation
 
-### Pre-built releases (recommended)
+### Pre-built (recommended)
 
-Download the pre-built release for your platform from the
+Download the release archive for your platform from the
 [releases page](https://github.com/sorokya/eolib-c/releases).
-Packages are named `eolib-{version}-{platform}.zip`.
+Packages are named `eolib-{version}-{platform}.zip` and include both the
+C library and the Lua bindings.
 
 **Option 1 — Use directly from the extracted directory (no install needed):**
 
@@ -57,6 +58,7 @@ target_link_libraries(myapp PRIVATE eolib::eolib)
 # Linux / macOS — copy into /usr/local (or any prefix you prefer)
 cp -r eolib-{version}-{platform}/include/* /usr/local/include/
 cp -r eolib-{version}-{platform}/lib/*     /usr/local/lib/
+cp -r eolib-{version}-{platform}/share/*   /usr/local/share/
 ```
 
 Then `find_package(eolib REQUIRED)` will find it automatically.
@@ -134,9 +136,12 @@ Native Lua 5.1+/LuaJIT bindings are available. See
 
 ### Pre-built (recommended)
 
-Download `eolib-{version}-Lua-{platform}.zip` from the
-[releases page](https://github.com/sorokya/eolib-c/releases) and extract it
-into your project directory. `require("eolib")` will just work.
+Download `eolib-{version}-{platform}.zip` from the
+[releases page](https://github.com/sorokya/eolib-c/releases) — the main
+archive includes both the C library and the Lua bindings.
+
+**Drop-in:** Extract the archive into your project directory.
+`require("eolib")` will just work.
 
 ### Building from source
 
