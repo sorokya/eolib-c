@@ -17,4 +17,10 @@ void eo_srand(uint32_t seed);
  */
 uint32_t eo_rand();
 
+/**
+ * Generate a pseudo-random 32-bit unsigned integer within a specified range [min, max].
+ * The sequence of numbers generated depends on the seed set by eo_srand().
+ */
+uint32_t eo_rand_range(uint32_t min, uint32_t max);
+
 #endif

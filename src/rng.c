@@ -34,3 +34,14 @@ uint32_t eo_rand()
     // return upper 31 bits
     return seed_hi & 0x7FFFFFFF;
 }
+
+uint32_t eo_rand_range(uint32_t min, uint32_t max)
+{
+    if (min > max)
+    {
+        return min;
+    }
+
+    uint32_t range = max - min + 1;
+    return min + (eo_rand() % range);
+}

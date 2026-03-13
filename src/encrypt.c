@@ -1,36 +1,6 @@
 #include "eolib/data.h"
 #include "eolib/encrypt.h"
-
-#if defined(_WIN32)
-#include <windows.h>
-#include <bcrypt.h>
-static uint32_t csprng_uniform(uint32_t upper_bound)
-{
-    uint32_t val;
-    BCryptGenRandom(NULL, (PUCHAR)&val, sizeof(val), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
-    return val % upper_bound;
-}
-#elif defined(__EMSCRIPTEN__)
-#include <stdlib.h>
-static uint32_t csprng_uniform(uint32_t upper_bound)
-{
-    return (uint32_t)rand() % upper_bound;
-}
-#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
-#include <stdlib.h>
-static uint32_t csprng_uniform(uint32_t upper_bound)
-{
-    return arc4random_uniform(upper_bound);
-}
-#else
-#include <sys/random.h>
-static uint32_t csprng_uniform(uint32_t upper_bound)
-{
-    uint32_t val;
-    getrandom(&val, sizeof(val), 0);
-    return val % upper_bound;
-}
-#endif
+#include "eolib/rng.h"
 
 int32_t eo_server_verification_hash(int32_t challenge)
 {
@@ -82,7 +52,7 @@ void eo_swap_multiples(uint8_t *data, size_t length, uint8_t multiple)
 
 uint8_t eo_generate_swap_multiple()
 {
-    return (uint8_t)(csprng_uniform(7) + 6);
+    return (uint8_t)(eo_rand_range(6, 12));
 }
 
 void eo_encrypt_packet(uint8_t *data, size_t length, uint8_t swap_multiple)

@@ -1,36 +1,6 @@
 #include "eolib/sequencer.h"
 #include "eolib/data.h"
-
-#if defined(_WIN32)
-#include <windows.h>
-#include <bcrypt.h>
-static uint32_t csprng_uniform(uint32_t upper_bound)
-{
-    uint32_t val;
-    BCryptGenRandom(NULL, (PUCHAR)&val, sizeof(val), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
-    return val % upper_bound;
-}
-#elif defined(__EMSCRIPTEN__)
-#include <stdlib.h>
-static uint32_t csprng_uniform(uint32_t upper_bound)
-{
-    return (uint32_t)rand() % upper_bound;
-}
-#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
-#include <stdlib.h>
-static uint32_t csprng_uniform(uint32_t upper_bound)
-{
-    return arc4random_uniform(upper_bound);
-}
-#else
-#include <sys/random.h>
-static uint32_t csprng_uniform(uint32_t upper_bound)
-{
-    uint32_t val;
-    getrandom(&val, sizeof(val), 0);
-    return val % upper_bound;
-}
-#endif
+#include "eolib/rng.h"
 
 EoSequencer eo_sequencer_init(int32_t start)
 {
@@ -58,7 +28,7 @@ EoResult eo_sequencer_next(EoSequencer *sequencer, int32_t *out_value)
 
 int32_t eo_generate_sequence_start()
 {
-    return (int32_t)csprng_uniform((uint32_t)(EO_CHAR_MAX - 9));
+    return eo_rand_range(0, EO_CHAR_MAX - 9);
 }
 
 int32_t eo_sequence_start_from_init(int32_t s1, int32_t s2)
@@ -101,7 +71,7 @@ EoResult eo_sequence_init_bytes(int32_t start, uint8_t *out_bytes)
     }
 
     int32_t range = seq1_max - seq1_min + 1;
-    int32_t seq1 = (range > 0) ? (int32_t)(csprng_uniform((uint32_t)range) + (uint32_t)seq1_min) : seq1_min;
+    int32_t seq1 = (range > 0) ? eo_rand_range(seq1_min, seq1_max) : seq1_min;
     int32_t seq2 = start - seq1 * 7 + 13;
 
     if (seq2 < 0 || seq2 > (EO_CHAR_MAX - 1))
@@ -139,7 +109,7 @@ EoResult eo_sequence_ping_bytes(int32_t start, uint8_t *out_bytes)
     }
 
     int32_t range = high - low + 1;
-    int32_t seq1 = (range > 0) ? (int32_t)(csprng_uniform((uint32_t)range) + (uint32_t)low) : low;
+    int32_t seq1 = (range > 0) ? eo_rand_range(low, high) : low;
     int32_t seq2 = seq1 - start;
 
     if (seq2 < 0 || seq2 > (EO_CHAR_MAX - 1))

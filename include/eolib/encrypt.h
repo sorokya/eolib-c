@@ -5,6 +5,20 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include "eolib/rng.h"
+
+/**
+ * Generates a server verification challenge value, which is a random integer used in the EO protocol's
+ * challenge-response authentication process. The client receives this challenge from the server and must compute
+ * the correct response using the `eo_server_verification_hash` function to authenticate itself to the server.
+ * @return The generated server verification challenge value.
+ * @remarks Emulates the behavior of the original game client: eo_rand() % 1000000
+ */
+static inline int32_t eo_generate_server_verification_challenge()
+{
+    return eo_rand() % (int32_t)1000000;
+}
+
 /**
  * Calculates the server verification hash for the given challenge value.
  * @param challenge The server challenge value (from ServerInitInitServerPacket).
