@@ -89,6 +89,9 @@ set_target_properties(eolib PROPERTIES OUTPUT_NAME "eolib")
 if(WIN32)
 	set_target_properties(eolib PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON PREFIX "lib")
 endif()
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+	target_link_options(eolib PRIVATE -static-libgcc)
+endif()
 
 install(TARGETS eolib
 	EXPORT eolibTargets
