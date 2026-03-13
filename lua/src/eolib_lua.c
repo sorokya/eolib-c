@@ -9,6 +9,8 @@ int luaopen_eolib(lua_State *L)
 
     lua_data_register(L, module_idx);
     lua_encrypt_register(L, module_idx);
+    lua_rng_register(L, module_idx);
+    lua_time_register(L, module_idx);
     lua_sequencer_register(L, module_idx);
     lua_protocol_register(L, module_idx);
 

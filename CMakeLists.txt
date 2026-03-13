@@ -89,7 +89,6 @@ add_dependencies(eolib generate_protocol)
 set_target_properties(eolib PROPERTIES OUTPUT_NAME "eolib")
 if(WIN32)
 	set_target_properties(eolib PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON PREFIX "lib")
-	target_link_libraries(eolib PRIVATE bcrypt)
 endif()
 
 install(TARGETS eolib
@@ -195,6 +194,43 @@ set(EOLIB_SEQUENCER_TESTS
 )
 foreach(test_name IN LISTS EOLIB_SEQUENCER_TESTS)
 	add_test(NAME eolib_sequencer_tests.${test_name} COMMAND eolib_sequencer_tests ${test_name})
+endforeach()
+
+add_executable(eolib_rng_tests
+	tests/rng_tests.c
+	tests/test_utils.c
+)
+target_include_directories(eolib_rng_tests PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/tests
+)
+target_link_libraries(eolib_rng_tests PRIVATE eolib)
+set(EOLIB_RNG_TESTS
+	eo_rand_deterministic
+	eo_rand_known_sequence
+	eo_rand_range_bounds
+	eo_rand_range_single_value
+	eo_rand_range_inverted
+)
+foreach(test_name IN LISTS EOLIB_RNG_TESTS)
+	add_test(NAME eolib_rng_tests.${test_name} COMMAND eolib_rng_tests ${test_name})
+endforeach()
+
+add_executable(eolib_time_tests
+	tests/time_tests.c
+	tests/test_utils.c
+)
+target_include_directories(eolib_time_tests PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/tests
+)
+target_link_libraries(eolib_time_tests PRIVATE eolib)
+set(EOLIB_TIME_TESTS
+	eo_time_valid_range
+	eo_time_monotonic
+)
+foreach(test_name IN LISTS EOLIB_TIME_TESTS)
+	add_test(NAME eolib_time_tests.${test_name} COMMAND eolib_time_tests ${test_name})
 endforeach()
 
 set_source_files_properties(${EOLIB_PACKET_TESTS_C} PROPERTIES GENERATED TRUE)

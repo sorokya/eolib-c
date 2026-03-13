@@ -13,6 +13,8 @@
 #include "../include/eolib/data.h"
 #include "../include/eolib/encrypt.h"
 #include "../include/eolib/sequencer.h"
+#include "../include/eolib/rng.h"
+#include "../include/eolib/time.h"
 
 /* Static 4-byte output buffer for eo_encode_number. */
 static uint8_t g_encode_number_buf[4];
@@ -124,6 +126,51 @@ void wasm_decode_string(uint8_t *buf, int length)
 
 /* Static output buffer for wasm_string_to_windows_1252. */
 static char g_cp1252_buf[4096];
+
+/**
+ * Seed the RNG with the given 32-bit value.
+ * Call this before using wasm_rand() or wasm_rand_range().
+ * Seeding with wasm_time() reproduces the original client's initialization sequence.
+ */
+void wasm_srand(uint32_t seed)
+{
+    eo_srand(seed);
+}
+
+/**
+ * Generate a pseudo-random 31-bit unsigned integer using the current RNG state.
+ */
+uint32_t wasm_rand(void)
+{
+    return eo_rand();
+}
+
+/**
+ * Generate a pseudo-random integer in the inclusive range [min, max].
+ */
+uint32_t wasm_rand_range(uint32_t min, uint32_t max)
+{
+    return eo_rand_range(min, max);
+}
+
+/**
+ * Return the current time as a Borland-compatible 32-bit seconds value.
+ * This is the same value the original EO client used to seed its RNG:
+ *   wasm_srand(wasm_time()) replicates the client's startup seed.
+ */
+uint32_t wasm_time(void)
+{
+    return eo_time();
+}
+
+/**
+ * Generate a server verification challenge value using the current RNG state.
+ * Equivalent to eo_rand() % 1000000.
+ */
+int32_t wasm_generate_server_verification_challenge(void)
+{
+    return eo_generate_server_verification_challenge();
+}
 
 /**
  * Convert a UTF-8 string to Windows-1252.

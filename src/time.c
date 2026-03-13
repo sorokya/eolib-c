@@ -10,7 +10,7 @@ uint32_t eo_time()
     localtime_r(&now, &local);
 #endif
 
-    // years since 1900
+    // tm_year is years since 1900 (standard C), used directly in the Borland formula
     int year = local.tm_year;
     int month = local.tm_mon;
     int day = local.tm_mday - 1;

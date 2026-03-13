@@ -40,6 +40,7 @@ EXPORTED_FUNCTIONS='[
   "_wasm_encode_number_buf",
   "_wasm_decode_number_bytes",
   "_wasm_server_verification_hash",
+  "_wasm_generate_server_verification_challenge",
   "_wasm_generate_swap_multiple",
   "_wasm_generate_sequence_start",
   "_wasm_sequence_start_from_init",
@@ -50,13 +51,19 @@ EXPORTED_FUNCTIONS='[
   "_wasm_decode_string",
   "_wasm_string_to_windows_1252",
   "_wasm_packet_roundtrip",
-  "_wasm_get_roundtrip_len"
+  "_wasm_get_roundtrip_len",
+  "_wasm_srand",
+  "_wasm_rand",
+  "_wasm_rand_range",
+  "_wasm_time"
 ]'
 
 emcc \
     "$REPO_ROOT/src/data.c" \
     "$REPO_ROOT/src/encrypt.c" \
     "$REPO_ROOT/src/sequencer.c" \
+    "$REPO_ROOT/src/rng.c" \
+    "$REPO_ROOT/src/time.c" \
     "$REPO_ROOT/src/protocol.c" \
     "$SCRIPT_DIR/wasm_api.c" \
     "$SCRIPT_DIR/wasm_protocol_dispatch.c" \

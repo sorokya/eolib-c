@@ -30,6 +30,8 @@ static inline void eolib_setmetatable(lua_State *L, const char *name)
 /* Sub-module registration functions */
 void lua_data_register(lua_State *L, int module_idx);
 void lua_encrypt_register(lua_State *L, int module_idx);
+void lua_rng_register(lua_State *L, int module_idx);
+void lua_time_register(lua_State *L, int module_idx);
 void lua_sequencer_register(lua_State *L, int module_idx);
 void lua_protocol_register(lua_State *L, int module_idx);
 

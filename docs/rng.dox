@@ -1,0 +1,75 @@
+/**
+ * @page rng RNG (Random Number Generator)
+ *
+ * @section rng_overview Overview
+ *
+ * The **eolib-c** RNG module (`eolib/rng.h`) faithfully emulates the pseudo-random
+ * number generator used by the original 32-bit Borland EO game client.
+ *
+ * It is a **dual-state linear congruential generator** with two 32-bit state
+ * variables (`current_seed` and `state_high`) that together give it an effective
+ * period of approximately 2⁶², far longer than a classic single-register LCG.
+ *
+ * @section rng_seeding Seeding
+ *
+ * Call @ref eo_srand before using the generator:
+ *
+ * @code{.c}
+ * eo_srand(my_seed);
+ * @endcode
+ *
+ * Internally, the seed is scrambled with the multiplier **22695477** before
+ * initialising `current_seed`, and `state_high` is reset to zero.
+ *
+ * @subsection rng_client_seed Reproducing the original client behaviour
+ *
+ * The original EO client seeded the RNG at startup using its own Borland-specific
+ * `time()` call — a 32-bit value derived from **local system time** using the
+ * Borland runtime algorithm (approximately `time(NULL) + local_timezone_offset + 18000`).
+ * A plain `time(NULL)` call would give incorrect seeds on machines not running
+ * at UTC.  To reproduce this behaviour exactly, seed the RNG with @ref eo_time :
+ *
+ * @code{.c}
+ * #include "eolib/time.h"
+ * #include "eolib/rng.h"
+ *
+ * eo_srand(eo_time());   // mirrors the original client startup seed
+ * @endcode
+ *
+ * If you pass the same seed on two different runs you will get an **identical**
+ * sequence of random numbers, which is useful for deterministic replay or testing.
+ *
+ * @section rng_algorithm Algorithm
+ *
+ * Each call to @ref eo_rand performs the following steps:
+ *
+ * 1. Compute contributions from the current high-state word and low-state word:
+ *    @code
+ *    temp_state_product = state_high ? state_high * 20021 : 0
+ *    temp_seed_product  = current_seed * 346
+ *    @endcode
+ * 2. Multiply `current_seed` by **20021** using 64-bit arithmetic to capture carry:
+ *    @code
+ *    full_product = (uint64_t)current_seed * 20021
+ *    @endcode
+ * 3. Add the previous contributions to the high 32 bits of the product:
+ *    @code
+ *    seed_hi += temp_state_product + temp_seed_product
+ *    @endcode
+ * 4. Increment the low word and update state:
+ *    @code
+ *    current_seed = (uint32_t)full_product + 1
+ *    state_high   = seed_hi
+ *    @endcode
+ * 5. Return the upper 31 bits: `state_high & 0x7FFFFFFF`
+ *
+ * The output is always a **positive 31-bit integer** in `[0, 2147483647]`.
+ *
+ * @section rng_api API
+ *
+ * | Function | Description |
+ * |---|---|
+ * | @ref eo_srand | Seed the generator |
+ * | @ref eo_rand | Generate the next pseudo-random 31-bit value |
+ * | @ref eo_rand_range | Generate a value in the inclusive range `[min, max]` |
+ */

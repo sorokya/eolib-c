@@ -221,6 +221,7 @@
         <li role="tab"><a href="#tab-strings">String Codec</a></li>
         <li role="tab"><a href="#tab-encrypt">Encryption</a></li>
         <li role="tab"><a href="#tab-sequencer">Sequencer</a></li>
+        <li role="tab"><a href="#tab-rng">RNG</a></li>
         <li role="tab"><a href="#tab-packets">Packets</a></li>
       </menu>
 
@@ -394,7 +395,8 @@
               <div class="field-row">
                 <label for="hash-challenge">Challenge value</label>
                 <input id="hash-challenge" type="number" value="42" style="width:100px" />
-                <button onclick="doHash()" style="margin-left:8px">Compute</button>
+                <button onclick="doGenChallenge()" style="margin-left:4px">Generate</button>
+                <button onclick="doHash()" style="margin-left:8px">Compute hash</button>
               </div>
               <p class="result-label">Hash result</p>
               <div class="result" id="hash-result">—</div>
@@ -459,7 +461,66 @@
           </article>
 
           <!-- ══════════════════════════════════════════════════
-             TAB 5: PACKETS
+             TAB 5: RNG
+        ══════════════════════════════════════════════════ -->
+          <article role="tabpanel" id="tab-rng" class="tab-panel">
+            <fieldset>
+              <legend>Time (Borland-compatible seed)</legend>
+              <p style="margin-bottom:6px">
+                Returns a 32-bit value computed from local system time using the
+                same algorithm as the Borland runtime. The result is
+                timezone-dependent (≈ time(NULL) + timezone_offset + 18000),
+                which is why a custom implementation is needed to reproduce the
+                original client's RNG seeds.
+              </p>
+              <div class="field-row">
+                <button onclick="doTime()">Get eo_time()</button>
+              </div>
+              <p class="result-label">Result</p>
+              <div class="result" id="rng-time-result">—</div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Seed RNG (srand)</legend>
+              <p style="margin-bottom:6px">
+                Seed the RNG. Use the same seed to reproduce a deterministic sequence.
+                Seeding with <code>eo_time()</code> replicates the original client behaviour.
+              </p>
+              <div class="field-row">
+                <label for="rng-seed">Seed</label>
+                <input id="rng-seed" type="number" min="0" style="width:120px" value="0" />
+                <button onclick="doSeedFromTime()" style="margin-left:4px">Use eo_time()</button>
+                <button onclick="doSrand()" style="margin-left:8px">Seed RNG</button>
+              </div>
+              <p class="result-label">Status</p>
+              <div class="result" id="rng-srand-result">—</div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Generate Random Number</legend>
+              <div class="field-row">
+                <button onclick="doRand()">rand()</button>
+              </div>
+              <p class="result-label">Result</p>
+              <div class="result" id="rng-rand-result">—</div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Generate Random Number in Range</legend>
+              <div class="field-row">
+                <label for="rng-min">Min</label>
+                <input id="rng-min" type="number" value="1" style="width:80px" />
+                <label for="rng-max" style="margin-left:8px">Max</label>
+                <input id="rng-max" type="number" value="100" style="width:80px" />
+                <button onclick="doRandRange()" style="margin-left:8px">rand_range()</button>
+              </div>
+              <p class="result-label">Result</p>
+              <div class="result" id="rng-range-result">—</div>
+            </fieldset>
+          </article>
+
+          <!-- ══════════════════════════════════════════════════
+             TAB 6: PACKETS
         ══════════════════════════════════════════════════ -->
           <article role="tabpanel" id="tab-packets" class="tab-panel">
             <div class="pkt-layout">
@@ -554,6 +615,11 @@
       api.packet_roundtrip = M.cwrap('wasm_packet_roundtrip', 'number',
         ['number', 'number', 'number', 'number', 'number']);
       api.get_roundtrip_len = M.cwrap('wasm_get_roundtrip_len', 'number', []);
+      api.srand = M.cwrap('wasm_srand', null, ['number']);
+      api.rand = M.cwrap('wasm_rand', 'number', []);
+      api.rand_range = M.cwrap('wasm_rand_range', 'number', ['number', 'number']);
+      api.eo_time = M.cwrap('wasm_time', 'number', []);
+      api.gen_challenge = M.cwrap('wasm_generate_server_verification_challenge', 'number', []);
 
       document.getElementById('loadingOverlay').classList.add('hidden');
       document.getElementById('wasmStatusText').textContent = 'WASM ready';
@@ -800,6 +866,12 @@
       setResult('hash-result', `${hash}  (0x${(hash >>> 0).toString(16).toUpperCase()})`);
     }
 
+    function doGenChallenge() {
+      if (!M) return;
+      const challenge = api.gen_challenge();
+      document.getElementById('hash-challenge').value = challenge;
+    }
+
     // ─────────────────────────────────────────────────────────────────────────────
     // Sequencer
     // ─────────────────────────────────────────────────────────────────────────────
@@ -858,8 +930,46 @@
         .join(' ') || '(empty)';
     }
 
+    // ─────────────────────────────────────────────────────────────────────────────
+    // RNG
+    // ─────────────────────────────────────────────────────────────────────────────
+    function doTime() {
+      if (!M) return;
+      const t = api.eo_time() >>> 0;
+      setResult('rng-time-result', `${t}  (0x${t.toString(16).toUpperCase()})`);
+    }
+
+    function doSeedFromTime() {
+      if (!M) return;
+      const t = api.eo_time() >>> 0;
+      document.getElementById('rng-seed').value = t;
+    }
+
+    function doSrand() {
+      if (!M) return;
+      const seed = parseInt(document.getElementById('rng-seed').value, 10);
+      if (isNaN(seed) || seed < 0) { setResult('rng-srand-result', 'Enter a non-negative integer.', false); return; }
+      api.srand(seed >>> 0);
+      setResult('rng-srand-result', `RNG seeded with ${seed >>> 0}`);
+    }
+
+    function doRand() {
+      if (!M) return;
+      const v = api.rand() >>> 0;
+      setResult('rng-rand-result', `${v}  (0x${v.toString(16).toUpperCase()})`);
+    }
+
+    function doRandRange() {
+      if (!M) return;
+      const min = parseInt(document.getElementById('rng-min').value, 10);
+      const max = parseInt(document.getElementById('rng-max').value, 10);
+      if (isNaN(min) || isNaN(max)) { setResult('rng-range-result', 'Enter valid min and max values.', false); return; }
+      if (min > max) { setResult('rng-range-result', 'min must be \u2264 max.', false); return; }
+      const v = api.rand_range(min >>> 0, max >>> 0) >>> 0;
+      setResult('rng-range-result', `${v}`);
+    }
+
     function populatePacketList() {
-      if (typeof PACKETS === 'undefined') return;
       const sel = document.getElementById('pkt-list');
       sel.innerHTML = '';
 

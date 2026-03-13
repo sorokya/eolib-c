@@ -34,6 +34,15 @@ void expect_equal_int32(const char *name, int32_t actual, int32_t expected)
     }
 }
 
+void expect_equal_uint32(const char *name, uint32_t actual, uint32_t expected)
+{
+    if (actual != expected)
+    {
+        fprintf(stderr, "%s failed: actual=%u, expected=%u\n", name, actual, expected);
+        test_failures++;
+    }
+}
+
 void expect_equal_int(const char *name, int actual, int expected)
 {
     if (actual != expected)

@@ -18,6 +18,7 @@ typedef struct
 
 void expect_equal_bytes(const char *name, const uint8_t *actual, const uint8_t *expected, size_t length);
 void expect_equal_int32(const char *name, int32_t actual, int32_t expected);
+void expect_equal_uint32(const char *name, uint32_t actual, uint32_t expected);
 void expect_equal_int(const char *name, int actual, int expected);
 void expect_equal_size(const char *name, size_t actual, size_t expected);
 void expect_equal_str(const char *name, const char *actual, const char *expected);

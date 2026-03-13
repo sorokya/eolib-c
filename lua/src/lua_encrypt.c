@@ -27,6 +27,12 @@ static int lua_swap_multiples(lua_State *L)
     return 1;
 }
 
+static int lua_generate_server_verification_challenge(lua_State *L)
+{
+    lua_pushinteger(L, (lua_Integer)eo_generate_server_verification_challenge());
+    return 1;
+}
+
 static int lua_generate_swap_multiple(lua_State *L)
 {
     lua_pushinteger(L, (lua_Integer)eo_generate_swap_multiple());
@@ -69,6 +75,9 @@ void lua_encrypt_register(lua_State *L, int module_idx)
 {
     lua_pushcfunction(L, lua_server_verification_hash);
     lua_setfield(L, module_idx, "server_verification_hash");
+
+    lua_pushcfunction(L, lua_generate_server_verification_challenge);
+    lua_setfield(L, module_idx, "generate_server_verification_challenge");
 
     lua_pushcfunction(L, lua_swap_multiples);
     lua_setfield(L, module_idx, "swap_multiples");
