@@ -120,6 +120,22 @@
  * | eo_reader_get_short() | 2 | ::EO_SHORT_MAX |
  * | eo_reader_get_three() | 3 | ::EO_THREE_MAX |
  * | eo_reader_get_int() | 4 | ::EO_INT_MAX |
+ *
+ * **Negative numbers:**
+ *
+ * EO number encoding is not sign-aware. `eo_reader_get_int()` decodes the four
+ * EO bytes into a 32-bit bit pattern and returns it as `int32_t`.
+ *
+ * For values in the range `[0, INT32_MAX]`, this behaves like an ordinary
+ * positive integer read. When the decoded 32-bit pattern is at least `2^31`,
+ * the returned `int32_t` becomes negative on typical two's-complement systems.
+ *
+ * For example, the EO bytes `A8 B5 9A 85` decode to the bit pattern
+ * `2147483648`, which is returned as `INT32_MIN`.
+ *
+ * Only 4-byte EO ints can produce negative results this way. `eo_reader_get_char()`,
+ * `eo_reader_get_short()`, and `eo_reader_get_three()` always return non-negative
+ * values because their decoded ranges never reach the sign bit.
  */
 
 /**
@@ -171,6 +187,22 @@
  * | eo_writer_add_short() | 2 | ::EO_SHORT_MAX |
  * | eo_writer_add_three() | 3 | ::EO_THREE_MAX |
  * | eo_writer_add_int() | 4 | ::EO_INT_MAX |
+ *
+ * **Negative numbers:**
+ *
+ * Only `eo_writer_add_int()` supports negative `int32_t` values.
+ * `eo_writer_add_char()`, `eo_writer_add_short()`, and `eo_writer_add_three()`
+ * accept only non-negative values in their documented ranges.
+ *
+ * Negative 4-byte EO ints are encoded from the value's 32-bit bit pattern.
+ * Because EO's 4-byte range stops at `::EO_INT_MAX` (`4097152081`), not every
+ * negative `int32_t` is representable. The valid negative range is
+ * `[INT32_MIN, -197815216]`.
+ *
+ * In particular:
+ * - `INT32_MIN` encodes to `A8 B5 9A 85`
+ * - `-197815216` encodes to `FD FD FD FD`
+ * - values in `[-197815215, -1]` are rejected with ::EO_INVALID_INT
  *
  * **Pre-allocating with `eo_get_size()`:**
  *
