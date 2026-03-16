@@ -1318,7 +1318,7 @@ const PACKETS = [
     "direction": 1,
     "familyId": 22,
     "actionId": 5,
-    "expected": "Av92dWx0LXL/WAK//hn+Gf4DAiAgIAYCCAIDC/4L/gv+C/4B/gH+Af4B/hb+Af4B/gH+I/4BAQH/",
+    "expected": "Av92dWx0LXL/WAK//hn+Gf4DAiAgIAYCCAIDC/4L/gv+C/4B/gH+Af4B/hb+Af4B/gH+I/4BAQH//w==",
     "properties": [ { "type": "protocol\/net\/server::NearbyInfo", "name": "nearby", "children": [ { "type": "[]protocol\/net\/server::CharacterMapInfo", "name": "characters", "children": [ { "type": "protocol\/net\/server::CharacterMapInfo", "children": [ { "type": "string", "name": "name", "value": "vult-r" }, { "type": "int", "name": "player_id", "value": 340 }, { "type": "int", "name": "map_id", "value": 190 }, { "type": "protocol\/net\/server::BigCoords", "name": "coords", "children": [ { "type": "int", "name": "x", "value": 24 }, { "type": "int", "name": "y", "value": 24 } ] }, { "type": "protocol::Direction", "name": "direction", "value": 2 }, { "type": "int", "name": "class_id", "value": 1 }, { "type": "string", "name": "guild_tag", "value": "   " }, { "type": "int", "name": "level", "value": 5 }, { "type": "protocol::Gender", "name": "gender", "value": 1 }, { "type": "int", "name": "hair_style", "value": 7 }, { "type": "int", "name": "hair_color", "value": 1 }, { "type": "int", "name": "skin", "value": 2 }, { "type": "int", "name": "max_hp", "value": 10 }, { "type": "int", "name": "hp", "value": 10 }, { "type": "int", "name": "max_tp", "value": 10 }, { "type": "int", "name": "tp", "value": 10 }, { "type": "protocol\/net\/server::EquipmentMapInfo", "name": "equipment", "children": [ { "type": "int", "name": "boots", "value": 0 }, { "type": "int", "name": "armor", "value": 21 }, { "type": "int", "name": "hat", "value": 0 }, { "type": "int", "name": "shield", "value": 0 }, { "type": "int", "name": "weapon", "value": 34 } ] }, { "type": "protocol\/net\/server::SitState", "name": "sit_state", "value": 0 }, { "type": "bool", "name": "invisible", "value": false }, { "type": "protocol\/net\/server::WarpEffect", "name": "warp_effect", "value": 0, "optional": true } ] } ] }, { "type": "[]protocol\/net\/server::NpcMapInfo", "name": "npcs" }, { "type": "[]protocol\/net\/server::ItemMapInfo", "name": "items" } ] } ]
   },
   {
@@ -1380,6 +1380,18 @@ const PACKETS = [
     "actionId": 3,
     "expected": "BA==",
     "properties": [ { "type": "int", "name": "questions_wrong", "value": 3 } ]
+  },
+  {
+    "id": "server_RangeReply_Npc",
+    "capture": "RangeReply_Npc",
+    "comment": "Reply to request for information about nearby players and NPCs",
+    "family": "Range",
+    "action": "Reply",
+    "direction": 1,
+    "familyId": 29,
+    "actionId": 3,
+    "expected": "Af8WCP4GGwH/",
+    "properties": [ { "type": "protocol\/net\/server::NearbyInfo", "name": "nearby", "children": [ { "type": "[]protocol\/net\/server::CharacterMapInfo", "name": "characters" }, { "type": "[]protocol\/net\/server::NpcMapInfo", "name": "npcs", "children": [ { "type": "protocol\/net\/server::NpcMapInfo", "children": [ { "type": "int", "name": "index", "value": 21 }, { "type": "int", "name": "id", "value": 7 }, { "type": "protocol::Coords", "name": "coords", "children": [ { "type": "int", "name": "x", "value": 5 }, { "type": "int", "name": "y", "value": 26 } ] }, { "type": "protocol::Direction", "name": "direction", "value": 0 } ] } ] }, { "type": "[]protocol\/net\/server::ItemMapInfo", "name": "items" } ] } ]
   },
   {
     "id": "server_LoginReply_ReplyCodeDataOk",
@@ -1572,18 +1584,6 @@ const PACKETS = [
     "actionId": 3,
     "expected": "Bv5OTw==",
     "properties": [ { "type": "protocol\/net\/server::LoginReply", "name": "reply_code", "value": 5 }, { "type": "protocol\/net\/server::LoginReplyReplyCodeDataLoggedIn", "name": "reply_code_data" } ]
-  },
-  {
-    "id": "server_RangeReply",
-    "capture": "RangeReply",
-    "comment": "Reply to request for information about nearby players and NPCs",
-    "family": "Range",
-    "action": "Reply",
-    "direction": 1,
-    "familyId": 29,
-    "actionId": 3,
-    "expected": "Af8WCP4GGwE=",
-    "properties": [ { "type": "protocol\/net\/server::NearbyInfo", "name": "nearby", "children": [ { "type": "[]protocol\/net\/server::CharacterMapInfo", "name": "characters" }, { "type": "[]protocol\/net\/server::NpcMapInfo", "name": "npcs", "children": [ { "type": "protocol\/net\/server::NpcMapInfo", "children": [ { "type": "int", "name": "index", "value": 21 }, { "type": "int", "name": "id", "value": 7 }, { "type": "protocol::Coords", "name": "coords", "children": [ { "type": "int", "name": "x", "value": 5 }, { "type": "int", "name": "y", "value": 26 } ] }, { "type": "protocol::Direction", "name": "direction", "value": 0 } ] } ] }, { "type": "[]protocol\/net\/server::ItemMapInfo", "name": "items" } ] } ]
   },
   {
     "id": "server_PartyTargetGroup",
@@ -2366,6 +2366,18 @@ const PACKETS = [
     "properties": [ { "type": "protocol\/net\/server::WarpType", "name": "warp_type", "value": 2 }, { "type": "int", "name": "map_id", "value": 190 }, { "type": "protocol\/net\/server::WarpRequestWarpTypeDataMapSwitch", "name": "warp_type_data", "children": [ { "type": "[]int", "name": "map_rid", "children": [ { "value": 4549 }, { "value": 44604 } ] }, { "type": "int", "name": "map_file_size", "value": 6613 } ] }, { "type": "int", "name": "session_id", "value": 19516 } ]
   },
   {
+    "id": "server_RangeReply_Character",
+    "capture": "RangeReply_Character",
+    "comment": "Reply to request for information about nearby players and NPCs",
+    "family": "Range",
+    "action": "Reply",
+    "direction": 1,
+    "familyId": 29,
+    "actionId": 3,
+    "expected": "Av92dWx0LXL/WAK//hn+Gf4DAiAgIAYCCAIDC/4L/gv+C/4B/gH+Af4B/hb+Af4B/gH+I/4BAQH//w==",
+    "properties": [ { "type": "protocol\/net\/server::NearbyInfo", "name": "nearby", "children": [ { "type": "[]protocol\/net\/server::CharacterMapInfo", "name": "characters", "children": [ { "type": "protocol\/net\/server::CharacterMapInfo", "children": [ { "type": "string", "name": "name", "value": "vult-r" }, { "type": "int", "name": "player_id", "value": 340 }, { "type": "int", "name": "map_id", "value": 190 }, { "type": "protocol\/net\/server::BigCoords", "name": "coords", "children": [ { "type": "int", "name": "x", "value": 24 }, { "type": "int", "name": "y", "value": 24 } ] }, { "type": "protocol::Direction", "name": "direction", "value": 2 }, { "type": "int", "name": "class_id", "value": 1 }, { "type": "string", "name": "guild_tag", "value": "   " }, { "type": "int", "name": "level", "value": 5 }, { "type": "protocol::Gender", "name": "gender", "value": 1 }, { "type": "int", "name": "hair_style", "value": 7 }, { "type": "int", "name": "hair_color", "value": 1 }, { "type": "int", "name": "skin", "value": 2 }, { "type": "int", "name": "max_hp", "value": 10 }, { "type": "int", "name": "hp", "value": 10 }, { "type": "int", "name": "max_tp", "value": 10 }, { "type": "int", "name": "tp", "value": 10 }, { "type": "protocol\/net\/server::EquipmentMapInfo", "name": "equipment", "children": [ { "type": "int", "name": "boots", "value": 0 }, { "type": "int", "name": "armor", "value": 21 }, { "type": "int", "name": "hat", "value": 0 }, { "type": "int", "name": "shield", "value": 0 }, { "type": "int", "name": "weapon", "value": 34 } ] }, { "type": "protocol\/net\/server::SitState", "name": "sit_state", "value": 0 }, { "type": "bool", "name": "invisible", "value": false }, { "type": "protocol\/net\/server::WarpEffect", "name": "warp_effect", "value": 0, "optional": true } ] } ] }, { "type": "[]protocol\/net\/server::NpcMapInfo", "name": "npcs" }, { "type": "[]protocol\/net\/server::ItemMapInfo", "name": "items" } ] } ]
+  },
+  {
     "id": "server_AttackPlayer",
     "capture": "AttackPlayer",
     "comment": "Nearby player attacking",
@@ -2532,6 +2544,18 @@ const PACKETS = [
     "actionId": 16,
     "expected": "OAIBLP4B/gH+FhoB/v7+Av7+B/7+/g==",
     "properties": [ { "type": "protocol\/net\/server::NpcKilledData", "name": "npc_killed_data", "children": [ { "type": "int", "name": "killer_id", "value": 308 }, { "type": "protocol::Direction", "name": "killer_direction", "value": 0 }, { "type": "int", "name": "npc_index", "value": 43 }, { "type": "int", "name": "drop_index", "value": 0 }, { "type": "int", "name": "drop_id", "value": 0 }, { "type": "protocol::Coords", "name": "drop_coords", "children": [ { "type": "int", "name": "x", "value": 21 }, { "type": "int", "name": "y", "value": 25 } ] }, { "type": "int", "name": "drop_amount", "value": 0 }, { "type": "int", "name": "damage", "value": 1 } ] }, { "type": "int", "name": "experience", "value": 6, "optional": true } ]
+  },
+  {
+    "id": "server_RangeReply_Both",
+    "capture": "RangeReply_Both",
+    "comment": "Reply to request for information about nearby players and NPCs",
+    "family": "Range",
+    "action": "Reply",
+    "direction": 1,
+    "familyId": 29,
+    "actionId": 3,
+    "expected": "Av92dWx0LXL/WAK//hn+Gf4DAiAgIAYCCAIDC/4L/gv+C/4B/gH+Af4B/hb+Af4B/gH+I/4BAQH/Fgj+BhsB/w==",
+    "properties": [ { "type": "protocol\/net\/server::NearbyInfo", "name": "nearby", "children": [ { "type": "[]protocol\/net\/server::CharacterMapInfo", "name": "characters", "children": [ { "type": "protocol\/net\/server::CharacterMapInfo", "children": [ { "type": "string", "name": "name", "value": "vult-r" }, { "type": "int", "name": "player_id", "value": 340 }, { "type": "int", "name": "map_id", "value": 190 }, { "type": "protocol\/net\/server::BigCoords", "name": "coords", "children": [ { "type": "int", "name": "x", "value": 24 }, { "type": "int", "name": "y", "value": 24 } ] }, { "type": "protocol::Direction", "name": "direction", "value": 2 }, { "type": "int", "name": "class_id", "value": 1 }, { "type": "string", "name": "guild_tag", "value": "   " }, { "type": "int", "name": "level", "value": 5 }, { "type": "protocol::Gender", "name": "gender", "value": 1 }, { "type": "int", "name": "hair_style", "value": 7 }, { "type": "int", "name": "hair_color", "value": 1 }, { "type": "int", "name": "skin", "value": 2 }, { "type": "int", "name": "max_hp", "value": 10 }, { "type": "int", "name": "hp", "value": 10 }, { "type": "int", "name": "max_tp", "value": 10 }, { "type": "int", "name": "tp", "value": 10 }, { "type": "protocol\/net\/server::EquipmentMapInfo", "name": "equipment", "children": [ { "type": "int", "name": "boots", "value": 0 }, { "type": "int", "name": "armor", "value": 21 }, { "type": "int", "name": "hat", "value": 0 }, { "type": "int", "name": "shield", "value": 0 }, { "type": "int", "name": "weapon", "value": 34 } ] }, { "type": "protocol\/net\/server::SitState", "name": "sit_state", "value": 0 }, { "type": "bool", "name": "invisible", "value": false }, { "type": "protocol\/net\/server::WarpEffect", "name": "warp_effect", "value": 0, "optional": true } ] } ] }, { "type": "[]protocol\/net\/server::NpcMapInfo", "name": "npcs", "children": [ { "type": "protocol\/net\/server::NpcMapInfo", "children": [ { "type": "int", "name": "index", "value": 21 }, { "type": "int", "name": "id", "value": 7 }, { "type": "protocol::Coords", "name": "coords", "children": [ { "type": "int", "name": "x", "value": 5 }, { "type": "int", "name": "y", "value": 26 } ] }, { "type": "protocol::Direction", "name": "direction", "value": 0 } ] } ] }, { "type": "[]protocol\/net\/server::ItemMapInfo", "name": "items" } ] } ]
   },
   {
     "id": "server_WalkPlayer",
