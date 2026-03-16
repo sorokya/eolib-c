@@ -1,5 +1,9 @@
 var NAVTREEINDEX24 =
 {
+"structInitInitServerPacket.html#a0d69ff9b6d0fef24dbee520f75d75c9c":[12,0,171,18],
+"structInitInitServerPacket.html#a0fd7130e80dee4ed6bdb1da63163ebc6":[12,0,171,12],
+"structInitInitServerPacket.html#a10a5341cc33398176d60b9eadca7a198":[12,0,171,13],
+"structInitInitServerPacket.html#a3140e7ffbe6a2c2f74d80a513e4f5bce":[12,0,171,1],
 "structInitInitServerPacket.html#a346a8a0c3c6964c34bac2f2751af6cf9":[12,0,171,22],
 "structInitInitServerPacket.html#a3a1452d673fb2e62ee335691cdfed910":[12,0,171,24],
 "structInitInitServerPacket.html#a44499e994c038195e4be2f9151e92fd9":[12,0,171,16],
@@ -245,9 +249,5 @@ var NAVTREEINDEX24 =
 "structMapGraphicRowTile.html#a23a94cff5a35523dc92dce77ce6cdce7":[12,0,217,2],
 "structMapGraphicRowTile.html#a8b640af1931ab96dc32e07da642846a3":[12,0,217,1],
 "structMapGraphicRowTile.html#ab5fd8bc653a90cf0325afdbf241e76f8":[12,0,217,0],
-"structMapItem.html":[12,0,218],
-"structMapItem.html#a1ccf4d6cbc21161d828e994aad54c0d5":[12,0,218,4],
-"structMapItem.html#a5768575612cf8f5cab45b6c8f44ee43e":[12,0,218,2],
-"structMapItem.html#a74b5ef642748d237961b9a4e858129bf":[12,0,218,3],
-"structMapItem.html#a7d19295393e90ea50eabb68afc7f0ec8":[12,0,218,6]
+"structMapItem.html":[12,0,218]
 };

@@ -1,5 +1,9 @@
 var NAVTREEINDEX27 =
 {
+"structShopSellServerPacket.html#ab62f155b08bafa55f89480d774067979":[12,0,325,3],
+"structShopSoldItem.html":[12,0,326],
+"structShopSoldItem.html#a264039046da31118714a8ca4fe8cfc9a":[12,0,326,0],
+"structShopSoldItem.html#a72f6cc7cebb7c8d2972c9b56f6059e12":[12,0,326,2],
 "structShopSoldItem.html#a76dd251e4337ba89077ac0f664439864":[12,0,326,1],
 "structShopTradeItem.html":[12,0,327],
 "structShopTradeItem.html#a1a6705d38e0660f118d271738b465bdc":[12,0,327,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX27 =
 "structTalkPlayerServerPacket.html#a7d11c2e48ecbe64195f570b14018928c":[12,0,376,2],
 "structTalkPlayerServerPacket.html#afbcbac118917973e320dd34829fdca56":[12,0,376,0],
 "structTalkRecord.html":[12,0,377],
-"structTalkRecord.html#a2cb37abbe42df9d9b02f596962936af4":[12,0,377,2],
-"structTalkRecord.html#a681520e5237f9d32605e7b7e5bab82e0":[12,0,377,3],
-"structTalkRecord.html#a768ea723fca662fc294edc29c6acf846":[12,0,377,4],
-"structTalkRecord.html#aa2d1d746b90971045bd8ade5723e081b":[12,0,377,0],
-"structTalkRecord.html#aae4654f770f827bf425d54e8ccd30fc9":[12,0,377,1]
+"structTalkRecord.html#a2cb37abbe42df9d9b02f596962936af4":[12,0,377,2]
 };

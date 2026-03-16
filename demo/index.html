@@ -237,7 +237,7 @@
               <legend>Encode Number</legend>
               <div class="field-row">
                 <label for="enc-value">Value</label>
-                <input id="enc-value" type="number" value="12345" min="0" style="width:110px" />
+                <input id="enc-value" type="number" value="12345" style="width:110px" />
                 <label for="enc-size" style="margin-left:8px">Size</label>
                 <select id="enc-size">
                   <option value="1">Char</option>
@@ -249,6 +249,10 @@
               </div>
               <p class="result-label">Encoded bytes (hex)</p>
               <div class="result" id="enc-result">—</div>
+              <p style="font-size:11px;margin-top:6px">
+                Negative values are only supported for 4-byte EO ints, in the range
+                <code>-2147483648</code> to <code>-197815216</code>.
+              </p>
             </fieldset>
 
             <fieldset>
@@ -262,6 +266,10 @@
               </div>
               <p class="result-label">Decoded value</p>
               <div class="result" id="dec-result">—</div>
+              <p style="font-size:11px;margin-top:6px">
+                4-byte EO ints decode to a 32-bit bit pattern interpreted as <code>int32_t</code>.
+                Values at or above <code>0x80000000</code> will display as negative.
+              </p>
             </fieldset>
 
             <fieldset>
@@ -633,7 +641,7 @@
       const out = [];
       for (const p of parts) {
         const v = parseInt(p, 16);
-        if (isNaN(v) || v < 0 || v > 255) throw new Error(`Invalid hex byte: "${p}"`);
+        if (Number.isNaN(v) || v < 0 || v > 255) throw new Error(`Invalid hex byte: "${p}"`);
         out.push(v);
       }
       return out;
@@ -676,12 +684,29 @@
       if (!M) return;
       const value = parseInt(document.getElementById('enc-value').value, 10);
       const size = parseInt(document.getElementById('enc-size').value, 10);
-      if (isNaN(value) || value < 0) {
-        setResult('enc-result', 'Enter a valid non-negative integer.', false); return;
+      if (Number.isNaN(value)) {
+        setResult('enc-result', 'Enter a valid integer.', false); return;
       }
+
+      if (size === 1 && (value < 0 || value > 252)) {
+        setResult('enc-result', 'EO Char accepts only values from 0 to 252.', false); return;
+      }
+      if (size === 2 && (value < 0 || value > 64008)) {
+        setResult('enc-result', 'EO Short accepts only values from 0 to 64,008.', false); return;
+      }
+      if (size === 3 && (value < 0 || value > 16194276)) {
+        setResult('enc-result', 'EO Three accepts only values from 0 to 16,194,276.', false); return;
+      }
+      if (size === 4 && (value < -2147483648 || value > 2147483647)) {
+        setResult('enc-result', 'EO Int input must fit in a signed 32-bit integer.', false); return;
+      }
+
       const ptr = api.encode_number_buf(value);
       if (!ptr) {
-        setResult('enc-result', `Value ${value} is too large for EO Int (max 4,097,152,080).`, false); return;
+        if (size === 4 && value < 0) {
+          setResult('enc-result', `EO Int negative values must be between -2147483648 and -197815216.`, false); return;
+        }
+        setResult('enc-result', `Value ${value} is outside the encodable range for this EO number type.`, false); return;
       }
       const raw = heapRead(ptr, 4);
       const hex = Array.from(raw.slice(0, size)).map(b => b.toString(16).toUpperCase().padStart(2, '0'));
@@ -700,7 +725,13 @@
       }
       const pad = [...bytes, 0, 0, 0, 0].slice(0, 4);
       const val = api.decode_number(pad[0], pad[1], pad[2], pad[3], bytes.length);
-      setResult('dec-result', `${val}  (0x${val.toString(16).toUpperCase()})`);
+      const unsigned = val >>> 0;
+      const hex = unsigned.toString(16).toUpperCase().padStart(8, '0');
+      if (bytes.length === 4) {
+        setResult('dec-result', `${val}  (uint32: ${unsigned}, hex: 0x${hex})`);
+      } else {
+        setResult('dec-result', `${val}  (0x${hex})`);
+      }
     }
 
     // ─────────────────────────────────────────────────────────────────────────────

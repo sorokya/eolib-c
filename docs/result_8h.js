@@ -13,7 +13,11 @@ var result_8h =
       [ "EO_SEQUENCE_OUT_OF_RANGE", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52ba75ee039170d95d8f3f871bd8a506cd0d", null ],
       [ "EO_INVALID_DATA", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52ba774544704dfcd68452ec12cda29514c7", null ],
       [ "EO_STR_OUT_OF_RANGE", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52baec126fa69c5b86e9c969dac261ae773e", null ],
-      [ "EO_STR_TOO_SHORT", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52ba7c7213e7535d017edacc8735c7fa05b4", null ]
+      [ "EO_STR_TOO_SHORT", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52ba7c7213e7535d017edacc8735c7fa05b4", null ],
+      [ "EO_INVALID_CHAR", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52ba3465a19798f38d28778234e694c24ace", null ],
+      [ "EO_INVALID_SHORT", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52ba2a93e92243e0f550f546a28afa611aa4", null ],
+      [ "EO_INVALID_THREE", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52ba495992d0a5682e7e9f17ac4f7d904f27", null ],
+      [ "EO_INVALID_INT", "result_8h.html#a80b9d1a97427ad2c8d1f68935e33c52ba10f71a2454ee3b7f682fba48eeb8a4e4", null ]
     ] ],
     [ "eo_result_string", "result_8h.html#a4c905a2a32256dcd09294b8f8586dd62", null ]
 ];

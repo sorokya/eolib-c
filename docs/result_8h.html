@@ -116,6 +116,11 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#a80b9d1a97427ad2c8d1f68935e33c52ba774544704dfcd68452ec12cda29514c7">EO_INVALID_DATA</a> = 9
 , <a class="el" href="#a80b9d1a97427ad2c8d1f68935e33c52baec126fa69c5b86e9c969dac261ae773e">EO_STR_OUT_OF_RANGE</a> = 10
 , <a class="el" href="#a80b9d1a97427ad2c8d1f68935e33c52ba7c7213e7535d017edacc8735c7fa05b4">EO_STR_TOO_SHORT</a> = 11
+, <br />
+&#160;&#160;<a class="el" href="#a80b9d1a97427ad2c8d1f68935e33c52ba3465a19798f38d28778234e694c24ace">EO_INVALID_CHAR</a> = 12
+, <a class="el" href="#a80b9d1a97427ad2c8d1f68935e33c52ba2a93e92243e0f550f546a28afa611aa4">EO_INVALID_SHORT</a> = 13
+, <a class="el" href="#a80b9d1a97427ad2c8d1f68935e33c52ba495992d0a5682e7e9f17ac4f7d904f27">EO_INVALID_THREE</a> = 14
+, <a class="el" href="#a80b9d1a97427ad2c8d1f68935e33c52ba10f71a2454ee3b7f682fba48eeb8a4e4">EO_INVALID_INT</a> = 15
 <br />
  }</td></tr>
 </table><table class="memberdecls">
@@ -189,6 +194,18 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a80b9d1a97427ad2c8d1f68935e33c52ba7c7213e7535d017edacc8735c7fa05b4" name="a80b9d1a97427ad2c8d1f68935e33c52ba7c7213e7535d017edacc8735c7fa05b4"></a>EO_STR_TOO_SHORT&#160;</td><td class="fieldinit">11&#160;</td><td class="fielddoc"><p>A string is shorter than the expected length.</p>
 <p>Returned when a fixed-length string added to a writer is shorter than the specified length, and padding is not enabled to fill the remaining space. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a80b9d1a97427ad2c8d1f68935e33c52ba3465a19798f38d28778234e694c24ace" name="a80b9d1a97427ad2c8d1f68935e33c52ba3465a19798f38d28778234e694c24ace"></a>EO_INVALID_CHAR&#160;</td><td class="fieldinit">12&#160;</td><td class="fielddoc"><p>A character value is outside the valid range (0 to EO_CHAR_MAX).</p>
+<p>Returned when attempting to encode a character that cannot be represented in the EO encoding format. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a80b9d1a97427ad2c8d1f68935e33c52ba2a93e92243e0f550f546a28afa611aa4" name="a80b9d1a97427ad2c8d1f68935e33c52ba2a93e92243e0f550f546a28afa611aa4"></a>EO_INVALID_SHORT&#160;</td><td class="fieldinit">13&#160;</td><td class="fielddoc"><p>A short integer value is outside the valid range (0 to EO_SHORT_MAX).</p>
+<p>Returned when attempting to encode a short integer that cannot be represented in the EO encoding format. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a80b9d1a97427ad2c8d1f68935e33c52ba495992d0a5682e7e9f17ac4f7d904f27" name="a80b9d1a97427ad2c8d1f68935e33c52ba495992d0a5682e7e9f17ac4f7d904f27"></a>EO_INVALID_THREE&#160;</td><td class="fieldinit">14&#160;</td><td class="fielddoc"><p>A three-byte integer value is outside the valid range (0 to EO_THREE_MAX).</p>
+<p>Returned when attempting to encode a three-byte integer that cannot be represented in the EO encoding format. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a80b9d1a97427ad2c8d1f68935e33c52ba10f71a2454ee3b7f682fba48eeb8a4e4" name="a80b9d1a97427ad2c8d1f68935e33c52ba10f71a2454ee3b7f682fba48eeb8a4e4"></a>EO_INVALID_INT&#160;</td><td class="fieldinit">15&#160;</td><td class="fielddoc"><p>An integer value is outside the representable 4-byte EO range.</p>
+<p>Returned when attempting to encode an integer whose 32-bit bit pattern cannot be represented in the EO integer format. </p>
 </td></tr>
 </table>
 

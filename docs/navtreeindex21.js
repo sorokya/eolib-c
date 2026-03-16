@@ -1,5 +1,9 @@
 var NAVTREEINDEX21 =
 {
+"structChairRequestClientPacket.html#a44e986bde94c49f0c184645b78b66ad0":[12,0,50,2],
+"structChairRequestClientPacket.html#a6a9f99ecf6cd8b9d4ccfacfaa0469904":[12,0,50,1],
+"structChairRequestClientPacket.html#aaea9efaf4d3dbd64c7b6039defc15c30":[12,0,50,4],
+"structChairRequestClientPacket.html#acd5056e295d8627cf382dd56aedf0cf7":[12,0,50,0],
 "structCharItem.html":[12,0,70],
 "structCharItem.html#a279b2622adf7702d3f52a579a9a0b56f":[12,0,70,2],
 "structCharItem.html#a4b266610b3c8e351a338303ee85a77f5":[12,0,70,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX21 =
 "structConnectionAcceptClientPacket.html#af11fd5b7a6b74f4a6266edae45f4207b":[12,0,90,0],
 "structConnectionPingClientPacket.html":[12,0,91],
 "structConnectionPingClientPacket.html#acf0a99d05c3a272653f02a4459a72caa":[12,0,91,0],
-"structConnectionPlayerServerPacket.html":[12,0,92],
-"structConnectionPlayerServerPacket.html#a2668317f22f255802a7590afd03c053c":[12,0,92,2],
-"structConnectionPlayerServerPacket.html#a545ffa2ef7afba60e558eed29a55fcaa":[12,0,92,0],
-"structConnectionPlayerServerPacket.html#ae1593b2a42c526581121a2b925047516":[12,0,92,1],
-"structCoords.html":[12,0,93]
+"structConnectionPlayerServerPacket.html":[12,0,92]
 };

@@ -132,15 +132,15 @@ var NAVTREEINDEX =
 "protocol_8h.html#a6b2feb855143e68470fc16141b77c3fd",
 "protocol_8h.html#aa3fd9a9b720fca3f21f5ab868a561e02",
 "protocol_8h.html#ad7da27bd8ffe5746919104f6345496c1",
-"structAccountCreateClientPacket.html#ac791c42a3cea527bbae6521202679f78",
-"structCharItem.html",
-"structCoords.html#a16146bbbc7b8378f7a7b048297c3a0c0",
-"structEquipmentCharacterSelect.html#a53cb118459e8ffdf6bb029091a74a9fe",
-"structInitInitServerPacket.html#a346a8a0c3c6964c34bac2f2751af6cf9",
-"structMapItem.html#aa1f0009e6de8c1dfd58d01cf5358e70d",
-"structPartyRequestServerPacket.html#a3d04711c06d025fa8c0d6b1a0a199912",
-"structShopSoldItem.html#a76dd251e4337ba89077ac0f664439864",
-"structTalkReplyServerPacket.html"
+"structAccountCreateClientPacket.html",
+"structChairRequestClientPacket.html#a44e986bde94c49f0c184645b78b66ad0",
+"structConnectionPlayerServerPacket.html#a2668317f22f255802a7590afd03c053c",
+"structEquipmentChange.html#acb025fa02d6f411d11670a8d06adbc72",
+"structInitInitServerPacket.html#a0d69ff9b6d0fef24dbee520f75d75c9c",
+"structMapItem.html#a1ccf4d6cbc21161d828e994aad54c0d5",
+"structPartyRequestClientPacket.html#a2eaa388a54659b910364645927795c6c",
+"structShopSellServerPacket.html#ab62f155b08bafa55f89480d774067979",
+"structTalkRecord.html#a681520e5237f9d32605e7b7e5bab82e0"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

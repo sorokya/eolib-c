@@ -1,5 +1,9 @@
 var NAVTREEINDEX22 =
 {
+"structConnectionPlayerServerPacket.html#a2668317f22f255802a7590afd03c053c":[12,0,92,2],
+"structConnectionPlayerServerPacket.html#a545ffa2ef7afba60e558eed29a55fcaa":[12,0,92,0],
+"structConnectionPlayerServerPacket.html#ae1593b2a42c526581121a2b925047516":[12,0,92,1],
+"structCoords.html":[12,0,93],
 "structCoords.html#a16146bbbc7b8378f7a7b048297c3a0c0":[12,0,93,1],
 "structCoords.html#aa7b76893276cfd1507c4b007d6535d69":[12,0,93,0],
 "structCoords.html#aca3fd4c6ce2f100c0e7895c1ad633e26":[12,0,93,2],
@@ -245,9 +249,5 @@ var NAVTREEINDEX22 =
 "structEquipmentChange.html#a8d4b754a7902cb292286d864b50abc51":[12,0,125,0],
 "structEquipmentChange.html#a9a3d262a6ef70f93dc3e6ac54af64e7d":[12,0,125,1],
 "structEquipmentChange.html#ab56121d71d286b97d5aaf86532ebe2a6":[12,0,125,4],
-"structEquipmentChange.html#ac6ed988c20b02992a08e4bed257759f9":[12,0,125,5],
-"structEquipmentChange.html#acb025fa02d6f411d11670a8d06adbc72":[12,0,125,3],
-"structEquipmentCharacterSelect.html":[12,0,126],
-"structEquipmentCharacterSelect.html#a0bfda5f714bd91a17659119d7213256e":[12,0,126,5],
-"structEquipmentCharacterSelect.html#a3a3711a75ac666d22d64f6aac8850c45":[12,0,126,2]
+"structEquipmentChange.html#ac6ed988c20b02992a08e4bed257759f9":[12,0,125,5]
 };

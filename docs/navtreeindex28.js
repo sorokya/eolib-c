@@ -1,5 +1,9 @@
 var NAVTREEINDEX28 =
 {
+"structTalkRecord.html#a681520e5237f9d32605e7b7e5bab82e0":[12,0,377,3],
+"structTalkRecord.html#a768ea723fca662fc294edc29c6acf846":[12,0,377,4],
+"structTalkRecord.html#aa2d1d746b90971045bd8ade5723e081b":[12,0,377,0],
+"structTalkRecord.html#aae4654f770f827bf425d54e8ccd30fc9":[12,0,377,1],
 "structTalkReplyServerPacket.html":[12,0,378],
 "structTalkReplyServerPacket.html#a1eb18d97e2afe23df29a01953da3a368":[12,0,378,1],
 "structTalkReplyServerPacket.html#a66fdd15365200734115897817751a43a":[12,0,378,2],
