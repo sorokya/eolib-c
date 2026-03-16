@@ -7,29 +7,29 @@
 #include <stdio.h>
 
 static void write_serialize_elements(FILE *source, const char *struct_name,
-    ElementList *elements, EnumDef *enums,
-    size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *value_expr,
-    const char *value_access);
+                                     ElementList *elements, EnumDef *enums,
+                                     size_t enums_count, StructDef *structs,
+                                     size_t structs_count, const char *value_expr,
+                                     const char *value_access);
 static void write_deserialize_elements(FILE *source, const char *struct_name,
-    ElementList *elements, EnumDef *enums,
-    size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *out_expr,
-    const char *out_access);
+                                       ElementList *elements, EnumDef *enums,
+                                       size_t enums_count, StructDef *structs,
+                                       size_t structs_count, const char *out_expr,
+                                       const char *out_access);
 static void write_free_elements(FILE *source, const char *struct_name,
-    ElementList *elements, EnumDef *enums,
-    size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *value_expr,
-    const char *value_access);
+                                ElementList *elements, EnumDef *enums,
+                                size_t enums_count, StructDef *structs,
+                                size_t structs_count, const char *value_expr,
+                                const char *value_access);
 static void write_size_elements(FILE *source, const char *struct_name,
-    ElementList *elements, EnumDef *enums,
-    size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *value_expr,
-    const char *value_access);
+                                ElementList *elements, EnumDef *enums,
+                                size_t enums_count, StructDef *structs,
+                                size_t structs_count, const char *value_expr,
+                                const char *value_access);
 static void write_struct_def(FILE *header, FILE *source, const char *name, ElementList *elements,
-    EnumDef *enums, size_t enums_count, StructDef *structs,
-    size_t structs_count, const char *comment,
-    const char *packet_family, const char *packet_action);
+                             EnumDef *enums, size_t enums_count, StructDef *structs,
+                             size_t structs_count, const char *comment,
+                             const char *packet_family, const char *packet_action);
 
 static void write_enum_def(FILE *header, FILE *source, EnumDef *def)
 {
@@ -856,6 +856,9 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
             int is_enum = enum_exists(enums, enums_count, type_name);
             int is_struct = struct_exists(structs, structs_count, type_name);
             int is_static = is_static_length(array->length);
+            int item_fixed_size = (!is_static && !array->length && !array->delimited && is_struct)
+                                      ? compute_struct_total_fixed_size(type_name, structs, structs_count, enums, enums_count)
+                                      : -1;
             const char *item_c_type = map_primitive_type(type_name);
             if (is_enum)
             {
@@ -886,6 +889,23 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                         out_expr, out_access, field_name, out_expr, out_access, field_name);
                 fprintf(source, "    for (size_t i = 0; i < %s%s%s_length; ++i) {\n",
                         out_expr, out_access, field_name);
+            }
+            else if (item_fixed_size > 0)
+            {
+                fprintf(source,
+                        "    size_t num_%s = eo_reader_remaining(reader) / %d;\n",
+                        field_name, item_fixed_size);
+                fprintf(source,
+                        "    %s%s%s = num_%s > 0 ? (%s *)malloc(num_%s * sizeof(%s)) : NULL;\n",
+                        out_expr, out_access, field_name, field_name,
+                        item_c_type, field_name, item_c_type);
+                fprintf(source,
+                        "    if (!%s%s%s && num_%s > 0) return EO_ALLOC_FAILED;\n",
+                        out_expr, out_access, field_name, field_name);
+                fprintf(source,
+                        "    %s%s%s_length = num_%s;\n",
+                        out_expr, out_access, field_name, field_name);
+                fprintf(source, "    for (size_t i = 0; i < num_%s; ++i) {\n", field_name);
             }
             else
             {
@@ -962,6 +982,12 @@ static void write_deserialize_elements(FILE *source, const char *struct_name,
                             "        if ((result = %s(reader, &%s%s%s[i])) != 0) return result;\n",
                             map_reader_fn(type_name), out_expr, out_access, field_name);
                 }
+            }
+            else if (item_fixed_size > 0)
+            {
+                fprintf(source,
+                        "        if ((result = %s_deserialize_fn((EoSerialize *)&%s%s%s[i], reader)) != 0) return result;\n",
+                        type_name, out_expr, out_access, field_name);
             }
             else
             {

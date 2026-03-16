@@ -25,5 +25,8 @@ int element_list_has_heap(ElementList *elements, EnumDef *enums, size_t enums_co
                           StructDef *structs, size_t structs_count);
 char *find_field_data_type(ElementList *elements, const char *name);
 LengthTarget find_length_target(ElementList *elements, const char *length_name);
+int compute_struct_total_fixed_size(const char *struct_name, StructDef *structs,
+                                    size_t structs_count, EnumDef *enums,
+                                    size_t enums_count);
 
 #endif /* CODE_GEN_ANALYSIS_H */
