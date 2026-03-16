@@ -87,11 +87,14 @@ void eo_writer_free(EoWriter *writer);
 EoResult eo_writer_ensure_capacity(EoWriter *writer, size_t additional);
 
 /**
- * Encodes a signed integer into EO byte format.
+ * Encodes an integer into EO byte format.
  * @param number Value to encode.
  * @param out_bytes Buffer for up to 4 encoded bytes.
  * @return EO_SUCCESS on success, EO_NULL_PTR if out_bytes is NULL, or
  *         EO_NUMBER_TOO_LARGE if the value exceeds the EO encoding range.
+ * @remarks Negative values are encoded using their 32-bit two's-complement bit pattern.
+ *          As a result, only wrapped negative values whose unsigned representation is less
+ *          than `EO_INT_MAX` are encodable.
  */
 EoResult eo_encode_number(int32_t number, uint8_t out_bytes[4]);
 
@@ -177,7 +180,11 @@ EoResult eo_writer_add_three(EoWriter *writer, int32_t value);
  * Appends a 4-byte EO-encoded number.
  * @param writer Writer to append to.
  * @param value Value to encode.
- * @return EO_SUCCESS on success, or a non-zero EoResult on failure.
+ * @return EO_SUCCESS on success, EO_INVALID_INT if the value is outside the
+ *         representable 4-byte EO int range, or a non-zero EoResult on failure.
+ * @remarks Values in `[0, INT32_MAX]` are always representable. Negative values are only
+ *          representable when their 32-bit unsigned bit pattern is less than `EO_INT_MAX`,
+ *          which corresponds to the range `[INT32_MIN, -197815216]`.
  */
 EoResult eo_writer_add_int(EoWriter *writer, int32_t value);
 
@@ -406,7 +413,8 @@ struct EoSerialize
  */
 static inline EoResult eo_deserialize(EoSerialize *serialize, EoReader *reader)
 {
-    if (!serialize || !reader) return EO_NULL_PTR;
+    if (!serialize || !reader)
+        return EO_NULL_PTR;
     return serialize->vtable->deserialize(serialize, reader);
 }
 
@@ -419,7 +427,8 @@ static inline EoResult eo_deserialize(EoSerialize *serialize, EoReader *reader)
  */
 static inline EoResult eo_serialize(const EoSerialize *serialize, EoWriter *writer)
 {
-    if (!serialize || !writer) return EO_NULL_PTR;
+    if (!serialize || !writer)
+        return EO_NULL_PTR;
     return serialize->vtable->serialize(serialize, writer);
 }
 
@@ -430,7 +439,8 @@ static inline EoResult eo_serialize(const EoSerialize *serialize, EoWriter *writ
  */
 static inline size_t eo_get_size(const EoSerialize *serialize)
 {
-    if (!serialize) return 0;
+    if (!serialize)
+        return 0;
     return serialize->vtable->get_size(serialize);
 }
 
@@ -441,7 +451,8 @@ static inline size_t eo_get_size(const EoSerialize *serialize)
  */
 static inline void eo_free(EoSerialize *serialize)
 {
-    if (!serialize || !serialize->vtable || !serialize->vtable->free) return;
+    if (!serialize || !serialize->vtable || !serialize->vtable->free)
+        return;
     serialize->vtable->free(serialize);
 }
 
@@ -468,7 +479,8 @@ struct EoPacket
  */
 static inline uint8_t eo_packet_get_family(const EoPacket *packet)
 {
-    if (!packet) return 0;
+    if (!packet)
+        return 0;
     return packet->vtable->get_family(packet);
 }
 
@@ -479,7 +491,8 @@ static inline uint8_t eo_packet_get_family(const EoPacket *packet)
  */
 static inline uint8_t eo_packet_get_action(const EoPacket *packet)
 {
-    if (!packet) return 0;
+    if (!packet)
+        return 0;
     return packet->vtable->get_action(packet);
 }
 

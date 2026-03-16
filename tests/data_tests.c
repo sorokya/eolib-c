@@ -60,7 +60,9 @@ static void test_eo_encode_decode_number_roundtrip()
         EO_SHORT_MAX,
         EO_THREE_MAX - 1,
         1234567,
-        INT32_MAX};
+        INT32_MAX,
+        INT32_MIN,
+        -197815216};
 
     for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++)
     {
@@ -162,8 +164,24 @@ static void test_eo_writer_number_range_checks()
     expect_equal_int("eo_writer_add_three negative", eo_writer_add_three(&writer, -1), EO_INVALID_THREE);
     expect_equal_int("eo_writer_add_three above max", eo_writer_add_three(&writer, EO_THREE_MAX + 1), EO_INVALID_THREE);
 
-    expect_equal_int("eo_writer_add_int negative", eo_writer_add_int(&writer, -1), EO_INVALID_INT);
+    expect_equal_int("eo_writer_add_int negative near zero", eo_writer_add_int(&writer, -1), EO_INVALID_INT);
+    expect_equal_int("eo_writer_add_int above wrapped negative max", eo_writer_add_int(&writer, -197815215), EO_INVALID_INT);
 
+    expect_equal_int("eo_writer_add_int minimum wrapped negative", eo_writer_add_int(&writer, -197815216), EO_SUCCESS);
+    {
+        const uint8_t expected[] = {0xFD, 0xFD, 0xFD, 0xFD};
+        expect_equal_bytes("eo_writer_add_int minimum wrapped negative bytes", writer.data, expected, sizeof(expected));
+    }
+
+    writer.length = 0;
+    expect_equal_int("eo_writer_add_int int32 min", eo_writer_add_int(&writer, INT32_MIN), EO_SUCCESS);
+    {
+        const uint8_t expected[] = {0xA8, 0xB5, 0x9A, 0x85};
+        expect_equal_bytes("eo_writer_add_int int32 min bytes", writer.data, expected, sizeof(expected));
+    }
+
+    writer.length = 0;
+    expect_equal_int("eo_writer_add_int invalid after valid reset", eo_writer_add_int(&writer, -1), EO_INVALID_INT);
     expect_equal_size("eo_writer_add_* invalid values do not write bytes", writer.length, 0);
 
     free(writer.data);

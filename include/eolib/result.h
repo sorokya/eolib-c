@@ -129,10 +129,10 @@ typedef enum EoResult
     EO_INVALID_THREE = 14,
 
     /**
-     * An integer value is outside the valid range (0 to EO_INT_MAX).
+     * An integer value is outside the representable 4-byte EO range.
      *
-     * Returned when attempting to encode an integer that cannot be represented
-     * in the EO encoding format.
+     * Returned when attempting to encode an integer whose 32-bit bit pattern
+     * cannot be represented in the EO integer format.
      */
     EO_INVALID_INT = 15,
 } EoResult;

@@ -282,34 +282,29 @@ EoResult eo_encode_number(int32_t number, uint8_t out_bytes[4])
     out_bytes[2] = EO_NUMBER_PADDING;
     out_bytes[3] = EO_NUMBER_PADDING;
 
-    int64_t value = number;
-    if (value < 0)
-    {
-        value = -value + (int64_t)INT32_MAX;
-    }
-
-    int64_t original = value;
-    if (original >= (int64_t)EO_INT_MAX)
+    uint32_t value = (uint32_t)number;
+    uint32_t original = value;
+    if (original >= (uint32_t)EO_INT_MAX)
     {
         return EO_NUMBER_TOO_LARGE;
     }
 
-    if (original >= (int64_t)EO_THREE_MAX)
+    if (original >= (uint32_t)EO_THREE_MAX)
     {
-        out_bytes[3] = (uint8_t)(value / (int64_t)EO_THREE_MAX) + 1;
-        value %= (int64_t)EO_THREE_MAX;
+        out_bytes[3] = (uint8_t)(value / (uint32_t)EO_THREE_MAX) + 1;
+        value %= (uint32_t)EO_THREE_MAX;
     }
 
-    if (original >= (int64_t)EO_SHORT_MAX)
+    if (original >= (uint32_t)EO_SHORT_MAX)
     {
-        out_bytes[2] = (uint8_t)(value / (int64_t)EO_SHORT_MAX) + 1;
-        value %= (int64_t)EO_SHORT_MAX;
+        out_bytes[2] = (uint8_t)(value / (uint32_t)EO_SHORT_MAX) + 1;
+        value %= (uint32_t)EO_SHORT_MAX;
     }
 
-    if (original >= (int64_t)EO_CHAR_MAX)
+    if (original >= (uint32_t)EO_CHAR_MAX)
     {
-        out_bytes[1] = (uint8_t)(value / (int64_t)EO_CHAR_MAX) + 1;
-        value %= (int64_t)EO_CHAR_MAX;
+        out_bytes[1] = (uint8_t)(value / (uint32_t)EO_CHAR_MAX) + 1;
+        value %= (uint32_t)EO_CHAR_MAX;
     }
 
     out_bytes[0] = (uint8_t)value + 1;
@@ -538,7 +533,7 @@ EoResult eo_writer_add_int(EoWriter *writer, int32_t value)
         return EO_NULL_PTR;
     }
 
-    if (value < 0)
+    if (value < 0 && (uint32_t)value >= (uint32_t)EO_INT_MAX)
     {
         return EO_INVALID_INT;
     }
