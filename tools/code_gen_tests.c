@@ -510,6 +510,10 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
             {
                 fprintf(f, "    expect_equal_size(\"%s length\", %s%s_length, %d);\n",
                         label, c_path, name, child_count);
+
+                // Bail at run-time if length == 0 to avoid generating invalid C expressions like packet.array[0]
+                fprintf(f, "    if (%s%s_length > 0)\n    {\n", c_path, name);
+
                 for (int j = 0; j < child_count; ++j)
                 {
                     struct json_object *child = json_object_array_get_idx(children_obj, j);
@@ -529,6 +533,8 @@ static void write_single_property_assertions(FILE *f, struct json_object *prop,
                                                   known_structs, fixed_arrays);
                     }
                 }
+
+                fprintf(f, "    }\n");
             }
         }
     }
@@ -728,6 +734,10 @@ void write_packet_tests(ProtocolDef *protocols, size_t protocol_count)
                 fprintf(f,
                         "    expect_equal_bytes(\"%s roundtrip\","
                         " writer.data, expected, expected_len);\n",
+                        packet_name);
+                fprintf(f,
+                        "    expect_equal_size(\"%s roundtrip length\","
+                        " writer.length, expected_len);\n",
                         packet_name);
             }
             fprintf(f, "    eo_free((EoSerialize *)&packet);\n");
