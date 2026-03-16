@@ -200,6 +200,14 @@ const char *eo_result_string(EoResult result)
         return "EO_STR_OUT_OF_RANGE: string exceeds the allowed fixed length";
     case EO_STR_TOO_SHORT:
         return "EO_STR_TOO_SHORT: string is shorter than the required fixed length";
+    case EO_INVALID_CHAR:
+        return "EO_INVALID_CHAR: character value is outside the valid range";
+    case EO_INVALID_SHORT:
+        return "EO_INVALID_SHORT: short integer value is outside the valid range";
+    case EO_INVALID_THREE:
+        return "EO_INVALID_THREE: three-byte integer value is outside the valid range";
+    case EO_INVALID_INT:
+        return "EO_INVALID_INT: integer value is outside the valid range";
     default:
         return "unknown EoResult value";
     }
@@ -441,6 +449,11 @@ EoResult eo_writer_add_char(EoWriter *writer, int32_t value)
         return EO_NULL_PTR;
     }
 
+    if (value < 0 || value > EO_CHAR_MAX)
+    {
+        return EO_INVALID_CHAR;
+    }
+
     EoResult result;
     if ((result = eo_writer_ensure_capacity(writer, 1)) != EO_SUCCESS)
     {
@@ -463,6 +476,11 @@ EoResult eo_writer_add_short(EoWriter *writer, int32_t value)
     if (!writer)
     {
         return EO_NULL_PTR;
+    }
+
+    if (value < 0 || value > EO_SHORT_MAX)
+    {
+        return EO_INVALID_SHORT;
     }
 
     EoResult result;
@@ -490,6 +508,11 @@ EoResult eo_writer_add_three(EoWriter *writer, int32_t value)
         return EO_NULL_PTR;
     }
 
+    if (value < 0 || value > EO_THREE_MAX)
+    {
+        return EO_INVALID_THREE;
+    }
+
     EoResult result;
     if ((result = eo_writer_ensure_capacity(writer, 3)) != EO_SUCCESS)
     {
@@ -513,6 +536,11 @@ EoResult eo_writer_add_int(EoWriter *writer, int32_t value)
     if (!writer)
     {
         return EO_NULL_PTR;
+    }
+
+    if (value < 0)
+    {
+        return EO_INVALID_INT;
     }
 
     EoResult result;
@@ -1171,5 +1199,3 @@ EoResult eo_reader_get_bytes(EoReader *reader, size_t length, uint8_t **out_valu
     reader->offset += length;
     return EO_SUCCESS;
 }
-
-

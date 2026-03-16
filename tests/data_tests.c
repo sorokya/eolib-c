@@ -142,6 +142,26 @@ static void test_eo_writer_add_numbers()
     free(writer.data);
 }
 
+static void test_eo_writer_number_range_checks()
+{
+    EoWriter writer = eo_writer_init_with_capacity(0);
+
+    expect_equal_int("eo_writer_add_char negative", eo_writer_add_char(&writer, -1), EO_INVALID_CHAR);
+    expect_equal_int("eo_writer_add_char above max", eo_writer_add_char(&writer, EO_CHAR_MAX + 1), EO_INVALID_CHAR);
+
+    expect_equal_int("eo_writer_add_short negative", eo_writer_add_short(&writer, -1), EO_INVALID_SHORT);
+    expect_equal_int("eo_writer_add_short above max", eo_writer_add_short(&writer, EO_SHORT_MAX + 1), EO_INVALID_SHORT);
+
+    expect_equal_int("eo_writer_add_three negative", eo_writer_add_three(&writer, -1), EO_INVALID_THREE);
+    expect_equal_int("eo_writer_add_three above max", eo_writer_add_three(&writer, EO_THREE_MAX + 1), EO_INVALID_THREE);
+
+    expect_equal_int("eo_writer_add_int negative", eo_writer_add_int(&writer, -1), EO_INVALID_INT);
+
+    expect_equal_size("eo_writer_add_* invalid values do not write bytes", writer.length, 0);
+
+    free(writer.data);
+}
+
 static void test_eo_writer_add_strings_and_bytes()
 {
     EoWriter writer = eo_writer_init_with_capacity(0);
@@ -451,6 +471,7 @@ static const TestCase eo_data_tests[] = {
     {"eo_encode_string_known_value", test_eo_encode_string_known_value},
     {"eo_decode_string_known_value", test_eo_decode_string_known_value},
     {"eo_writer_add_numbers", test_eo_writer_add_numbers},
+    {"eo_writer_number_range_checks", test_eo_writer_number_range_checks},
     {"eo_writer_add_strings_and_bytes", test_eo_writer_add_strings_and_bytes},
     {"eo_writer_string_sanitization_mode", test_eo_writer_string_sanitization_mode},
     {"eo_writer_fixed_string", test_eo_writer_fixed_string},

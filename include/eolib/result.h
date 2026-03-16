@@ -103,6 +103,38 @@ typedef enum EoResult
      * and padding is not enabled to fill the remaining space.
      */
     EO_STR_TOO_SHORT = 11,
+
+    /**
+     * A character value is outside the valid range (0 to EO_CHAR_MAX).
+     *
+     * Returned when attempting to encode a character that cannot be represented
+     * in the EO encoding format.
+     */
+    EO_INVALID_CHAR = 12,
+
+    /**
+     * A short integer value is outside the valid range (0 to EO_SHORT_MAX).
+     *
+     * Returned when attempting to encode a short integer that cannot be represented
+     * in the EO encoding format.
+     */
+    EO_INVALID_SHORT = 13,
+
+    /**
+     * A three-byte integer value is outside the valid range (0 to EO_THREE_MAX).
+     *
+     * Returned when attempting to encode a three-byte integer that cannot be represented
+     * in the EO encoding format.
+     */
+    EO_INVALID_THREE = 14,
+
+    /**
+     * An integer value is outside the valid range (0 to EO_INT_MAX).
+     *
+     * Returned when attempting to encode an integer that cannot be represented
+     * in the EO encoding format.
+     */
+    EO_INVALID_INT = 15,
 } EoResult;
 
 /**

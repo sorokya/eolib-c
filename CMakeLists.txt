@@ -166,6 +166,7 @@ set(EOLIB_data_TESTS
 	eo_encode_string_known_value
 	eo_decode_string_known_value
 	eo_writer_add_numbers
+	eo_writer_number_range_checks
 	eo_writer_add_strings_and_bytes
 	eo_writer_string_sanitization_mode
 	eo_reader_number_reads
