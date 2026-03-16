@@ -162,6 +162,7 @@ set(EOLIB_data_TESTS
 	eo_writer_init_with_capacity
 	eo_writer_ensure_capacity
 	eo_encode_decode_number_roundtrip
+	eo_decode_number_negative_wrap
 	eo_encode_decode_string_roundtrip
 	eo_encode_string_known_value
 	eo_decode_string_known_value

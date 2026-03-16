@@ -73,6 +73,13 @@ static void test_eo_encode_decode_number_roundtrip()
     expect_equal_int32("eo_decode_number should treat NULL bytes as zero", eo_decode_number(NULL, 0), 0);
 }
 
+static void test_eo_decode_number_negative_wrap()
+{
+    uint8_t bytes[] = {0xA8, 0xB5, 0x9A, 0x85};
+
+    expect_equal_int32("eo_decode_number should wrap at int32 boundary", eo_decode_number(bytes, 4), INT32_MIN);
+}
+
 static void test_eo_encode_decode_string_roundtrip()
 {
     uint8_t buf[] = "Hello, World!";
@@ -467,6 +474,7 @@ static const TestCase eo_data_tests[] = {
     {"eo_writer_init_with_capacity", test_eo_writer_init_with_capacity},
     {"eo_writer_ensure_capacity", test_eo_writer_ensure_capacity},
     {"eo_encode_decode_number_roundtrip", test_eo_encode_decode_number_roundtrip},
+    {"eo_decode_number_negative_wrap", test_eo_decode_number_negative_wrap},
     {"eo_encode_decode_string_roundtrip", test_eo_encode_decode_string_roundtrip},
     {"eo_encode_string_known_value", test_eo_encode_string_known_value},
     {"eo_decode_string_known_value", test_eo_decode_string_known_value},
